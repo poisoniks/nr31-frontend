@@ -73,9 +73,9 @@
     --text-alt: #0B1320;
     --surface-base: #FFFFFF;
     --border-base: rgba(26, 31, 44, 0.1);
-    --glass-bg: rgba(255, 255, 255, 0.85);
+    --glass-bg: rgba(255, 255, 255, 0.5);
     --glass-border: rgba(26, 31, 44, 0.1);
-    --glass-card-bg: rgba(255, 255, 255, 0.9);
+    --glass-card-bg: rgba(255, 255, 255, 0.6);
     --glass-card-border: rgba(26, 31, 44, 0.1);
     --hero-overlay-start: rgba(253, 251, 247, 0.3);
     --hero-overlay-end: rgba(253, 251, 247, 1);
