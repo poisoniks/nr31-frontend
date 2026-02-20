@@ -66,21 +66,22 @@
     --radius: 0.5rem;
 
     /* Site Design Root Variables */
-    --accent-base: #D4AF37;
-    --accent-hover: #E5B81B;
-    --bg-base: #FDFBF7;
+    --accent-base: #ff9900;
+    --accent-hover: #e68a00;
+    --bg-base: #F8F7F4;
     --text-base: #1A1F2C;
     --text-alt: #0B1320;
     --surface-base: #FFFFFF;
-    --border-base: rgba(26, 31, 44, 0.1);
-    --glass-bg: rgba(255, 255, 255, 0.5);
-    --glass-border: rgba(26, 31, 44, 0.1);
-    --glass-card-bg: rgba(255, 255, 255, 0.6);
-    --glass-card-border: rgba(26, 31, 44, 0.1);
-    --hero-overlay-start: rgba(253, 251, 247, 0.3);
-    --hero-overlay-end: rgba(253, 251, 247, 1);
-    --gold-grad-start: #D4AF37;
-    --gold-grad-end: #E5B81B;
+    --border-base: rgba(26, 31, 44, 0.12);
+    --glass-bg: rgba(255, 255, 255, 0.6);
+    --glass-border: rgba(255, 255, 255, 0.6);
+    --glass-card-bg: rgba(255, 255, 255, 0.85);
+    --glass-card-border: rgba(26, 31, 44, 0.08);
+    --hero-overlay-start: rgba(248, 247, 244, 0.1);
+    --hero-overlay-end: rgba(248, 247, 244, 0.95);
+    --gold-grad-start: #ff9900;
+    --gold-grad-end: #a16207;
+    --glass-shadow: 0 12px 32px -8px rgba(0, 0, 0, 0.08), 0 4px 12px -4px rgba(0, 0, 0, 0.04);
   }
 
   .dark {
@@ -121,6 +122,7 @@
     --hero-overlay-end: rgba(2, 6, 23, 1);
     --gold-grad-start: #fbbf24;
     --gold-grad-end: #d97706;
+    --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
   }
 
   body {
@@ -163,6 +165,7 @@
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--glass-card-border);
+  box-shadow: var(--glass-shadow);
 }
 
 @utility hero-overlay {

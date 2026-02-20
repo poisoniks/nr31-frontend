@@ -19,10 +19,10 @@ const Home: React.FC = () => {
                 />
 
                 <div className="relative z-20 max-w-7xl mx-auto px-4 w-full flex flex-col items-center md:items-start text-center md:text-left mt-20 animate-fade-in-up">
-                    <div className="inline-flex items-center rounded-full border border-nr-accent/30 bg-nr-accent/10 px-3 py-1 text-sm font-medium text-nr-accent mb-6 backdrop-blur-md">
+                    <div className="inline-flex items-center rounded-full glass border border-nr-accent/20 px-4 py-1.5 text-sm font-bold text-nr-accent mb-6 shadow-sm dark:shadow-none transition-all">
                         <span>{t('home.hero.badge', 'Частина ЄУК Community')}</span>
                     </div>
-                    <h1 className="font-serif text-5xl md:text-7xl font-bold mb-6 drop-shadow-2xl">
+                    <h1 className="font-serif text-5xl md:text-7xl font-bold mb-6 drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)] dark:drop-shadow-lg">
                         <span className="block text-gold-gradient">NR31</span>
                         <span className="text-nr-text">Feldkanonenregiment</span>
                     </h1>
@@ -42,7 +42,7 @@ const Home: React.FC = () => {
                     {/* Main Content (70%) */}
                     <div className="lg:col-span-8 space-y-8">
                         {/* About Us Card */}
-                        <div className="glass-card p-6 rounded-xl shadow-sm relative overflow-hidden group">
+                        <div className="glass-card p-6 rounded-xl relative overflow-hidden group">
                             <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition transform group-hover:scale-110">
                                 <Discord size={120} className="text-nr-accent" />
                             </div>
@@ -61,7 +61,7 @@ const Home: React.FC = () => {
                             </h3>
 
                             {[1, 2].map(i => (
-                                <div key={i} className="glass-card rounded-xl overflow-hidden flex flex-col sm:flex-row group hover:border-nr-accent/50 transition-colors shadow-sm">
+                                <div key={i} className="glass-card rounded-xl overflow-hidden flex flex-col sm:flex-row group hover:border-nr-accent/50 transition-colors">
                                     <div className="sm:w-1/3 aspect-video sm:aspect-auto bg-gray-200 overflow-hidden relative">
                                         <img
                                             src={`https://images.unsplash.com/photo-1582216171542-0f0e8fca7a72?q=80&w=600&auto=format&fit=crop&sig=${i}`}
@@ -90,7 +90,7 @@ const Home: React.FC = () => {
                         </div>
 
                         {/* EUC Block */}
-                        <div className="glass-card p-1 rounded-xl shadow-md border-2 border-blue-500/30">
+                        <div className="glass-card p-1 rounded-xl border-2 border-blue-500/30">
                             <div className="bg-blue-900/10 dark:bg-blue-950/30 h-full rounded-lg p-6 flex flex-col sm:flex-row items-center gap-6 text-center sm:text-left">
                                 <div className="w-20 h-20 rounded-full bg-blue-100 flex items-center justify-center border border-blue-400/30 shrink-0">
                                     <span className="font-bold text-xl text-blue-900">ЄУК</span>
@@ -109,7 +109,7 @@ const Home: React.FC = () => {
                     <div className="lg:col-span-4 space-y-6">
 
                         {/* Next Event Widget */}
-                        <div className="glass-card rounded-xl p-5 shadow-sm sticky top-24">
+                        <div className="glass-card rounded-xl p-5 sticky top-24">
                             <h4 className="font-serif text-lg font-bold mb-4 flex items-center justify-between text-nr-text">
                                 <span>{t('home.widgets.next_event', 'Наступна подія')}</span>
                                 <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
@@ -129,7 +129,7 @@ const Home: React.FC = () => {
                         </div>
 
                         {/* Discord Widget */}
-                        <div className="glass-card rounded-xl border border-[#5865F2]/20 p-5 shadow-sm">
+                        <div className="glass-card rounded-xl border border-[#5865F2]/20 p-5">
                             <h4 className="font-serif text-lg font-bold mb-4 flex items-center gap-2 text-[#5865F2]">
                                 <Discord size={20} />
                                 <span>Discord</span>
