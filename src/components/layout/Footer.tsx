@@ -1,5 +1,5 @@
 import React from 'react';
-import { Flame, Github, Disc as Discord, Youtube, Send } from 'lucide-react';
+import { Github, Disc as Discord, Youtube, Send } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 const Footer: React.FC = () => {
@@ -12,8 +12,13 @@ const Footer: React.FC = () => {
                 {/* Left Column */}
                 <div className="flex flex-col items-center md:items-start gap-2">
                     <div className="flex items-center gap-2 group cursor-pointer">
-                        <div className="w-8 h-8 bg-amber-600/20 rounded-full border border-amber-500/50 flex items-center justify-center transition">
-                            <Flame size={16} className="text-amber-500" />
+                        <div className="w-9 h-9 rounded-full flex items-center justify-center transition-all duration-500 group-hover:shadow-[0_0_15px_rgba(251,191,36,0.4)] group-hover:bg-amber-500/10 relative">
+                            <div className="absolute inset-0 rounded-full bg-amber-500/20 blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                            <img
+                                src="/Nr31FKR_logo-no-back.png"
+                                alt="NR31 Logo"
+                                className="w-full h-full object-contain relative z-10 drop-shadow-[0_0_2px_rgba(251,191,36,0.3)] group-hover:drop-shadow-[0_0_12px_rgba(251,191,36,0.8)] transition-all duration-500"
+                            />
                         </div>
                         <span className="font-serif font-bold text-lg tracking-wider text-nr-text">NR31</span>
                     </div>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Menu, Globe, Moon, Sun, Shield, LogIn, Swords } from 'lucide-react';
+import { Menu, Globe, Moon, Sun, LogIn, Swords } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import { useTheme } from '../ThemeProvider';
@@ -39,8 +39,13 @@ const Header: React.FC = () => {
                         </button>
 
                         <Link to="/" className="flex items-center gap-3 group">
-                            <div className="w-10 h-10 bg-amber-600/20 rounded-full border border-amber-500/50 flex items-center justify-center group-hover:bg-amber-600/30 transition">
-                                <Shield size={24} className="text-amber-500" />
+                            <div className="w-11 h-11 rounded-full flex items-center justify-center transition-all duration-500 group-hover:shadow-[0_0_20px_rgba(251,191,36,0.5)] group-hover:bg-amber-500/10 relative">
+                                <div className="absolute inset-0 rounded-full bg-amber-500/20 blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                                <img
+                                    src="/Nr31FKR_logo-no-back.png"
+                                    alt="NR31 Logo"
+                                    className="w-full h-full object-contain relative z-10 drop-shadow-[0_0_2px_rgba(251,191,36,0.3)] group-hover:drop-shadow-[0_0_15px_rgba(251,191,36,0.9)] transition-all duration-500"
+                                />
                             </div>
                             <span className="font-serif font-bold text-xl tracking-wider text-nr-text group-hover:text-nr-accent transition-colors">NR31</span>
                         </Link>
