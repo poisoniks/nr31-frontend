@@ -1,35 +1,49 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useEffect } from 'react';
+import { Routes, Route, useLocation } from 'react-router-dom';
+import { ThemeProvider } from './components/ThemeProvider';
+import Header from './components/layout/Header';
+import Footer from './components/layout/Footer';
+import Home from './pages/Home';
+import Roster from './pages/Roster';
+import Events from './pages/Events';
+import Admin from './pages/Admin';
+import { ProtectedRoute } from './components/auth/ProtectedRoute';
+import { RequirePermission } from './components/auth/RequirePermission';
 
-function App() {
-  const [count, setCount] = useState(0)
+const ScrollToTop = () => {
+  const { pathname } = useLocation();
 
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  return null;
 }
 
-export default App
+function App() {
+  return (
+    <ThemeProvider>
+      <ScrollToTop />
+      <div className="flex flex-col min-h-screen relative">
+        <Header />
+        <main className="flex-1 flex flex-col relative z-0">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/roster" element={<Roster />} />
+            <Route path="/events" element={<Events />} />
+            <Route path="/admin" element={
+              <ProtectedRoute>
+                <RequirePermission permission="admin:view" fallback={<div className="p-8 text-center text-nr-text">Access Denied</div>}>
+                  <Admin />
+                </RequirePermission>
+              </ProtectedRoute>
+            } />
+          </Routes>
+        </main>
+        <Footer />
+      </div>
+    </ThemeProvider>
+  );
+}
+
+export default App;
