@@ -1,11 +1,11 @@
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400..900&family=Inter:wght@300..700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Roboto:wght@300;400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Georgia:wght@400;700&display=swap');
 @import "tailwindcss";
 
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --font-serif: "Cinzel", "Playfair Display", serif;
-  --font-sans: "Georgia", "Inter", "Roboto", sans-serif;
+  --font-serif: "Georgia", serif;
+  --font-sans: "Georgia", serif;
 
   --color-nr-accent: var(--accent-base);
   --color-nr-accent-hover: var(--accent-hover);
@@ -133,49 +133,6 @@
   }
 }
 
-@layer utilities {
-  .glass {
-    background: var(--glass-bg);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid var(--glass-border);
-  }
-
-  .glass-card {
-    background: var(--glass-card-bg);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    border: 1px solid var(--glass-card-border);
-  }
-
-  .hero-overlay {
-    background: linear-gradient(to bottom, var(--hero-overlay-start) 0%, var(--hero-overlay-end) 100%);
-  }
-
-  .text-gold-gradient {
-    background: linear-gradient(to right, var(--gold-grad-start), var(--gold-grad-end));
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-
-  @keyframes fade-in-up {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  .animate-fade-in-up {
-    animation: fade-in-up 0.6s ease-out forwards;
-  }
-}
-
 ::-webkit-scrollbar {
   width: 8px;
 }
@@ -192,4 +149,50 @@
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--accent-base);
+
+}
+
+@utility glass {
+  background-color: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+@utility glass-card {
+  background-color: var(--glass-card-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-card-border);
+}
+
+@utility hero-overlay {
+  background: linear-gradient(to bottom, var(--hero-overlay-start), var(--hero-overlay-end));
+}
+
+@utility text-gold-gradient {
+  background-image: linear-gradient(to right, var(--gold-grad-start), var(--gold-grad-end));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@utility animate-fade-in-up {
+  animation: fade-in-up 0.5s ease-out forwards;
+}
+
+@utility animate-spin-slow {
+  animation: spin 3s linear infinite;
+}
+
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

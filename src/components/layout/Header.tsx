@@ -25,7 +25,7 @@ const Header: React.FC = () => {
 
     return (
         <>
-            <header className="fixed top-0 left-0 w-full h-16 glass z-50 flex items-center justify-between transition-all duration-300">
+            <header className="fixed top-0 left-0 w-full h-16 glass border-b border-nr-border z-50 flex items-center justify-between transition-all duration-300">
                 <div className="max-w-7xl mx-auto px-4 h-full w-full flex items-center justify-between">
 
                     {/* Left section */}
@@ -78,7 +78,7 @@ const Header: React.FC = () => {
                             {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
                         </button>
 
-                        <button className="hidden md:flex px-5 py-2 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 text-white font-bold rounded shadow-lg shadow-amber-900/40 transition-all transform hover:scale-105 items-center gap-2">
+                        <button className="hidden md:flex px-5 py-2 bg-linear-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 text-white font-bold rounded shadow-lg shadow-amber-900/40 transition-all transform hover:scale-105 items-center gap-2">
                             <span>{t('header.join', 'Вступити')}</span>
                             <Swords size={16} />
                         </button>

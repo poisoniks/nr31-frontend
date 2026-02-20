@@ -135,7 +135,7 @@ const Roster: React.FC = () => {
                                                 {member.medals > 0 && (
                                                     <div className="flex -space-x-1" title={`${member.medals} ${t('roster.medals', 'Нагород')}`}>
                                                         {[...Array(Math.min(member.medals, 3))].map((_, i) => (
-                                                            <div key={i} className="w-6 h-6 rounded-full bg-gradient-to-br from-yellow-300 to-yellow-600 border border-yellow-700 shadow-sm flex items-center justify-center">
+                                                            <div key={i} className="w-6 h-6 rounded-full bg-linear-to-br from-yellow-300 to-yellow-600 border border-yellow-700 shadow-sm flex items-center justify-center">
                                                                 <Award size={12} className="text-amber-900" />
                                                             </div>
                                                         ))}
@@ -156,7 +156,7 @@ const Roster: React.FC = () => {
 
             {/* Profile Modal */}
             {selectedMember && (
-                <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+                <div className="fixed inset-0 z-60 flex items-center justify-center p-4">
                     <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setSelectedMember(null)} />
                     <div className="glass-card rounded-xl shadow-2xl border-2 border-nr-accent/20 relative z-10 w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200">
                         {/* Modal Header Cover */}
@@ -191,7 +191,7 @@ const Roster: React.FC = () => {
                                 {selectedMember.medals > 0 ? (
                                     <div className="flex gap-2 mb-6">
                                         {[...Array(selectedMember.medals)].map((_, i) => (
-                                            <div key={i} className="w-10 h-10 rounded-full bg-gradient-to-br from-yellow-300 to-yellow-600 shadow-lg border border-yellow-700 font-bold text-amber-900 flex items-center justify-center relative group cursor-pointer hover:scale-110 transition-transform">
+                                            <div key={i} className="w-10 h-10 rounded-full bg-linear-to-br from-yellow-300 to-yellow-600 shadow-lg border border-yellow-700 font-bold text-amber-900 flex items-center justify-center relative group cursor-pointer hover:scale-110 transition-transform">
                                                 ★
                                                 <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-xs py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50">
                                                     {t('roster.member.medal_courage', 'Медаль за відвагу')} #{i + 1}

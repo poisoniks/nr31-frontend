@@ -92,7 +92,7 @@ const Home: React.FC = () => {
                         {/* EUC Block */}
                         <div className="glass-card p-1 rounded-xl shadow-md border-2 border-blue-500/30">
                             <div className="bg-blue-900/10 dark:bg-blue-950/30 h-full rounded-lg p-6 flex flex-col sm:flex-row items-center gap-6 text-center sm:text-left">
-                                <div className="w-20 h-20 rounded-full bg-blue-100 flex items-center justify-center border border-blue-400/30 flex-shrink-0">
+                                <div className="w-20 h-20 rounded-full bg-blue-100 flex items-center justify-center border border-blue-400/30 shrink-0">
                                     <span className="font-bold text-xl text-blue-900">ЄУК</span>
                                 </div>
                                 <div>
@@ -147,11 +147,11 @@ const Home: React.FC = () => {
                         </div>
 
                         {/* Media Widget */}
-                        <div className="glass-card aspect-[9/16] rounded-xl overflow-hidden relative group">
+                        <div className="glass-card aspect-9/16 rounded-xl overflow-hidden relative group">
                             <img src="https://images.unsplash.com/photo-1542502690-0b6dc0863bb5?q=80&w=400&auto=format&fit=crop" className="w-full h-full object-cover opacity-70 group-hover:scale-105 transition-transform duration-700" alt="Video thumbnail" />
                             <div className="absolute inset-0 flex items-center justify-center">
                                 <div className="w-12 h-12 glass rounded-full flex items-center justify-center cursor-pointer group-hover:bg-nr-accent transition-colors">
-                                    <div className="w-0 h-0 border-t-8 border-t-transparent border-l-[12px] border-l-white border-b-8 border-b-transparent ml-1"></div>
+                                    <div className="w-0 h-0 border-t-8 border-t-transparent border-l-12 border-l-white border-b-8 border-b-transparent ml-1"></div>
                                 </div>
                             </div>
                             <div className="absolute bottom-4 left-4 right-4">
