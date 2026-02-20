@@ -13,7 +13,7 @@ const Home: React.FC = () => {
                 {/* Mock background image overlay */}
                 <div className="absolute inset-0 hero-overlay z-10" />
                 <img
-                    src="https://images.unsplash.com/photo-1590240958742-ebd55c7097c0?q=80&w=2000&auto=format&fit=crop"
+                    src="/home_background.jpg"
                     alt="Battle"
                     className="absolute inset-0 w-full h-full object-cover opacity-60"
                 />
