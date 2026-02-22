@@ -105,5 +105,8 @@
     "discord.members_online": "Members Online",
     "discord.currently_playing": "Currently playing:",
     "discord.more_players": "+ {{count}} more...",
-    "discord.join": "Connect"
+    "discord.join": "Connect",
+    "youtube.latest_video": "Our new video",
+    "youtube.no_videos": "No recent videos found",
+    "youtube.error": "Failed to load video"
 }

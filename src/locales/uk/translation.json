@@ -105,5 +105,8 @@
     "discord.members_online": "В мережі",
     "discord.currently_playing": "Зараз грають:",
     "discord.more_players": "Ще {{count}}...",
-    "discord.join": "Приєднатися"
+    "discord.join": "Приєднатися",
+    "youtube.latest_video": "Наше нове відео",
+    "youtube.no_videos": "Немає останніх відео",
+    "youtube.error": "Не вдалося завантажити відео"
 }

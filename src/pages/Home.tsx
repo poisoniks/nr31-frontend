@@ -3,6 +3,7 @@ import { Swords } from 'lucide-react';
 import Button from '../components/ui/Button';
 import { useTranslation } from 'react-i18next';
 import DiscordWidget from '../components/ui/DiscordWidget';
+import YoutubeWidget from '../components/ui/YoutubeWidget';
 
 const Home: React.FC = () => {
     const { t } = useTranslation();
@@ -132,16 +133,8 @@ const Home: React.FC = () => {
                         </div>
 
                         {/* Media Widget */}
-                        <div className="glass-card aspect-9/16 rounded-xl overflow-hidden relative group">
-                            <img src="https://images.unsplash.com/photo-1542502690-0b6dc0863bb5?q=80&w=400&auto=format&fit=crop" className="w-full h-full object-cover opacity-70 group-hover:scale-105 transition-transform duration-700" alt="Video thumbnail" />
-                            <div className="absolute inset-0 flex items-center justify-center">
-                                <div className="w-12 h-12 glass rounded-full flex items-center justify-center cursor-pointer group-hover:bg-nr-accent transition-colors">
-                                    <div className="w-0 h-0 border-t-8 border-t-transparent border-l-12 border-l-white border-b-8 border-b-transparent ml-1"></div>
-                                </div>
-                            </div>
-                            <div className="absolute bottom-4 left-4 right-4">
-                                <h5 className="text-white font-serif font-bold text-sm drop-shadow-md">{t('home.widgets.latest_short')}</h5>
-                            </div>
+                        <div className="glass-card rounded-xl overflow-hidden relative border border-[#c4c9ce]/20 dark:border-[#202225]/20">
+                            <YoutubeWidget />
                         </div>
 
                     </div>
