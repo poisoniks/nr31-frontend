@@ -15,6 +15,7 @@ i18n
         },
         fallbackLng: 'en',
         debug: true,
+        parseMissingKeyHandler: () => 'Localize me!',
         interpolation: {
             escapeValue: false,
         },

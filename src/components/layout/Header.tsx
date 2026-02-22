@@ -1,21 +1,25 @@
 import React, { useState } from 'react';
-import { Menu, Globe, Moon, Sun, LogIn, Swords } from 'lucide-react';
+import { Menu, Globe, Moon, Sun, LogIn } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import { useTheme } from '../ThemeProvider';
 import { useTranslation } from 'react-i18next';
+import Button from '../ui/Button';
+import { useAuthStore } from '../../store/useAuthStore';
 
 const Header: React.FC = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const location = useLocation();
     const { theme, toggleTheme } = useTheme();
     const { t, i18n } = useTranslation();
+    const user = useAuthStore(state => state.user);
+    const hasAdminPermission = user?.authorities?.includes('admin:view') ?? false;
 
     const navLinks = [
-        { name: t('header.home', 'Головна'), path: '/' },
-        { name: t('header.roster', 'Склад'), path: '/roster' },
-        { name: t('header.events', 'Події'), path: '/events' },
-        { name: t('header.admin', 'Адмін'), path: '/admin' }
+        { name: t('header.home'), path: '/' },
+        { name: t('header.roster'), path: '/roster' },
+        { name: t('header.events'), path: '/events' },
+        ...(hasAdminPermission ? [{ name: t('header.admin'), path: '/admin' }] : [])
     ];
 
     const toggleLanguage = () => {
@@ -43,11 +47,11 @@ const Header: React.FC = () => {
                                 <div className="absolute inset-0 rounded-full bg-amber-500/20 blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                                 <img
                                     src="/Nr31FKR_logo-no-back.png"
-                                    alt="NR31 Logo"
+                                    alt="Nr.31 FKR Logo"
                                     className="w-full h-full object-contain relative z-10 drop-shadow-[0_0_2px_rgba(251,191,36,0.3)] group-hover:drop-shadow-[0_0_15px_rgba(251,191,36,0.9)] transition-all duration-500"
                                 />
                             </div>
-                            <span className="font-serif font-bold text-xl tracking-wider text-nr-text group-hover:text-nr-accent transition-colors">NR31</span>
+                            <span className="font-serif font-bold text-xl tracking-wider text-nr-text group-hover:text-nr-accent transition-colors">Nr.31 FKR</span>
                         </Link>
                     </div>
 
@@ -83,14 +87,9 @@ const Header: React.FC = () => {
                             {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
                         </button>
 
-                        <button className="hidden md:flex px-5 py-2 bg-linear-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 text-white font-bold rounded shadow-lg shadow-amber-900/40 transition-all transform hover:scale-105 items-center gap-2">
-                            <span>{t('header.join', 'Вступити')}</span>
-                            <Swords size={16} />
-                        </button>
-
-                        <button className="p-2 border border-nr-border rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition text-nr-text/80" aria-label="Login">
+                        <Button variant="ghost" size="icon" className="border border-nr-border text-nr-text/80" aria-label="Login">
                             <LogIn size={20} />
-                        </button>
+                        </Button>
                     </div>
 
                 </div>

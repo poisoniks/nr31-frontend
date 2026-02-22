@@ -71,15 +71,15 @@ const Roster: React.FC = () => {
     };
 
     const statusLabels: Record<MemberStatus, string> = {
-        active: t('roster.status.active', 'Активний'),
-        leave: t('roster.status.leave', 'Відпустка'),
-        reserve: t('roster.status.reserve', 'Запас')
+        active: t('roster.status.active'),
+        leave: t('roster.status.leave'),
+        reserve: t('roster.status.reserve')
     };
 
     return (
         <div className="max-w-5xl mx-auto px-4 py-12 pt-24 relative z-10 w-full animate-fade-in-up">
             <h1 className="font-serif text-4xl font-bold mb-8 text-nr-text text-center md:text-left drop-shadow-md">
-                <span className="text-gold-gradient">{t('roster.title.p1', 'Особовий')}</span> {t('roster.title.p2', 'Склад')}
+                <span className="text-gold-gradient">{t('roster.title.p1')}</span> {t('roster.title.p2')}
             </h1>
 
             <div className="glass-card rounded-xl shadow-sm p-4 md:p-8">
@@ -93,7 +93,7 @@ const Roster: React.FC = () => {
                     </div>
                     <input
                         type="text"
-                        placeholder={t('roster.search.placeholder', 'Пошук бійця...')}
+                        placeholder={t('roster.search.placeholder')}
                         className="w-full md:w-64 px-4 py-2 rounded-md bg-transparent border border-nr-border text-nr-text focus:outline-none focus:ring-1 focus:ring-nr-accent placeholder-nr-text/40"
                     />
                 </div>
@@ -133,7 +133,7 @@ const Roster: React.FC = () => {
                                             </div>
                                             <div className="hidden md:flex items-center gap-4">
                                                 {member.medals > 0 && (
-                                                    <div className="flex -space-x-1" title={`${member.medals} ${t('roster.medals', 'Нагород')}`}>
+                                                    <div className="flex -space-x-1" title={`${member.medals} ${t('roster.medals')}`}>
                                                         {[...Array(Math.min(member.medals, 3))].map((_, i) => (
                                                             <div key={i} className="w-6 h-6 rounded-full bg-linear-to-br from-yellow-300 to-yellow-600 border border-yellow-700 shadow-sm flex items-center justify-center">
                                                                 <Award size={12} className="text-amber-900" />
@@ -183,10 +183,10 @@ const Roster: React.FC = () => {
 
                             <div className="mt-16 block">
                                 <h2 className="font-serif text-2xl font-bold text-nr-text">{selectedMember.role} {selectedMember.name}</h2>
-                                <p className="text-sm text-nr-text/60 mb-6">{t('roster.member.join_date_label', 'В строю з:')} {selectedMember.joinDate}</p>
+                                <p className="text-sm text-nr-text/60 mb-6">{t('roster.member.join_date_label')} {selectedMember.joinDate}</p>
 
                                 <h4 className="font-bold text-sm uppercase tracking-wider text-nr-text/50 mb-3 flex items-center gap-2">
-                                    <Award size={16} className="text-nr-accent" /> {t('roster.member.medals_title', 'Нагороди')} ({selectedMember.medals})
+                                    <Award size={16} className="text-nr-accent" /> {t('roster.member.medals_title')} ({selectedMember.medals})
                                 </h4>
                                 {selectedMember.medals > 0 ? (
                                     <div className="flex gap-2 mb-6">
@@ -194,17 +194,17 @@ const Roster: React.FC = () => {
                                             <div key={i} className="w-10 h-10 rounded-full bg-linear-to-br from-yellow-300 to-yellow-600 shadow-lg border border-yellow-700 font-bold text-amber-900 flex items-center justify-center relative group cursor-pointer hover:scale-110 transition-transform">
                                                 ★
                                                 <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-xs py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50">
-                                                    {t('roster.member.medal_courage', 'Медаль за відвагу')} #{i + 1}
+                                                    {t('roster.member.medal_courage')} #{i + 1}
                                                 </div>
                                             </div>
                                         ))}
                                     </div>
                                 ) : (
-                                    <p className="text-sm text-nr-text/50 mb-6 italic">{t('roster.member.no_medals', 'Ще немає нагород')}</p>
+                                    <p className="text-sm text-nr-text/50 mb-6 italic">{t('roster.member.no_medals')}</p>
                                 )}
 
                                 <h4 className="font-bold text-sm uppercase tracking-wider text-nr-text/50 mb-3 flex items-center gap-2">
-                                    <History size={16} className="text-nr-accent" /> {t('roster.member.history', 'Історія підвищень')}
+                                    <History size={16} className="text-nr-accent" /> {t('roster.member.history')}
                                 </h4>
                                 <div className="space-y-4 relative">
                                     <div className="flex gap-4 relative">
@@ -212,13 +212,13 @@ const Roster: React.FC = () => {
                                         <div className="w-3 h-3 bg-nr-accent rounded-full mt-1.5 relative z-10 shrink-0 ring-4 ring-nr-surface shadow-[0_0_8px_rgba(245,158,11,0.6)]"></div>
                                         <div>
                                             <p className="font-bold text-sm text-nr-text">{selectedMember.role}</p>
-                                            <p className="text-xs text-nr-text/60">{t('roster.member.current_role', 'Поточне звання')}</p>
+                                            <p className="text-xs text-nr-text/60">{t('roster.member.current_role')}</p>
                                         </div>
                                     </div>
                                     <div className="flex gap-4 relative">
                                         <div className="w-3 h-3 bg-gray-400 rounded-full mt-1.5 relative z-10 shrink-0 ring-4 ring-nr-surface"></div>
                                         <div>
-                                            <p className="font-bold text-sm text-nr-text/60">{t('roster.member.recruit', 'Рекрут')}</p>
+                                            <p className="font-bold text-sm text-nr-text/60">{t('roster.member.recruit')}</p>
                                             <p className="text-xs text-nr-text/50">{selectedMember.joinDate}</p>
                                         </div>
                                     </div>

@@ -1,4 +1,4 @@
-# UI/UX Design Document: NR31 Regiment Portal
+# UI/UX Design Document: Nr.31 FKR Regiment Portal
 
 ## 1. Visual Language
 
@@ -31,7 +31,7 @@ Fixed at the top, height 64px (`h-16`). Background: semi-transparent light (`bg-
 
 * **Left Side:**
     * **Hamburger Menu (Button):** 4-line icon. Opens a side panel (Sheet/Drawer) on click.
-    * **Logo:** Regiment coat of arms SVG + "NR31" text (bold).
+    * **Logo:** Regiment coat of arms SVG + "Nr.31 FKR" text (bold).
 
 
 * **Center Part (Desktop):**
@@ -60,7 +60,7 @@ Slides out from the left when the Hamburger button is clicked.
 
 Minimalist, separated by a line at the top.
 
-* **Left Column:** Logo + "© 2026 NR31 Regiment".
+* **Left Column:** Logo + "© 2026 Nr.31 FKR Regiment".
 * **Center:** Text "Developed for the EUK Community" with a link. Link to GitHub repository (code icon).
 * **Right Column:** Row of social media icons (Discord, YouTube, Telegram) with a glow effect on hover.
 
@@ -171,7 +171,7 @@ Use the **Lucide React** set. Style: thin lines (stroke-width: 1.5 or 2), rounde
 ## 5. User Experience (UX) Features
 
 1. **Onboarding (First Login):**
-    * After registration/login, show a beautiful welcome window: *"Welcome to NR31! Please sync your account with Discord"* (if planned) or *"Check the training schedule"*.
+    * After registration/login, show a beautiful welcome window: *"Welcome to Nr.31 FKR! Please sync your account with Discord"* (if planned) or *"Check the training schedule"*.
 
 2. **Breadcrumbs:**
     * On internal pages (e.g., Guides -> Melee Combat), show the navigation path at the top.
