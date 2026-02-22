@@ -47,11 +47,11 @@ const Header: React.FC = () => {
                                 <div className="absolute inset-0 rounded-full bg-amber-500/20 blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                                 <img
                                     src="/Nr31FKR_logo-no-back.png"
-                                    alt="NR31 Logo"
+                                    alt="Nr.31 FKR Logo"
                                     className="w-full h-full object-contain relative z-10 drop-shadow-[0_0_2px_rgba(251,191,36,0.3)] group-hover:drop-shadow-[0_0_15px_rgba(251,191,36,0.9)] transition-all duration-500"
                                 />
                             </div>
-                            <span className="font-serif font-bold text-xl tracking-wider text-nr-text group-hover:text-nr-accent transition-colors">NR31</span>
+                            <span className="font-serif font-bold text-xl tracking-wider text-nr-text group-hover:text-nr-accent transition-colors">Nr.31 FKR</span>
                         </Link>
                     </div>
 

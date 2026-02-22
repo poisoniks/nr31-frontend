@@ -80,7 +80,7 @@ const DiscordWidget: React.FC = () => {
                         <img src={logoUrl} alt="Server Logo" className="w-12 h-12 rounded-2xl object-cover shadow-sm bg-black/10 dark:bg-black/40 border border-nr-border/50 transition-colors duration-200" />
                     ) : (
                         <div className="w-12 h-12 rounded-2xl bg-black/10 dark:bg-black/40 flex items-center justify-center text-xs font-bold shrink-0 border border-nr-border/50 text-nr-text transition-colors duration-200">
-                            NR31
+                            ЄУК
                         </div>
                     )}
                     <div className="flex flex-col min-w-0">

@@ -16,13 +16,13 @@ const Footer: React.FC = () => {
                             <div className="absolute inset-0 rounded-full bg-amber-500/20 blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                             <img
                                 src="/Nr31FKR_logo-no-back.png"
-                                alt="NR31 Logo"
+                                alt="Nr.31 FKR Logo"
                                 className="w-full h-full object-contain relative z-10 drop-shadow-[0_0_2px_rgba(251,191,36,0.3)] group-hover:drop-shadow-[0_0_12px_rgba(251,191,36,0.8)] transition-all duration-500"
                             />
                         </div>
-                        <span className="font-serif font-bold text-lg tracking-wider text-nr-text">NR31</span>
+                        <span className="font-serif font-bold text-lg tracking-wider text-nr-text">Nr.31 FKR</span>
                     </div>
-                    <p className="text-sm text-nr-text/60 mt-2">© {new Date().getFullYear()} NR31 Regiment. {t('footer.rights')}</p>
+                    <p className="text-sm text-nr-text/60 mt-2">© {new Date().getFullYear()} Nr.31 FKR Regiment. {t('footer.rights')}</p>
                 </div>
 
                 {/* Center Column */}

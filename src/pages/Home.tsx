@@ -25,7 +25,7 @@ const Home: React.FC = () => {
                         <span>{t('home.hero.badge')}</span>
                     </div>
                     <h1 className="font-serif text-5xl md:text-7xl font-bold mb-6 drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)] dark:drop-shadow-lg">
-                        <span className="block text-gold-gradient">NR31</span>
+                        <span className="block text-gold-gradient">Nr.31</span>
                         <span className="text-nr-text">Feldkanonenregiment</span>
                     </h1>
                     <p className="text-xl md:text-2xl text-nr-text/80 mb-10 max-w-2xl font-light">
