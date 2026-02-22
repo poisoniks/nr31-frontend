@@ -1,7 +1,7 @@
 import React from 'react';
 import { Swords } from 'lucide-react';
 import Button from '../components/ui/Button';
-import { useTranslation } from 'react-i18next';
+import { useTranslation, Trans } from 'react-i18next';
 import DiscordWidget from '../components/ui/DiscordWidget';
 import YoutubeWidget from '../components/ui/YoutubeWidget';
 
@@ -31,7 +31,12 @@ const Home: React.FC = () => {
                     <p className="text-xl md:text-2xl text-nr-text/80 mb-10 max-w-2xl font-light">
                         {t('home.hero.subtitle')}
                     </p>
-                    <Button variant="primary" size="lg" className="w-full md:w-auto flex justify-center items-center gap-2 font-bold shadow-lg shadow-amber-900/40 transform hover:scale-105">
+                    <Button
+                        variant="primary"
+                        size="lg"
+                        className="w-full md:w-auto flex justify-center items-center gap-2 font-bold shadow-lg shadow-amber-900/40 transform hover:scale-105"
+                        onClick={() => document.getElementById('how-to-join')?.scrollIntoView({ behavior: 'smooth' })}
+                    >
                         <span>{t('home.hero.cta')}</span>
                         <Swords size={20} />
                     </Button>
@@ -45,11 +50,88 @@ const Home: React.FC = () => {
                     {/* Main Content (70%) */}
                     <div className="lg:col-span-8 space-y-8">
                         {/* About Us Card */}
-                        <div className="glass-card p-6 rounded-xl relative overflow-hidden group">
-                            <h2 className="font-serif text-2xl font-bold text-nr-text mb-4 relative z-10">{t('home.about.title')}</h2>
-                            <p className="text-nr-text/80 mb-6 leading-relaxed relative z-10">
-                                {t('home.about.text')}
-                            </p>
+                        <div className="glass-card p-6 rounded-xl relative overflow-hidden group space-y-8">
+                            <div className="relative z-10">
+                                <h2 className="font-serif text-2xl font-bold text-nr-text mb-4">{t('home.about.title')}</h2>
+                                <p className="text-nr-text/80 leading-relaxed">
+                                    {t('home.about.text')}
+                                </p>
+                            </div>
+
+                            {/* What we offer */}
+                            <div className="relative z-10">
+                                <h3 className="font-serif text-xl font-bold mb-3 text-nr-text">{t('home.join.offer.title')}</h3>
+                                <ul className="space-y-2 text-nr-text/80 list-disc list-inside marker:text-nr-accent">
+                                    {[0, 1, 2, 3, 4, 5].map(i => (
+                                        <li key={i}>{t(`home.join.offer.items.${i}`)}</li>
+                                    ))}
+                                </ul>
+                            </div>
+
+                            {/* Command */}
+                            <div className="relative z-10">
+                                <h3 className="font-serif text-xl font-bold mb-3 text-nr-text">{t('home.join.command.title')}</h3>
+                                <ul className="space-y-2 text-nr-text/80 list-disc list-inside marker:text-nr-accent">
+                                    <li>{t('home.join.command.leader')}</li>
+                                    <li>{t('home.join.command.officer1')}</li>
+                                    <li>{t('home.join.command.officer2')}</li>
+                                </ul>
+                            </div>
+
+                            {/* Important Links */}
+                            <div className="relative z-10">
+                                <h3 className="font-serif text-xl font-bold mb-3 text-nr-text">{t('home.join.links.title')}</h3>
+                                <div className="flex flex-wrap gap-3">
+                                    <a href="https://discord.gg/uuc" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 bg-black/5 dark:bg-black/20 hover:bg-nr-accent/10 px-4 py-2 rounded-lg border border-nr-border/50 transition-colors text-nr-text font-medium text-sm">
+                                        {t('home.join.links.euc')}
+                                    </a>
+                                    <a href="https://www.fsegames.eu/forum/index.php?topic=49585.0" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 bg-black/5 dark:bg-black/20 hover:bg-nr-accent/10 px-4 py-2 rounded-lg border border-nr-border/50 transition-colors text-nr-text font-medium text-sm">
+                                        {t('home.join.links.forum')}
+                                    </a>
+                                    <a href="https://docs.google.com/spreadsheets/d/1kkzzUGL1VGYnH3OrzGC8TsalzWd42ZNYfP6yhvxPi7U/edit?gid=0#gid=0" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 bg-black/5 dark:bg-black/20 hover:bg-nr-accent/10 px-4 py-2 rounded-lg border border-nr-border/50 transition-colors text-nr-text font-medium text-sm">
+                                        {t('home.join.links.roster')}
+                                    </a>
+                                    <a href="https://www.youtube.com/@silentfanat2698" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 bg-black/5 dark:bg-black/20 hover:bg-nr-accent/10 px-4 py-2 rounded-lg border border-nr-border/50 transition-colors text-nr-text font-medium text-sm">
+                                        {t('home.join.links.youtube')}
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* How to join block */}
+                        <div id="how-to-join" className="glass-card p-6 rounded-xl relative overflow-hidden group border border-amber-500/30 scroll-mt-24">
+                            {/* How to join */}
+                            <div className="relative z-10">
+                                <h3 className="font-serif text-3xl md:text-4xl font-bold mb-4 text-gold-gradient block">{t('home.join.how.title')}</h3>
+                                <ul className="space-y-2 text-nr-text/80 list-disc list-inside marker:text-nr-accent">
+                                    <li className="mb-4">
+                                        {t('home.join.how.items.0')}
+                                        <div className="flex flex-col gap-2 max-w-sm ml-4 lg:ml-6 mt-3">
+                                            {[
+                                                { name: 'Manul', steam: 'https://steamcommunity.com/profiles/76561198250504840' },
+                                                { name: 'Dizhka', steam: 'https://steamcommunity.com/profiles/76561198871671245' },
+                                                { name: 'GodyX', steam: 'https://steamcommunity.com/profiles/76561199466448146' }
+                                            ].map(cmd => (
+                                                <a
+                                                    key={cmd.name}
+                                                    href={cmd.steam}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="flex items-center justify-between bg-black/5 dark:bg-white/5 px-4 py-3 rounded-lg border border-nr-border/50 transition-all hover:border-nr-accent/50 hover:bg-black/10 dark:hover:bg-white/10 group/cmd"
+                                                >
+                                                    <span className="font-bold text-nr-text group-hover/cmd:text-nr-accent transition-colors">{cmd.name}</span>
+                                                </a>
+                                            ))}
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <Trans
+                                            i18nKey="home.join.how.items.1"
+                                            components={{ 1: <a href="https://discord.gg/uuc" target="_blank" rel="noopener noreferrer" className="text-nr-accent hover:underline font-bold" /> }}
+                                        />
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
 
                         {/* News Feed */}
@@ -86,21 +168,6 @@ const Home: React.FC = () => {
                                     </div>
                                 </div>
                             ))}
-                        </div>
-
-                        {/* EUC Block */}
-                        <div className="glass-card p-1 rounded-xl border-2 border-blue-500/30">
-                            <div className="bg-blue-900/10 dark:bg-blue-950/30 h-full rounded-lg p-6 flex flex-col sm:flex-row items-center gap-6 text-center sm:text-left">
-                                <div className="w-20 h-20 rounded-full bg-blue-100 flex items-center justify-center border border-blue-400/30 shrink-0">
-                                    <span className="font-bold text-xl text-blue-900">ЄУК</span>
-                                </div>
-                                <div>
-                                    <h3 className="font-serif text-lg font-bold mb-2 text-nr-text">{t('home.euk.title')}</h3>
-                                    <p className="text-sm text-nr-text/70">
-                                        {t('home.euk.text')}
-                                    </p>
-                                </div>
-                            </div>
                         </div>
                     </div>
 
