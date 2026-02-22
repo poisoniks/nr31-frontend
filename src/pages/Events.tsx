@@ -44,15 +44,15 @@ const Events: React.FC = () => {
             <div className="flex flex-col md:flex-row justify-between md:items-end mb-8 gap-4">
                 <div>
                     <h1 className="font-serif text-4xl font-bold text-nr-text mb-2 drop-shadow-md">
-                        {t('events.title_part1', 'Календар')} <span className="text-gold-gradient">{t('events.title_part2', 'Подій')}</span>
+                        {t('events.title_part1')} <span className="text-gold-gradient">{t('events.title_part2')}</span>
                     </h1>
-                    <p className="text-nr-text/60">{t('events.month_year', 'Лютий 2026')}</p>
+                    <p className="text-nr-text/60">{t('events.month_year')}</p>
                 </div>
 
                 <div className="flex gap-4 text-sm text-nr-text">
-                    <span className="flex items-center gap-2"><span className="w-3 h-3 rounded bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.6)]"></span> {t('events.types.battle', 'Битви')}</span>
-                    <span className="flex items-center gap-2"><span className="w-3 h-3 rounded bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]"></span> {t('events.types.training', 'Тренування')}</span>
-                    <span className="flex items-center gap-2"><span className="w-3 h-3 rounded bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.6)]"></span> {t('events.types.meeting', 'Збори')}</span>
+                    <span className="flex items-center gap-2"><span className="w-3 h-3 rounded bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.6)]"></span> {t('events.types.battle')}</span>
+                    <span className="flex items-center gap-2"><span className="w-3 h-3 rounded bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]"></span> {t('events.types.training')}</span>
+                    <span className="flex items-center gap-2"><span className="w-3 h-3 rounded bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.6)]"></span> {t('events.types.meeting')}</span>
                 </div>
             </div>
 
@@ -61,19 +61,19 @@ const Events: React.FC = () => {
                 {/* Calendar Header */}
                 <div className="flex items-center justify-between mb-6 pb-4 border-b border-nr-border">
                     <Button variant="ghost" size="sm" className="hover:bg-nr-border/20">
-                        <ChevronLeft size={20} /> {t('events.calendar.prev', 'Попередня')}
+                        <ChevronLeft size={20} /> {t('events.calendar.prev')}
                     </Button>
-                    <span className="font-serif font-bold text-xl text-nr-text">{t('events.month_year', 'Лютий 2026')}</span>
+                    <span className="font-serif font-bold text-xl text-nr-text">{t('events.month_year')}</span>
                     <Button variant="ghost" size="sm" className="hover:bg-nr-border/20">
-                        {t('events.calendar.next', 'Наступна')} <ChevronRight size={20} />
+                        {t('events.calendar.next')} <ChevronRight size={20} />
                     </Button>
                 </div>
 
                 {/* Calendar Grid */}
                 <div className="grid grid-cols-7 gap-1 md:gap-4 mb-4">
-                    {daysOfWeek.map((day, index) => (
+                    {daysOfWeek.map((_, index) => (
                         <div key={index} className="text-center font-bold text-nr-text/60 text-xs md:text-sm py-2 bg-black/5 dark:bg-white/5 rounded-md">
-                            {t(`events.days.${index}`, day)}
+                            {t(`events.days.${index}`)}
                         </div>
                     ))}
                 </div>
@@ -137,31 +137,31 @@ const Events: React.FC = () => {
                             <div className="grid grid-cols-2 gap-y-4 gap-x-6 mb-6">
                                 <div className="flex items-center gap-3 text-nr-text p-3 bg-nr-bg rounded border border-nr-border">
                                     <Clock className="text-nr-accent" size={20} />
-                                    <div><p className="text-xs text-nr-text/50 uppercase">{t('events.details.time', 'Час')}</p><p className="font-bold">{selectedEvent.time}</p></div>
+                                    <div><p className="text-xs text-nr-text/50 uppercase">{t('events.details.time')}</p><p className="font-bold">{selectedEvent.time}</p></div>
                                 </div>
                                 <div className="flex items-center gap-3 text-nr-text p-3 bg-nr-bg rounded border border-nr-border">
                                     <MapPin className="text-nr-accent" size={20} />
-                                    <div><p className="text-xs text-nr-text/50 uppercase">{t('events.details.location', 'Локація')}</p><p className="font-bold">{selectedEvent.map}</p></div>
+                                    <div><p className="text-xs text-nr-text/50 uppercase">{t('events.details.location')}</p><p className="font-bold">{selectedEvent.map}</p></div>
                                 </div>
                                 <div className="flex items-center gap-3 text-nr-text p-3 bg-nr-bg rounded border border-nr-border">
                                     <span className="font-serif font-bold text-nr-accent text-xl w-5 text-center px-1 border border-nr-accent rounded">F</span>
-                                    <div><p className="text-xs text-nr-text/50 uppercase">{t('events.details.faction', 'Фракція')}</p><p className="font-bold">{selectedEvent.faction}</p></div>
+                                    <div><p className="text-xs text-nr-text/50 uppercase">{t('events.details.faction')}</p><p className="font-bold">{selectedEvent.faction}</p></div>
                                 </div>
                                 <div className="flex items-center gap-3 text-nr-text p-3 bg-nr-bg rounded border border-nr-border">
                                     <Users className="text-nr-accent" size={20} />
-                                    <div><p className="text-xs text-nr-text/50 uppercase">{t('events.details.attendance', 'Явка')}</p><p className="font-bold">{selectedEvent.going} {t('events.details.members_count', 'бійців')}</p></div>
+                                    <div><p className="text-xs text-nr-text/50 uppercase">{t('events.details.attendance')}</p><p className="font-bold">{selectedEvent.going} {t('events.details.members_count')}</p></div>
                                 </div>
                             </div>
 
                             <div className="mb-8">
-                                <h4 className="font-bold text-sm text-nr-text/50 uppercase mb-2">{t('events.details.description_title', 'Опис')}</h4>
+                                <h4 className="font-bold text-sm text-nr-text/50 uppercase mb-2">{t('events.details.description_title')}</h4>
                                 <p className="text-nr-text/90 leading-relaxed p-4 bg-nr-bg rounded border border-nr-border">{selectedEvent.description}</p>
                             </div>
 
                             {/* RSVP Actions */}
                             <div className="pt-6 border-t border-nr-border flex gap-4">
-                                <Button variant="primary" className="flex-1 shadow-lg shadow-nr-accent/20">{t('rsvp.actions.confirm', 'Підтвердити явку')}</Button>
-                                <Button variant="secondary" className="flex-1">{t('rsvp.actions.decline', 'Не зможу бути')}</Button>
+                                <Button variant="primary" className="flex-1 shadow-lg shadow-nr-accent/20">{t('rsvp.actions.confirm')}</Button>
+                                <Button variant="secondary" className="flex-1">{t('rsvp.actions.decline')}</Button>
                             </div>
                         </div>
                     </div>

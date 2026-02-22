@@ -22,17 +22,17 @@ const Footer: React.FC = () => {
                         </div>
                         <span className="font-serif font-bold text-lg tracking-wider text-nr-text">NR31</span>
                     </div>
-                    <p className="text-sm text-nr-text/60 mt-2">© {new Date().getFullYear()} NR31 Regiment. {t('footer.rights', 'All rights reserved.')}</p>
+                    <p className="text-sm text-nr-text/60 mt-2">© {new Date().getFullYear()} NR31 Regiment. {t('footer.rights')}</p>
                 </div>
 
                 {/* Center Column */}
                 <div className="flex flex-col items-center gap-2 text-sm text-nr-text/70">
                     <p>
-                        {t('footer.developed_for', 'Розроблено для спільноти')} <span className="font-medium text-nr-accent">ЄУК</span>
+                        {t('footer.developed_for')} <span className="font-medium text-nr-accent">ЄУК</span>
                     </p>
                     <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-nr-text/50 hover:text-nr-text transition-colors">
                         <Github size={16} />
-                        <span>{t('footer.repository', 'GitHub репозиторій')}</span>
+                        <span>{t('footer.repository')}</span>
                     </a>
                 </div>
 

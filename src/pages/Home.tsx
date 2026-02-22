@@ -1,5 +1,5 @@
 import React from 'react';
-import { Disc as Discord } from 'lucide-react';
+import { Disc as Discord, Swords } from 'lucide-react';
 import Button from '../components/ui/Button';
 import { useTranslation } from 'react-i18next';
 
@@ -20,17 +20,18 @@ const Home: React.FC = () => {
 
                 <div className="relative z-20 max-w-7xl mx-auto px-4 w-full flex flex-col items-center md:items-start text-center md:text-left mt-20 animate-fade-in-up">
                     <div className="inline-flex items-center rounded-full glass border border-nr-accent/20 px-4 py-1.5 text-sm font-bold text-nr-accent mb-6 shadow-sm dark:shadow-none transition-all">
-                        <span>{t('home.hero.badge', 'Частина ЄУК Community')}</span>
+                        <span>{t('home.hero.badge')}</span>
                     </div>
                     <h1 className="font-serif text-5xl md:text-7xl font-bold mb-6 drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)] dark:drop-shadow-lg">
                         <span className="block text-gold-gradient">NR31</span>
                         <span className="text-nr-text">Feldkanonenregiment</span>
                     </h1>
                     <p className="text-xl md:text-2xl text-nr-text/80 mb-10 max-w-2xl font-light">
-                        {t('home.hero.subtitle', 'Стань артилеристом імператорської армії. Приєднуйся до найактивнішого україномовного полку в Mount & Blade Warband: Napoleonic Wars.')}
+                        {t('home.hero.subtitle')}
                     </p>
-                    <Button variant="primary" size="lg" className="text-lg w-full md:w-auto shadow-lg shadow-nr-accent/20 hover:scale-105 transition-transform">
-                        {t('home.hero.cta', 'Приєднатися до Discord')}
+                    <Button variant="primary" size="lg" className="w-full md:w-auto flex justify-center items-center gap-2 font-bold shadow-lg shadow-amber-900/40 transform hover:scale-105">
+                        <span>{t('home.hero.cta')}</span>
+                        <Swords size={20} />
                     </Button>
                 </div>
             </section>
@@ -43,21 +44,17 @@ const Home: React.FC = () => {
                     <div className="lg:col-span-8 space-y-8">
                         {/* About Us Card */}
                         <div className="glass-card p-6 rounded-xl relative overflow-hidden group">
-                            <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition transform group-hover:scale-110">
-                                <Discord size={120} className="text-nr-accent" />
-                            </div>
-                            <h2 className="font-serif text-2xl font-bold text-nr-text mb-4 relative z-10">{t('home.about.title', 'Про полк')}</h2>
+                            <h2 className="font-serif text-2xl font-bold text-nr-text mb-4 relative z-10">{t('home.about.title')}</h2>
                             <p className="text-nr-text/80 mb-6 leading-relaxed relative z-10">
-                                {t('home.about.text', 'Ми — група ентузіастів, які грають у Mount & Blade: Warband з доповненням Napoleonic Wars. Наш полк відтворює 31-й польовий артилерійський полк (Feldkanonenregiment Nr. 31) Австрійської Імперії. Ми регулярно беремо участь у лінійних битвах, осадах та івентах спільноти ЄУК.')}
+                                {t('home.about.text')}
                             </p>
-                            <Button variant="secondary" className="relative z-10">{t('home.about.button', 'Читати історію')}</Button>
                         </div>
 
                         {/* News Feed */}
                         <div className="space-y-6">
                             <h3 className="font-serif text-xl font-bold flex items-center gap-2 text-nr-text">
                                 <span className="w-2 h-2 rounded-full bg-nr-accent"></span>
-                                {t('home.news.title', 'Останні новини')}
+                                {t('home.news.title')}
                             </h3>
 
                             {[1, 2].map(i => (
@@ -71,18 +68,18 @@ const Home: React.FC = () => {
                                     </div>
                                     <div className="p-5 flex-1 flex flex-col justify-between">
                                         <div>
-                                            <span className="text-xs font-semibold uppercase text-nr-accent mb-2 block">{t('home.news.tag', 'Івент')}</span>
-                                            <h4 className="font-serif text-lg font-bold mb-2 text-nr-text group-hover:text-nr-accent transition-colors">{t('home.news.item.title', 'Перемога на Гранд Кампанії')}</h4>
+                                            <span className="text-xs font-semibold uppercase text-nr-accent mb-2 block">{t('home.news.tag')}</span>
+                                            <h4 className="font-serif text-lg font-bold mb-2 text-nr-text group-hover:text-nr-accent transition-colors">{t('home.news.item.title')}</h4>
                                             <p className="text-sm text-nr-text/70 line-clamp-2">
-                                                {t('home.news.item.text', 'Дякуємо всім бійцям, які взяли участь у вчорашньому івенті. Наша батарея показала найкращий результат серед союзників, знищивши до 40 піхотинців...')}
+                                                {t('home.news.item.text')}
                                             </p>
                                         </div>
                                         <div className="flex items-center justify-between mt-4 pb-1 border-t border-nr-border/50 pt-4">
                                             <div className="flex items-center gap-2">
                                                 <div className="w-6 h-6 rounded-full bg-gray-400"></div>
-                                                <span className="text-xs text-nr-text/60">Col. Username • {t('home.news.item.ago', '2 дні тому')}</span>
+                                                <span className="text-xs text-nr-text/60">Col. Username • {t('home.news.item.ago')}</span>
                                             </div>
-                                            <button className="text-xs font-medium text-nr-accent hover:underline">{t('home.news.comments', 'Коментарі')} (5)</button>
+                                            <button className="text-xs font-medium text-nr-accent hover:underline">{t('home.news.comments')} (5)</button>
                                         </div>
                                     </div>
                                 </div>
@@ -96,9 +93,9 @@ const Home: React.FC = () => {
                                     <span className="font-bold text-xl text-blue-900">ЄУК</span>
                                 </div>
                                 <div>
-                                    <h3 className="font-serif text-lg font-bold mb-2 text-nr-text">{t('home.euk.title', 'Об\'єднана Українська Спільнота')}</h3>
+                                    <h3 className="font-serif text-lg font-bold mb-2 text-nr-text">{t('home.euk.title')}</h3>
                                     <p className="text-sm text-nr-text/70">
-                                        {t('home.euk.text', 'NR31 є гордою частиною ЄУК. Долучайтеся до нас на масштабних щотижневих івентах, де ми боремося пліч-о-пліч з іншими україномовними полками.')}
+                                        {t('home.euk.text')}
                                     </p>
                                 </div>
                             </div>
@@ -109,21 +106,21 @@ const Home: React.FC = () => {
                     <div className="lg:col-span-4 space-y-6">
 
                         {/* Next Event Widget */}
-                        <div className="glass-card rounded-xl p-5 sticky top-24">
+                        <div className="glass-card rounded-xl p-5">
                             <h4 className="font-serif text-lg font-bold mb-4 flex items-center justify-between text-nr-text">
-                                <span>{t('home.widgets.next_event', 'Наступна подія')}</span>
+                                <span>{t('home.widgets.next_event')}</span>
                                 <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
                             </h4>
                             <div className="bg-black/10 dark:bg-black/40 border border-nr-border rounded-lg p-4 mb-4 text-center">
                                 <div className="grid grid-cols-3 gap-2 font-mono text-xl font-bold tracking-wider text-nr-accent mb-1">
-                                    <div>02<span className="block text-[10px] text-nr-text/50 font-sans font-normal uppercase">{t('time.days', 'Дні')}</span></div>
-                                    <div>14<span className="block text-[10px] text-nr-text/50 font-sans font-normal uppercase">{t('time.hours', 'Год')}</span></div>
-                                    <div>35<span className="block px-1 text-[10px] text-nr-text/50 font-sans font-normal uppercase">{t('time.minutes', 'Хв')}</span></div>
+                                    <div>02<span className="block text-[10px] text-nr-text/50 font-sans font-normal uppercase">{t('time.days')}</span></div>
+                                    <div>14<span className="block text-[10px] text-nr-text/50 font-sans font-normal uppercase">{t('time.hours')}</span></div>
+                                    <div>35<span className="block px-1 text-[10px] text-nr-text/50 font-sans font-normal uppercase">{t('time.minutes')}</span></div>
                                 </div>
                             </div>
                             <h5 className="font-medium text-center mb-4 text-nr-text">ЄУК Public Linebattle</h5>
                             <div className="flex gap-2">
-                                <Button variant="primary" className="flex-1 shrink-0 py-2">{t('rsvp.yes', 'Я буду')}</Button>
+                                <Button variant="primary" className="flex-1 shrink-0 py-2">{t('rsvp.yes')}</Button>
                                 <Button variant="secondary" className="px-3 shrink-0" aria-label="Відмовляюсь">✕</Button>
                             </div>
                         </div>
@@ -155,7 +152,7 @@ const Home: React.FC = () => {
                                 </div>
                             </div>
                             <div className="absolute bottom-4 left-4 right-4">
-                                <h5 className="text-white font-serif font-bold text-sm drop-shadow-md">{t('home.widgets.latest_short', 'Новий Short: Зарядка гармати за 10с')}</h5>
+                                <h5 className="text-white font-serif font-bold text-sm drop-shadow-md">{t('home.widgets.latest_short')}</h5>
                             </div>
                         </div>
 
