@@ -163,7 +163,6 @@ const Home: React.FC = () => {
                                                 <div className="w-6 h-6 rounded-full bg-gray-400"></div>
                                                 <span className="text-xs text-nr-text/60">Col. Username • {t('home.news.item.ago')}</span>
                                             </div>
-                                            <button className="text-xs font-medium text-nr-accent hover:underline">{t('home.news.comments')} (5)</button>
                                         </div>
                                     </div>
                                 </div>
@@ -223,7 +222,7 @@ const Home: React.FC = () => {
                                     <div>35<span className="block px-1 text-[10px] text-nr-text/50 font-sans font-normal uppercase">{t('time.minutes')}</span></div>
                                 </div>
                             </div>
-                            <h5 className="font-medium text-center mb-4 text-nr-text">ЄУК Public Linebattle</h5>
+                            <h5 className="font-medium text-center mb-4 text-nr-text">Flagspawn event</h5>
                             <div className="flex gap-2">
                                 <Button variant="primary" className="flex-1 shrink-0 py-2">{t('rsvp.yes')}</Button>
                                 <Button variant="secondary" className="px-3 shrink-0" aria-label="Відмовляюсь">✕</Button>
