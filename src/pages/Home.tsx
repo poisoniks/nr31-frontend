@@ -128,12 +128,12 @@ const Home: React.FC = () => {
                         </div>
 
                         {/* Discord Widget */}
-                        <div className="glass-card rounded-xl border border-[#5865F2]/20 overflow-hidden h-[400px]">
+                        <div className="glass-card rounded-xl overflow-hidden h-[400px]">
                             <DiscordWidget />
                         </div>
 
                         {/* Media Widget */}
-                        <div className="glass-card rounded-xl overflow-hidden relative border border-[#c4c9ce]/20 dark:border-[#202225]/20">
+                        <div className="glass-card rounded-xl overflow-hidden relative">
                             <YoutubeWidget />
                         </div>
 
