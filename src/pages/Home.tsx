@@ -169,6 +169,42 @@ const Home: React.FC = () => {
                                 </div>
                             ))}
                         </div>
+
+                        {/* Support Us */}
+                        <div className="glass-card p-6 rounded-xl relative overflow-hidden group border border-nr-border/50">
+                            <div className="relative z-10">
+                                <h3 className="font-serif text-2xl md:text-3xl font-bold mb-4 text-nr-text">{t('home.support.title')}</h3>
+                                <div className="flex flex-col gap-3 max-w-sm ml-2 md:ml-4">
+                                    <a
+                                        href="https://send.monobank.ua/jar/3m9TAxi5Eb"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex items-center gap-4 bg-black/5 dark:bg-white/5 px-4 py-3 rounded-lg border border-nr-border/50 transition-all hover:border-nr-accent/50 hover:bg-black/10 dark:hover:bg-white/10 group/supp"
+                                    >
+                                        <img
+                                            src="https://play-lh.googleusercontent.com/tVdBTQSX3ek05SxDZJClWtohEohC0EHLF7BRqzfq7tRsr3533ONjQxUd-pmQxjGtb2I=s48-rw"
+                                            alt="Monobank"
+                                            className="w-8 h-8 shrink-0 rounded-lg shadow-sm"
+                                        />
+                                        <span className="font-bold text-nr-text group-hover/supp:text-nr-accent transition-colors">{t('home.support.monobank')}</span>
+                                    </a>
+
+                                    <a
+                                        href="https://next.privat24.ua/send/27n07"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex items-center gap-4 bg-black/5 dark:bg-white/5 px-4 py-3 rounded-lg border border-nr-border/50 transition-all hover:border-nr-accent/50 hover:bg-black/10 dark:hover:bg-white/10 group/supp"
+                                    >
+                                        <img
+                                            src="https://next.privat24.ua/assets/912a277127b20d16edea.svg"
+                                            alt="Privat24"
+                                            className="w-8 h-8 shrink-0 rounded-lg shadow-sm"
+                                        />
+                                        <span className="font-bold text-nr-text group-hover/supp:text-nr-accent transition-colors">{t('home.support.privat24')}</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     {/* Right Column / Widgets (30%) */}

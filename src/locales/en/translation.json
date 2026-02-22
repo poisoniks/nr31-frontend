@@ -126,5 +126,8 @@
     "home.join.links.euc": "EUC",
     "home.join.links.forum": "Forum thread",
     "home.join.links.roster": "Regiment roster",
-    "home.join.links.youtube": "YouTube"
+    "home.join.links.youtube": "YouTube",
+    "home.support.title": "Want to support us?",
+    "home.support.monobank": "Monobank",
+    "home.support.privat24": "Privat24"
 }
