@@ -101,5 +101,9 @@
     "roster.groups.command": "Command",
     "roster.groups.officers": "Officers",
     "roster.groups.nco": "Non-Commissioned Officers",
-    "roster.groups.privates": "Privates"
+    "roster.groups.privates": "Privates",
+    "discord.members_online": "Members Online",
+    "discord.currently_playing": "Currently playing:",
+    "discord.more_players": "+ {{count}} more...",
+    "discord.join": "Connect"
 }

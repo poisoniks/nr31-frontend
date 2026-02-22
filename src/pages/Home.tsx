@@ -1,7 +1,8 @@
 import React from 'react';
-import { Disc as Discord, Swords } from 'lucide-react';
+import { Swords } from 'lucide-react';
 import Button from '../components/ui/Button';
 import { useTranslation } from 'react-i18next';
+import DiscordWidget from '../components/ui/DiscordWidget';
 
 const Home: React.FC = () => {
     const { t } = useTranslation();
@@ -9,7 +10,7 @@ const Home: React.FC = () => {
     return (
         <div className="flex flex-col min-h-screen">
             {/* Hero Section */}
-            <section className="relative h-[80vh] min-h-[600px] flex items-center bg-[#020617] border-b border-nr-border overflow-hidden">
+            <section className="relative h-[80vh] min-h-[600px] flex items-center bg-nr-bg border-b border-nr-border overflow-hidden">
                 {/* Mock background image overlay */}
                 <div className="absolute inset-0 hero-overlay z-10" />
                 <img
@@ -126,21 +127,8 @@ const Home: React.FC = () => {
                         </div>
 
                         {/* Discord Widget */}
-                        <div className="glass-card rounded-xl border border-[#5865F2]/20 p-5">
-                            <h4 className="font-serif text-lg font-bold mb-4 flex items-center gap-2 text-[#5865F2]">
-                                <Discord size={20} />
-                                <span>Discord</span>
-                            </h4>
-                            <div className="flex items-center gap-2 text-sm mb-4 text-nr-text">
-                                <span className="w-2 h-2 rounded-full bg-green-500"></span>
-                                <span className="font-medium">45 Online</span>
-                            </div>
-                            <div className="flex -space-x-2 overflow-hidden mb-6">
-                                {[1, 2, 3, 4, 5].map(i => (
-                                    <img key={i} className="inline-block h-8 w-8 rounded-full ring-2 ring-nr-surface" src={`https://i.pravatar.cc/100?img=${i}`} alt="Online user" />
-                                ))}
-                            </div>
-                            <Button className="w-full bg-[#5865F2] hover:bg-[#4752C4] text-white">Connect</Button>
+                        <div className="glass-card rounded-xl border border-[#5865F2]/20 overflow-hidden h-[400px]">
+                            <DiscordWidget />
                         </div>
 
                         {/* Media Widget */}

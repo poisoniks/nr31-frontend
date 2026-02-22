@@ -101,5 +101,9 @@
     "roster.groups.command": "Командування",
     "roster.groups.officers": "Офіцери",
     "roster.groups.nco": "Унтер-офіцери",
-    "roster.groups.privates": "Рядові"
+    "roster.groups.privates": "Рядові",
+    "discord.members_online": "В мережі",
+    "discord.currently_playing": "Зараз грають:",
+    "discord.more_players": "Ще {{count}}...",
+    "discord.join": "Приєднатися"
 }
