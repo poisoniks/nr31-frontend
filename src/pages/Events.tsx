@@ -1,172 +1,320 @@
-import React, { useState } from 'react';
-import { ChevronLeft, ChevronRight, MapPin, Clock, Users, X } from 'lucide-react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
 import Button from '../components/ui/Button';
 import { useTranslation } from 'react-i18next';
+import { calendarApi } from '../api/calendarApi';
+import type { CalendarEventDTO } from '../types/calendar';
+import EventDetailModal from '../components/events/EventDetailModal';
 
-// Mock data
-type EventType = 'battle' | 'training' | 'meeting';
+type ViewMode = 'week' | 'month';
 
-interface MockEvent {
-    id: number;
-    date: number;
-    title: string;
-    type: EventType;
-    time: string;
-    map: string;
-    faction: string;
-    going: number;
-    description: string;
-}
-
-const mockEvents: MockEvent[] = [
-    { id: 1, date: 5, title: "Public Linebattle", type: "battle", time: "20:00", map: "Austrian Fields", faction: "Austria", going: 24, description: "Щотижневий івент від спільноти ЄУК. Збираємось на 19:30 у голосовому." },
-    { id: 2, date: 12, title: "Training", type: "training", time: "19:00", map: "Drill Square", faction: "Austria", going: 18, description: "Відпрацювання стройового кроку та швидкості ведення вогню." },
-    { id: 3, date: 15, title: "Grand Campaign", type: "battle", time: "18:00", map: "Waterloo", faction: "Austria", going: 45, description: "Масштабна кампанія з іншими полками. Обов'язкова явка!" },
-    { id: 4, date: 24, title: "Officers Meeting", type: "meeting", time: "21:00", map: "Discord", faction: "-", going: 5, description: "Збори для обговорення планів на наступний місяць." }
-];
-
-const EventTypes = {
-    battle: { color: "bg-red-500", labelKey: "events.types.battle", defaultLabel: "Битва" },
-    training: { color: "bg-green-500", labelKey: "events.types.training", defaultLabel: "Тренування" },
-    meeting: { color: "bg-blue-500", labelKey: "events.types.meeting", defaultLabel: "Збори" }
+const localized = (map: Record<string, string> | undefined, lang: string): string => {
+    if (!map) return '';
+    return map[lang] || map['en'] || Object.values(map)[0] || '';
 };
 
+// ── Date helpers ──
+
+const getWeekRange = (date: Date): { from: Date; to: Date } => {
+    const d = new Date(date);
+    const day = d.getDay();
+    const diffToMon = day === 0 ? -6 : 1 - day;
+    const from = new Date(d);
+    from.setDate(d.getDate() + diffToMon);
+    from.setHours(0, 0, 0, 0);
+    const to = new Date(from);
+    to.setDate(from.getDate() + 6);
+    to.setHours(23, 59, 59, 999);
+    return { from, to };
+};
+
+const getMonthRange = (date: Date): { from: Date; to: Date } => {
+    const from = new Date(date.getFullYear(), date.getMonth(), 1);
+    const to = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+    to.setHours(23, 59, 59, 999);
+    return { from, to };
+};
+
+const formatDateParam = (d: Date): string => {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
+};
+
+const formatWeekLabel = (from: Date, to: Date, lang: string): string => {
+    const opts: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'short' };
+    const locale = lang.startsWith('uk') ? 'uk-UA' : 'en-US';
+    return `${from.toLocaleDateString(locale, opts)} – ${to.toLocaleDateString(locale, { ...opts, year: 'numeric' })}`;
+};
+
+const formatMonthLabel = (date: Date, lang: string): string => {
+    const locale = lang.startsWith('uk') ? 'uk-UA' : 'en-US';
+    return date.toLocaleDateString(locale, { month: 'long', year: 'numeric' });
+};
+
+const getDaysOfWeek = (lang: string): string[] => {
+    const locale = lang.startsWith('uk') ? 'uk-UA' : 'en-US';
+    const base = new Date(2024, 0, 1); // Monday
+    const days: string[] = [];
+    for (let i = 0; i < 7; i++) {
+        const d = new Date(base);
+        d.setDate(base.getDate() + i);
+        days.push(d.toLocaleDateString(locale, { weekday: 'short' }));
+    }
+    return days;
+};
+
+const isSameDay = (a: Date, b: Date): boolean =>
+    a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+
+const isToday = (d: Date): boolean => isSameDay(d, new Date());
+
+// ── Component ──
+
 const Events: React.FC = () => {
-    const { t } = useTranslation();
-    const [selectedEvent, setSelectedEvent] = useState<MockEvent | null>(null);
+    const { t, i18n } = useTranslation();
+    const lang = i18n.language?.startsWith('uk') ? 'uk' : 'en';
 
-    const daysInMonth = 28; // Feb 2026 for mock
-    const startingDay = 6; // starts on Saturday for mock
-    const daysOfWeek = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Нд'];
+    const [viewMode, setViewMode] = useState<ViewMode>('week');
+    const [currentDate, setCurrentDate] = useState(new Date());
+    const [events, setEvents] = useState<CalendarEventDTO[]>([]);
+    const [loading, setLoading] = useState(false);
+    const [selectedEvent, setSelectedEvent] = useState<CalendarEventDTO | null>(null);
 
-    return (
-        <div className="max-w-7xl mx-auto px-4 py-12 pt-24 min-h-screen relative z-10 w-full animate-fade-in-up">
-            <div className="flex flex-col md:flex-row justify-between md:items-end mb-8 gap-4">
-                <div>
-                    <h1 className="font-serif text-4xl font-bold text-nr-text mb-2 drop-shadow-md">
-                        {t('events.title_part1')} <span className="text-gold-gradient">{t('events.title_part2')}</span>
-                    </h1>
-                    <p className="text-nr-text/60">{t('events.month_year')}</p>
-                </div>
+    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-                <div className="flex gap-4 text-sm text-nr-text">
-                    <span className="flex items-center gap-2"><span className="w-3 h-3 rounded bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.6)]"></span> {t('events.types.battle')}</span>
-                    <span className="flex items-center gap-2"><span className="w-3 h-3 rounded bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]"></span> {t('events.types.training')}</span>
-                    <span className="flex items-center gap-2"><span className="w-3 h-3 rounded bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.6)]"></span> {t('events.types.meeting')}</span>
-                </div>
+    const fetchEvents = useCallback(async () => {
+        const { from, to } = viewMode === 'week' ? getWeekRange(currentDate) : getMonthRange(currentDate);
+        setLoading(true);
+        try {
+            const data = await calendarApi.getEvents(formatDateParam(from), formatDateParam(to), timezone);
+            setEvents(data);
+        } catch (err) {
+            console.error('Failed to fetch events', err);
+            setEvents([]);
+        } finally {
+            setLoading(false);
+        }
+    }, [currentDate, viewMode, timezone]);
+
+    useEffect(() => {
+        fetchEvents();
+    }, [fetchEvents]);
+
+    const navigatePrev = () => {
+        setCurrentDate(prev => {
+            const d = new Date(prev);
+            if (viewMode === 'week') d.setDate(d.getDate() - 7);
+            else d.setMonth(d.getMonth() - 1);
+            return d;
+        });
+    };
+
+    const navigateNext = () => {
+        setCurrentDate(prev => {
+            const d = new Date(prev);
+            if (viewMode === 'week') d.setDate(d.getDate() + 7);
+            else d.setMonth(d.getMonth() + 1);
+            return d;
+        });
+    };
+
+    const { from: rangeFrom, to: rangeTo } = viewMode === 'week' ? getWeekRange(currentDate) : getMonthRange(currentDate);
+    const headerLabel = viewMode === 'week'
+        ? formatWeekLabel(rangeFrom, rangeTo, lang)
+        : formatMonthLabel(currentDate, lang);
+
+    const daysOfWeek = getDaysOfWeek(lang);
+
+    const getEventsForDay = (date: Date): CalendarEventDTO[] => {
+        return events.filter(ev => {
+            const evDate = new Date(ev.start);
+            return isSameDay(evDate, date);
+        });
+    };
+
+    // ── Week View ──
+    const renderWeekView = () => {
+        const weekDays: Date[] = [];
+        for (let i = 0; i < 7; i++) {
+            const d = new Date(rangeFrom);
+            d.setDate(rangeFrom.getDate() + i);
+            weekDays.push(d);
+        }
+
+        return (
+            <div className="grid grid-cols-7 gap-2 md:gap-3">
+                {weekDays.map((day, i) => {
+                    const dayEvents = getEventsForDay(day);
+                    const today = isToday(day);
+
+                    return (
+                        <div key={i} className="min-h-[120px] md:min-h-[200px] flex flex-col">
+                            {/* Day header */}
+                            <div className={`text-center py-2 rounded-t-lg border border-b-0 border-nr-border ${today ? 'bg-nr-accent/20' : 'bg-black/5 dark:bg-white/5'}`}>
+                                <p className="text-[10px] md:text-xs font-medium text-nr-text/50 uppercase">{daysOfWeek[i]}</p>
+                                <p className={`text-sm md:text-lg font-bold ${today ? 'text-nr-accent' : 'text-nr-text'}`}>
+                                    {day.getDate()}
+                                </p>
+                            </div>
+
+                            {/* Events column */}
+                            <div className="flex-1 border border-t-0 border-nr-border rounded-b-lg p-1 md:p-2 space-y-1.5 bg-nr-surface/30">
+                                {dayEvents.map(ev => (
+                                    <button
+                                        key={ev.id}
+                                        onClick={() => setSelectedEvent(ev)}
+                                        className="w-full text-left p-1.5 md:p-2 rounded-md bg-nr-accent/10 border border-nr-accent/20 hover:bg-nr-accent/20 hover:border-nr-accent/40 transition-all cursor-pointer group"
+                                    >
+                                        <p className="text-[9px] md:text-[11px] text-nr-accent font-bold">
+                                            {new Date(ev.start).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                        </p>
+                                        <p className="text-[10px] md:text-xs font-medium text-nr-text truncate group-hover:text-nr-accent transition-colors">
+                                            {localized(ev.title, lang)}
+                                        </p>
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    );
+                })}
             </div>
+        );
+    };
 
-            <div className="glass-card rounded-xl shadow-sm p-4 md:p-8">
+    // ── Month View ──
+    const renderMonthView = () => {
+        const year = currentDate.getFullYear();
+        const month = currentDate.getMonth();
+        const firstDayOfMonth = new Date(year, month, 1);
+        const lastDayOfMonth = new Date(year, month + 1, 0);
+        const daysInMonth = lastDayOfMonth.getDate();
 
-                {/* Calendar Header */}
-                <div className="flex items-center justify-between mb-6 pb-4 border-b border-nr-border">
-                    <Button variant="ghost" size="sm" className="hover:bg-nr-border/20">
-                        <ChevronLeft size={20} /> {t('events.calendar.prev')}
-                    </Button>
-                    <span className="font-serif font-bold text-xl text-nr-text">{t('events.month_year')}</span>
-                    <Button variant="ghost" size="sm" className="hover:bg-nr-border/20">
-                        {t('events.calendar.next')} <ChevronRight size={20} />
-                    </Button>
-                </div>
+        // Monday = 0, Sunday = 6
+        let startDay = firstDayOfMonth.getDay() - 1;
+        if (startDay < 0) startDay = 6;
 
-                {/* Calendar Grid */}
-                <div className="grid grid-cols-7 gap-1 md:gap-4 mb-4">
-                    {daysOfWeek.map((_, index) => (
-                        <div key={index} className="text-center font-bold text-nr-text/60 text-xs md:text-sm py-2 bg-black/5 dark:bg-white/5 rounded-md">
-                            {t(`events.days.${index}`)}
+        return (
+            <>
+                {/* Day-of-week headers */}
+                <div className="grid grid-cols-7 gap-1 md:gap-3 mb-2">
+                    {daysOfWeek.map((name, i) => (
+                        <div key={i} className="text-center font-bold text-nr-text/60 text-xs md:text-sm py-2 bg-black/5 dark:bg-white/5 rounded-md">
+                            {name}
                         </div>
                     ))}
                 </div>
 
-                <div className="grid grid-cols-7 gap-2 md:gap-4">
-                    {/* Empty cells */}
-                    {[...Array(startingDay)].map((_, i) => (
-                        <div key={`empty-${i}`} className="aspect-square bg-nr-bg/10 rounded-lg p-2 opacity-50 border border-nr-border border-dashed"></div>
+                <div className="grid grid-cols-7 gap-1 md:gap-3">
+                    {/* Empty cells before month starts */}
+                    {[...Array(startDay)].map((_, i) => (
+                        <div key={`empty-${i}`} className="aspect-square bg-nr-bg/10 rounded-lg p-2 opacity-30 border border-nr-border border-dashed" />
                     ))}
 
-                    {/* Days */}
+                    {/* Days of the month */}
                     {[...Array(daysInMonth)].map((_, i) => {
-                        const date = i + 1;
-                        const eventInfo = mockEvents.find(e => e.date === date);
-                        const isToday = date === 20;
+                        const date = new Date(year, month, i + 1);
+                        const dayEvents = getEventsForDay(date);
+                        const today = isToday(date);
 
                         return (
                             <div
-                                key={date}
-                                onClick={() => eventInfo && setSelectedEvent(eventInfo)}
-                                className={`aspect-square p-1 md:p-2 rounded-lg border transition-all cursor-pointer relative group flex flex-col items-center md:items-start
-                  ${eventInfo ? 'border-nr-border bg-nr-bg shadow hover:border-nr-accent' : 'border-nr-border/50 bg-nr-surface/30 hover:bg-black/5 dark:hover:bg-white/5'}
-                  ${isToday ? 'ring-2 ring-nr-accent ring-offset-2 ring-offset-nr-bg' : ''}
-                `}
+                                key={i + 1}
+                                className={`aspect-square p-1 md:p-2 rounded-lg border transition-all flex flex-col
+                                    ${dayEvents.length > 0 ? 'border-nr-border bg-nr-bg shadow-sm hover:border-nr-accent cursor-pointer' : 'border-nr-border/50 bg-nr-surface/30'}
+                                    ${today ? 'ring-2 ring-nr-accent ring-offset-2 ring-offset-nr-bg' : ''}
+                                `}
                             >
-                                <span className={`font-medium text-xs md:text-sm ${isToday ? 'text-nr-accent font-bold' : 'text-nr-text/70'}`}>
-                                    {date}
+                                <span className={`font-medium text-xs md:text-sm ${today ? 'text-nr-accent font-bold' : 'text-nr-text/70'}`}>
+                                    {i + 1}
                                 </span>
 
-                                {eventInfo && (
-                                    <div className="mt-auto w-full">
-                                        <div className={`${EventTypes[eventInfo.type].color} h-1.5 md:h-1 w-1/2 mx-auto md:w-full rounded-full md:rounded-sm mb-1`}></div>
-                                        <div className={`${EventTypes[eventInfo.type].color}/20 text-${EventTypes[eventInfo.type].color.replace('bg-', '')} border border-${EventTypes[eventInfo.type].color.replace('bg-', '')}/30 text-[10px] p-1 rounded font-medium hidden md:block truncate`}>
-                                            {eventInfo.time} {eventInfo.title}
-                                        </div>
+                                {dayEvents.length > 0 && (
+                                    <div className="mt-auto w-full space-y-0.5">
+                                        {dayEvents.slice(0, 2).map(ev => (
+                                            <button
+                                                key={ev.id}
+                                                onClick={() => setSelectedEvent(ev)}
+                                                className="w-full text-left cursor-pointer"
+                                            >
+                                                <div className="bg-nr-accent/20 border border-nr-accent/30 text-[9px] md:text-[10px] p-0.5 md:p-1 rounded font-medium text-nr-text truncate hover:bg-nr-accent/30 transition-colors">
+                                                    <span className="hidden md:inline">{new Date(ev.start).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} </span>
+                                                    {localized(ev.title, lang)}
+                                                </div>
+                                            </button>
+                                        ))}
+                                        {dayEvents.length > 2 && (
+                                            <p className="text-[9px] text-nr-text/50 text-center">+{dayEvents.length - 2}</p>
+                                        )}
                                     </div>
                                 )}
                             </div>
                         );
                     })}
                 </div>
+            </>
+        );
+    };
+
+    return (
+        <div className="max-w-7xl mx-auto px-4 py-12 pt-24 min-h-screen relative z-10 w-full animate-fade-in-up">
+            {/* Page header */}
+            <div className="flex flex-col md:flex-row justify-between md:items-end mb-8 gap-4">
+                <div>
+                    <h1 className="font-serif text-4xl font-bold text-nr-text mb-2 drop-shadow-md">
+                        {t('events.title_part1')} <span className="text-gold-gradient">{t('events.title_part2')}</span>
+                    </h1>
+                </div>
+
+                {/* View toggle */}
+                <div className="flex gap-2">
+                    <Button
+                        variant={viewMode === 'week' ? 'primary' : 'ghost'}
+                        size="sm"
+                        onClick={() => setViewMode('week')}
+                    >
+                        {t('events.view.week')}
+                    </Button>
+                    <Button
+                        variant={viewMode === 'month' ? 'primary' : 'ghost'}
+                        size="sm"
+                        onClick={() => setViewMode('month')}
+                    >
+                        {t('events.view.month')}
+                    </Button>
+                </div>
             </div>
 
-            {/* Event Details Popover (Modal) */}
-            {selectedEvent && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-                    <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setSelectedEvent(null)} />
-                    <div className="glass-card rounded-xl shadow-2xl relative z-10 w-full max-w-lg border border-nr-border overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-
-                        {/* Header */}
-                        <div className={`${EventTypes[selectedEvent.type].color} px-6 py-4 flex items-start justify-between text-white`}>
-                            <div>
-                                <div className="text-xs font-bold tracking-wider uppercase opacity-80 mb-1">{t(EventTypes[selectedEvent.type].labelKey, EventTypes[selectedEvent.type].defaultLabel)}</div>
-                                <h3 className="font-serif text-2xl font-bold">{selectedEvent.title}</h3>
-                            </div>
-                            <button onClick={() => setSelectedEvent(null)} className="p-1 hover:bg-black/20 rounded transition-colors"><X size={24} /></button>
-                        </div>
-
-                        {/* Content */}
-                        <div className="p-6">
-                            <div className="grid grid-cols-2 gap-y-4 gap-x-6 mb-6">
-                                <div className="flex items-center gap-3 text-nr-text p-3 bg-nr-bg rounded border border-nr-border">
-                                    <Clock className="text-nr-accent" size={20} />
-                                    <div><p className="text-xs text-nr-text/50 uppercase">{t('events.details.time')}</p><p className="font-bold">{selectedEvent.time}</p></div>
-                                </div>
-                                <div className="flex items-center gap-3 text-nr-text p-3 bg-nr-bg rounded border border-nr-border">
-                                    <MapPin className="text-nr-accent" size={20} />
-                                    <div><p className="text-xs text-nr-text/50 uppercase">{t('events.details.location')}</p><p className="font-bold">{selectedEvent.map}</p></div>
-                                </div>
-                                <div className="flex items-center gap-3 text-nr-text p-3 bg-nr-bg rounded border border-nr-border">
-                                    <span className="font-serif font-bold text-nr-accent text-xl w-5 text-center px-1 border border-nr-accent rounded">F</span>
-                                    <div><p className="text-xs text-nr-text/50 uppercase">{t('events.details.faction')}</p><p className="font-bold">{selectedEvent.faction}</p></div>
-                                </div>
-                                <div className="flex items-center gap-3 text-nr-text p-3 bg-nr-bg rounded border border-nr-border">
-                                    <Users className="text-nr-accent" size={20} />
-                                    <div><p className="text-xs text-nr-text/50 uppercase">{t('events.details.attendance')}</p><p className="font-bold">{selectedEvent.going} {t('events.details.members_count')}</p></div>
-                                </div>
-                            </div>
-
-                            <div className="mb-8">
-                                <h4 className="font-bold text-sm text-nr-text/50 uppercase mb-2">{t('events.details.description_title')}</h4>
-                                <p className="text-nr-text/90 leading-relaxed p-4 bg-nr-bg rounded border border-nr-border">{selectedEvent.description}</p>
-                            </div>
-
-                            {/* RSVP Actions */}
-                            <div className="pt-6 border-t border-nr-border flex gap-4">
-                                <Button variant="primary" className="flex-1 shadow-lg shadow-nr-accent/20">{t('rsvp.actions.confirm')}</Button>
-                                <Button variant="secondary" className="flex-1">{t('rsvp.actions.decline')}</Button>
-                            </div>
-                        </div>
-                    </div>
+            <div className="glass-card rounded-xl shadow-sm p-4 md:p-8">
+                {/* Navigation header */}
+                <div className="flex items-center justify-between mb-6 pb-4 border-b border-nr-border">
+                    <Button variant="ghost" size="sm" className="hover:bg-nr-border/20" onClick={navigatePrev}>
+                        <ChevronLeft size={20} /> {t('events.calendar.prev')}
+                    </Button>
+                    <span className="font-serif font-bold text-lg md:text-xl text-nr-text capitalize">{headerLabel}</span>
+                    <Button variant="ghost" size="sm" className="hover:bg-nr-border/20" onClick={navigateNext}>
+                        {t('events.calendar.next')} <ChevronRight size={20} />
+                    </Button>
                 </div>
-            )}
+
+                {/* Content */}
+                {loading ? (
+                    <div className="flex items-center justify-center py-20">
+                        <Loader2 className="animate-spin text-nr-accent" size={32} />
+                        <span className="ml-3 text-nr-text/60">{t('events.loading')}</span>
+                    </div>
+                ) : events.length === 0 ? (
+                    <div className="text-center py-20 text-nr-text/50">
+                        <p className="text-lg">{t('events.no_events')}</p>
+                    </div>
+                ) : (
+                    viewMode === 'week' ? renderWeekView() : renderMonthView()
+                )}
+            </div>
+
+            {/* Event detail modal */}
+            <EventDetailModal event={selectedEvent} onClose={() => setSelectedEvent(null)} />
         </div>
     );
 };
