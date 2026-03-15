@@ -25,7 +25,7 @@ const DiscordWidget: React.FC = () => {
     const [discordData, setDiscordData] = useState<DiscordData | null>(null);
 
     useEffect(() => {
-        fetch('https://discord.com/api/invites/uuc')
+        fetch('https://discord.com/api/invites/uuc', { credentials: 'omit' })
             .then(res => res.json())
             .then(data => {
                 if (data?.guild?.icon) {
@@ -34,7 +34,7 @@ const DiscordWidget: React.FC = () => {
             })
             .catch(console.error);
 
-        fetch('https://discord.com/api/guilds/454665524400619535/widget.json')
+        fetch('https://discord.com/api/guilds/454665524400619535/widget.json', { credentials: 'omit' })
             .then(res => res.json())
             .then(data => setDiscordData(data))
             .catch(console.error);

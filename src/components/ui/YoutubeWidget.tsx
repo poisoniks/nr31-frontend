@@ -28,7 +28,7 @@ const YoutubeWidget: React.FC = () => {
                 for (const channelId of CHANNELS) {
                     try {
                         const rssUrl = encodeURIComponent(`https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`);
-                        const response = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${rssUrl}`);
+                        const response = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${rssUrl}`, { credentials: 'omit' });
                         if (!response.ok) {
                             console.error(`Failed to fetch JSON for channel ${channelId}`);
                             continue;
@@ -129,7 +129,7 @@ const YoutubeWidget: React.FC = () => {
                 <div className={`w-full relative ${latestVideo.isShort ? 'aspect-[9/16] max-w-[350px] mx-auto' : 'aspect-video'}`}>
                     <iframe
                         className="absolute top-0 left-0 w-full h-full"
-                        src={`https://www.youtube.com/embed/${latestVideo.id}`}
+                        src={`https://www.youtube-nocookie.com/embed/${latestVideo.id}`}
                         title={latestVideo.title}
                         frameBorder="0"
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
