@@ -127,5 +127,10 @@
     "home.join.links.youtube": "YouTube",
     "home.support.title": "Want to support us?",
     "home.support.monobank": "Monobank",
-    "home.support.privat24": "Privat24"
+    "home.support.privat24": "Privat24",
+    "login.title": "Login",
+    "login.username": "Username",
+    "login.password": "Password",
+    "login.submit": "Sign In",
+    "login.error": "Invalid username or password"
 }

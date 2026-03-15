@@ -127,5 +127,10 @@
     "home.join.links.youtube": "YouTube",
     "home.support.title": "Бажаєш підтримати нас?",
     "home.support.monobank": "Monobank",
-    "home.support.privat24": "Приват24"
+    "home.support.privat24": "Приват24",
+    "login.title": "Вхід",
+    "login.username": "Ім'я користувача",
+    "login.password": "Пароль",
+    "login.submit": "Увійти",
+    "login.error": "Невірне ім'я користувача або пароль"
 }

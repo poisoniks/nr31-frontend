@@ -187,6 +187,9 @@
   animation: spin 3s linear infinite;
 }
 
+@utility animate-fade-in {
+  animation: fade-in 0.2s ease-out forwards;
+}
 
 @keyframes fade-in-up {
   from {
@@ -199,3 +202,13 @@
     transform: translateY(0);
   }
 }
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}

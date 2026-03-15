@@ -1,18 +1,21 @@
 import React, { useState } from 'react';
-import { Menu, Globe, Moon, Sun, LogIn } from 'lucide-react';
+import { Menu, Globe, Moon, Sun, LogIn, User } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import { useTheme } from '../ThemeProvider';
 import { useTranslation } from 'react-i18next';
 import Button from '../ui/Button';
 import { useAuthStore } from '../../store/useAuthStore';
+import LoginModal from '../auth/LoginModal';
 
 const Header: React.FC = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [isLoginOpen, setIsLoginOpen] = useState(false);
     const location = useLocation();
     const { theme, toggleTheme } = useTheme();
     const { t, i18n } = useTranslation();
     const user = useAuthStore(state => state.user);
+    const isAuthenticated = useAuthStore(state => state.isAuthenticated);
     const hasAdminPermission = user?.authorities?.includes('admin:view') ?? false;
 
     const navLinks = [
@@ -87,15 +90,28 @@ const Header: React.FC = () => {
                             {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
                         </button>
 
-                        <Button variant="ghost" size="icon" className="border border-nr-border text-nr-text/80" aria-label="Login">
-                            <LogIn size={20} />
-                        </Button>
+                        {isAuthenticated ? (
+                            <Button variant="ghost" size="icon" className="border border-nr-border text-nr-text/80" aria-label="Profile">
+                                <User size={20} />
+                            </Button>
+                        ) : (
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="border border-nr-border text-nr-text/80"
+                                aria-label="Login"
+                                onClick={() => setIsLoginOpen(true)}
+                            >
+                                <LogIn size={20} />
+                            </Button>
+                        )}
                     </div>
 
                 </div>
             </header>
 
             <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
+            <LoginModal isOpen={isLoginOpen} onClose={() => setIsLoginOpen(false)} />
         </>
     );
 };
