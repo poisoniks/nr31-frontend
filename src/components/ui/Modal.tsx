@@ -5,11 +5,12 @@ import { X } from 'lucide-react';
 interface ModalProps {
     isOpen: boolean;
     onClose: () => void;
-    title?: string;
+    title?: React.ReactNode;
     children: React.ReactNode;
+    contentClassName?: string;
 }
 
-const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }) => {
+const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, contentClassName = '' }) => {
     useEffect(() => {
         const handleEscape = (e: KeyboardEvent) => {
             if (e.key === 'Escape') onClose();
@@ -37,11 +38,11 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }) => {
             />
 
             {/* Modal Content */}
-            <div className="relative w-full max-w-md glass-card rounded-xl p-6 animate-fade-in-up z-10">
+            <div className={`relative w-full max-w-md glass-card rounded-xl p-6 animate-fade-in-up z-10 ${contentClassName}`}>
                 {/* Header */}
                 <div className="flex items-center justify-between mb-6">
                     {title && (
-                        <h2 className="text-xl font-serif font-bold text-nr-text">
+                        <h2 className="text-xl font-serif font-bold text-nr-text flex items-center gap-2">
                             {title}
                         </h2>
                     )}
