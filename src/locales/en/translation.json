@@ -148,5 +148,9 @@
     "events.edit.mode.disabled_discord": "Unsupported for Discord-synced series",
     "events.edit.type": "Event Type",
     "events.edit.units": "Participating Units",
-    "events.edit.saving": "Saving..."
+    "events.edit.saving": "Saving...",
+    "events.create.title": "Create Event",
+    "events.create.submit": "Create",
+    "events.create.creating": "Creating...",
+    "events.create.error": "An unexpected error occurred while creating the event"
 }

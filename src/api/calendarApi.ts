@@ -1,5 +1,5 @@
 import api from './axiosConfig';
-import type { CalendarEventDTO, UpdateEventRequest, SupportedLocaleDTO, EventType, UnitType } from '../types/calendar';
+import type { CalendarEventDTO, UpdateEventRequest, CreateEventRequest, SupportedLocaleDTO, EventType, UnitType } from '../types/calendar';
 
 export const calendarApi = {
     getEvents: async (from: string, to: string, timezone?: string): Promise<CalendarEventDTO[]> => {
@@ -28,6 +28,11 @@ export const calendarApi = {
 
     getUnitTypes: async (): Promise<UnitType[]> => {
         const response = await api.get('/v1/roster/unit-types');
+        return response.data;
+    },
+
+    createEvent: async (data: CreateEventRequest): Promise<CalendarEventDTO> => {
+        const response = await api.post('/v1/calendar/events', data);
         return response.data;
     },
 };

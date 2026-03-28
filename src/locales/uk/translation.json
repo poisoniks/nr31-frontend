@@ -148,5 +148,9 @@
     "events.edit.mode.disabled_discord": "Не підтримується для серій з Discord",
     "events.edit.type": "Тип події",
     "events.edit.units": "Підрозділи-учасники",
-    "events.edit.saving": "Збереження..."
+    "events.edit.saving": "Збереження...",
+    "events.create.title": "Створити подію",
+    "events.create.submit": "Створити",
+    "events.create.creating": "Створення...",
+    "events.create.error": "Неочікувана помилка при створенні події"
 }

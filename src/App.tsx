@@ -10,6 +10,8 @@ import Admin from './pages/Admin';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { RequirePermission } from './components/auth/RequirePermission';
 import { useTranslation } from 'react-i18next';
+import { useUIStore } from './store/useUIStore';
+import GlobalErrorPopup from './components/ui/GlobalErrorPopup';
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -23,6 +25,7 @@ const ScrollToTop = () => {
 
 function App() {
   const { t, i18n } = useTranslation();
+  const { error, setError } = useUIStore();
 
   useEffect(() => {
     document.title = t('app.title');
@@ -31,6 +34,7 @@ function App() {
   return (
     <ThemeProvider>
       <ScrollToTop />
+      <GlobalErrorPopup message={error} onDismiss={() => setError(null)} />
       <div className="flex flex-col min-h-screen relative">
         <Header />
         <main className="flex-1 flex flex-col relative z-0">

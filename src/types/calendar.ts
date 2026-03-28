@@ -47,6 +47,16 @@ export interface UpdateEventRequest {
     };
 }
 
+export interface CreateEventRequest {
+    title?: Record<string, string>;
+    description?: Record<string, string>;
+    start: string;
+    end?: string;
+    type: number;
+    serverName?: string;
+    participatingUnits?: number[];
+}
+
 export interface SupportedLocaleDTO {
     id: number;
     code: string;

@@ -5,7 +5,10 @@ import { useTranslation } from 'react-i18next';
 import { calendarApi } from '../api/calendarApi';
 import type { CalendarEventDTO } from '../types/calendar';
 import EventDetailModal from '../components/events/EventDetailModal';
+import EventCreateModal from '../components/events/EventCreateModal';
 import { DateFormatter } from '../utils/dateFormatter';
+import { useAuthStore } from '../store/useAuthStore';
+import { useUIStore } from '../store/useUIStore';
 
 type ViewMode = 'week' | 'month';
 
@@ -131,12 +134,16 @@ const EventBox = ({ ev, lang, onClick }: { ev: CalendarEventDTO, lang: string, o
 const Events: React.FC = () => {
     const { t, i18n } = useTranslation();
     const lang = i18n.language?.startsWith('uk') ? 'uk' : 'en';
+    const user = useAuthStore((s) => s.user);
+    const canCreate = user?.authorities?.includes('event:write') ?? false;
 
     const [viewMode, setViewMode] = useState<ViewMode>('week');
     const [currentDate, setCurrentDate] = useState(new Date());
     const [events, setEvents] = useState<CalendarEventDTO[]>([]);
     const [showSpinner, setShowSpinner] = useState(false);
     const [selectedEvent, setSelectedEvent] = useState<CalendarEventDTO | null>(null);
+    const [createDate, setCreateDate] = useState<Date | null>(null);
+    const { setError } = useUIStore();
 
     const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
@@ -230,7 +237,14 @@ const Events: React.FC = () => {
                             </div>
 
                             {/* Events column */}
-                            <div className="flex-1 border border-t-0 border-nr-border rounded-b-lg p-1 md:p-2 space-y-1.5 bg-nr-surface/30">
+                            <div
+                                className={`flex-1 border border-t-0 border-nr-border rounded-b-lg p-1 md:p-2 space-y-1.5 bg-nr-surface/30 ${canCreate ? 'cursor-pointer hover:bg-nr-accent/5 transition-colors' : ''}`}
+                                onClick={(e) => {
+                                    if (canCreate && e.target === e.currentTarget) {
+                                        setCreateDate(new Date(day));
+                                    }
+                                }}
+                            >
                                 {dayEvents.map(ev => (
                                     <EventBox key={`${ev.id}_${ev.start}`} ev={ev} lang={lang} onClick={() => setSelectedEvent(ev)} />
                                 ))}
@@ -283,9 +297,14 @@ const Events: React.FC = () => {
                             <div
                                 key={dayKey}
                                 className={`aspect-square p-1 md:p-2 rounded-lg border transition-all flex flex-col overflow-hidden
-                                    ${hasActiveEvents ? 'border-nr-border bg-nr-bg shadow-sm hover:border-nr-accent cursor-pointer' : 'border-nr-border/50 bg-nr-surface/30'}
+                                    ${hasActiveEvents ? 'border-nr-border bg-nr-bg shadow-sm hover:border-nr-accent cursor-pointer' : `border-nr-border/50 bg-nr-surface/30 ${canCreate ? 'hover:border-nr-accent/40 hover:bg-nr-accent/5 cursor-pointer' : ''}`}
                                     ${today ? 'ring-2 ring-nr-accent ring-offset-2 ring-offset-nr-bg' : ''}
                                 `}
+                                onClick={(e) => {
+                                    if (canCreate && e.target === e.currentTarget) {
+                                        setCreateDate(new Date(date));
+                                    }
+                                }}
                             >
                                 <span className={`font-medium text-xs md:text-sm ${today ? 'text-nr-accent font-bold' : 'text-nr-text/70'}`}>
                                     {i + 1}
@@ -368,12 +387,24 @@ const Events: React.FC = () => {
                 event={selectedEvent}
                 onClose={() => setSelectedEvent(null)}
                 onEventUpdated={() => {
-                    // Force refresh by clearing cache and fetching again
                     Object.keys(eventsCache).forEach(key => delete eventsCache[key]);
                     fetchedRangesCache.clear();
                     fetchEvents();
                     setSelectedEvent(null);
                 }}
+            />
+
+            {/* Event create modal */}
+            <EventCreateModal
+                isOpen={!!createDate}
+                initialDate={createDate}
+                onClose={() => setCreateDate(null)}
+                onCreated={() => {
+                    Object.keys(eventsCache).forEach(key => delete eventsCache[key]);
+                    fetchedRangesCache.clear();
+                    fetchEvents();
+                }}
+                onError={(msg) => setError(msg)}
             />
         </div>
     );
