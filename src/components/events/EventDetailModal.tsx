@@ -14,6 +14,7 @@ import { useAuthStore } from '../../store/useAuthStore';
 
 interface EventDetailModalProps {
     event: CalendarEventDTO | null;
+    isOpen: boolean;
     onClose: () => void;
     onEventUpdated?: () => void;
 }
@@ -29,7 +30,7 @@ const toLocalDatetime = (iso: string): string => {
     return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
 };
 
-const EventDetailModal: React.FC<EventDetailModalProps> = ({ event, onClose, onEventUpdated }) => {
+const EventDetailModal: React.FC<EventDetailModalProps> = ({ event, isOpen, onClose, onEventUpdated }) => {
     const { t, i18n } = useTranslation();
     const lang = (i18n.language || '').split('-')[0] || 'en';
     const user = useAuthStore((s) => s.user);
@@ -162,7 +163,7 @@ const EventDetailModal: React.FC<EventDetailModalProps> = ({ event, onClose, onE
         );
     };
 
-    if (!event) return null;
+    if (!event || !isOpen) return null;
 
     const titleText = localized(event.title, lang);
     const description = localized(event.description, lang);

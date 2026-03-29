@@ -393,6 +393,7 @@ const Events: React.FC = () => {
             {/* Event detail modal */}
             <EventDetailModal
                 event={selectedEvent}
+                isOpen={!!selectedEvent}
                 onClose={() => setSelectedEvent(null)}
                 onEventUpdated={() => {
                     Object.keys(eventsCache).forEach(key => delete eventsCache[key]);

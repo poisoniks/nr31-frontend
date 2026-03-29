@@ -1,12 +1,72 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Swords } from 'lucide-react';
 import Button from '../components/ui/Button';
 import { useTranslation, Trans } from 'react-i18next';
 import DiscordWidget from '../components/ui/DiscordWidget';
 import YoutubeWidget from '../components/ui/YoutubeWidget';
+import { calendarApi } from '../api/calendarApi';
+import type { CalendarEventDTO } from '../types/calendar';
+import EventDetailModal from '../components/events/EventDetailModal';
 
 const Home: React.FC = () => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
+    const navigate = useNavigate();
+    const lang = (i18n.language || '').split('-')[0] || 'en';
+
+    const [nearestEvent, setNearestEvent] = useState<CalendarEventDTO | null>(null);
+    const [timeRemaining, setTimeRemaining] = useState({ days: 0, hours: 0, minutes: 0, inProgress: false });
+    const [showDetail, setShowDetail] = useState(false);
+
+    useEffect(() => {
+        fetchNearest();
+    }, []);
+
+    useEffect(() => {
+        if (!nearestEvent) return;
+
+        const updateCountdown = () => {
+            const now = new Date().getTime();
+            const start = new Date(nearestEvent.start).getTime();
+            const end = nearestEvent.end ? new Date(nearestEvent.end).getTime() : start + 90 * 60 * 1000;
+
+            if (now >= start && now <= end) {
+                setTimeRemaining({ days: 0, hours: 0, minutes: 0, inProgress: true });
+            } else if (now > end) {
+                setTimeRemaining({ days: 0, hours: 0, minutes: 0, inProgress: false });
+            } else {
+                const diff = start - now;
+                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                setTimeRemaining({ days, hours, minutes, inProgress: false });
+            }
+        };
+
+        updateCountdown();
+        const interval = setInterval(updateCountdown, 60000);
+        return () => clearInterval(interval);
+    }, [nearestEvent]);
+
+    const localized = (map: Record<string, string> | undefined) => {
+        if (!map) return '';
+        return map[lang] || Object.values(map)[0] || '';
+    };
+
+    const handleEventJoin = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        if (!nearestEvent) return;
+        const dateString = nearestEvent.start.split('T')[0];
+        navigate(`/events?date=${dateString}`);
+    };
+
+    const fetchNearest = () => {
+        const now = new Date().toISOString();
+        const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        calendarApi.getNearestEvent(now, tz)
+            .then(event => setNearestEvent(event))
+            .catch((err) => console.error(err));
+    };
 
     return (
         <div className="flex flex-col min-h-screen">
@@ -210,24 +270,90 @@ const Home: React.FC = () => {
                     <div className="lg:col-span-4 space-y-6">
 
                         {/* Next Event Widget */}
-                        <div className="glass-card rounded-xl p-5">
-                            <h4 className="font-serif text-lg font-bold mb-4 flex items-center justify-between text-nr-text">
-                                <span>{t('home.widgets.next_event')}</span>
-                                <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
-                            </h4>
-                            <div className="bg-black/10 dark:bg-black/40 border border-nr-border rounded-lg p-4 mb-4 text-center">
-                                <div className="grid grid-cols-3 gap-2 font-mono text-xl font-bold tracking-wider text-nr-accent mb-1">
-                                    <div>02<span className="block text-[10px] text-nr-text/50 font-sans font-normal uppercase">{t('time.days')}</span></div>
-                                    <div>14<span className="block text-[10px] text-nr-text/50 font-sans font-normal uppercase">{t('time.hours')}</span></div>
-                                    <div>35<span className="block px-1 text-[10px] text-nr-text/50 font-sans font-normal uppercase">{t('time.minutes')}</span></div>
+                        {nearestEvent ? (
+                            <div 
+                                className="glass-card rounded-xl p-5 relative overflow-hidden group/event border border-nr-border/50 hover:border-nr-accent/50 transition-colors cursor-pointer"
+                                onClick={() => setShowDetail(true)}
+                            >
+                                {timeRemaining.inProgress && (
+                                    <div className="absolute top-0 right-0 px-3 py-1 bg-emerald-500/20 text-emerald-400 text-[10px] font-bold tracking-wider rounded-bl-lg border-b border-l border-emerald-500/30 uppercase z-10 animate-pulse">
+                                        {lang === 'uk' ? 'В ГРІ' : 'In Progress'}
+                                    </div>
+                                )}
+                                <h4 className="font-serif text-lg font-bold mb-4 flex items-center justify-between text-nr-text relative z-10">
+                                    <div className="flex items-center gap-2">
+                                        {nearestEvent.type?.customIcon ? (
+                                            <img src={nearestEvent.type.customIcon} alt="" className="w-5 h-5 object-contain" />
+                                        ) : (
+                                            <Swords size={20} className="text-nr-accent" />
+                                        )}
+                                        <span>{t('home.widgets.next_event')}</span>
+                                    </div>
+                                    {!timeRemaining.inProgress && <span className="w-2 h-2 rounded-full bg-nr-accent animate-pulse shadow-[0_0_8px_rgba(251,191,36,0.8)]"></span>}
+                                </h4>
+                                
+                                <div className="bg-black/10 dark:bg-black/40 border border-nr-border rounded-lg p-4 mb-4 text-center relative z-10 shadow-inner">
+                                    {timeRemaining.inProgress ? (
+                                        <div className="font-serif text-2xl font-bold tracking-wider text-emerald-500 uppercase py-2 drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]">
+                                            {lang === 'uk' ? 'В ГРІ' : 'IN PROGRESS'}
+                                        </div>
+                                    ) : (
+                                        <div className="grid grid-cols-3 gap-2 font-mono text-2xl md:text-3xl font-bold tracking-wider text-nr-accent mb-1 drop-shadow-[0_0_5px_rgba(251,191,36,0.3)]">
+                                            <div>{String(timeRemaining.days).padStart(2, '0')}<span className="block mt-1 text-[10px] text-nr-text/50 font-sans font-medium uppercase tracking-widest">{t('time.days')}</span></div>
+                                            <div>{String(timeRemaining.hours).padStart(2, '0')}<span className="block mt-1 text-[10px] text-nr-text/50 font-sans font-medium uppercase tracking-widest">{t('time.hours')}</span></div>
+                                            <div>{String(timeRemaining.minutes).padStart(2, '0')}<span className="block mt-1 px-1 text-[10px] text-nr-text/50 font-sans font-medium uppercase tracking-widest">{t('time.minutes')}</span></div>
+                                        </div>
+                                    )}
+                                </div>
+                                
+                                <h5 className="font-serif text-xl font-bold text-center mb-5 text-nr-text drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)] leading-tight">{localized(nearestEvent.title)}</h5>
+                                
+                                {nearestEvent.participatingUnits && nearestEvent.participatingUnits.length > 0 && (
+                                    <div className="flex flex-wrap justify-center gap-2.5 mb-6 relative z-10 p-3 bg-black/5 dark:bg-white/5 rounded-lg border border-nr-border/30">
+                                        <div className="w-full text-center text-[10px] uppercase tracking-wider text-nr-text/50 font-bold mb-1 w-full">{lang === 'uk' ? 'Підрозділи' : 'Units'}</div>
+                                        {nearestEvent.participatingUnits.map(unit => (
+                                            <div key={unit.id} className="relative group cursor-help transition-transform hover:scale-110">
+                                                {unit.customIcon ? (
+                                                    <img src={unit.customIcon} alt={localized(unit.name)} className="w-7 h-7 object-contain drop-shadow-md" />
+                                                ) : (
+                                                    <div className="w-7 h-7 bg-nr-border/50 rounded-sm flex items-center justify-center text-[10px] font-bold text-nr-text shadow-sm border border-nr-border">{localized(unit.name).substring(0,2)}</div>
+                                                )}
+                                                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-max max-w-[220px] bg-nr-bg/95 border border-nr-border text-nr-text text-[10px] sm:text-xs p-3 rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 text-center pointer-events-none backdrop-blur-sm">
+                                                    <div className="font-bold mb-1 text-nr-accent">{localized(unit.name)}</div>
+                                                    {unit.description && <div className="text-nr-text/80 line-clamp-3">{localized(unit.description)}</div>}
+                                                    {/* Little arrow at the bottom of tooltip */}
+                                                    <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-nr-border"></div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+
+                                <div className="flex flex-col gap-3 relative z-10 w-full">
+                                    <Button variant="primary" className="flex-1 shrink-0 py-2.5 justify-center w-full font-bold shadow-md hover:shadow-lg transition-all" onClick={handleEventJoin}>
+                                        {lang === 'uk' ? 'Перейти в календар' : 'View in Calendar'}
+                                    </Button>
+                                    {timeRemaining.inProgress && (
+                                        <a 
+                                            href="https://discord.com/channels/454665524400619535/1311608584861257789" 
+                                            target="_blank" 
+                                            rel="noopener noreferrer" 
+                                            className="block w-full transform hover:scale-[1.02] transition-transform"
+                                            onClick={(e) => e.stopPropagation()}
+                                        >
+                                            <Button variant="secondary" className="justify-center w-full py-2.5 bg-[#5865F2] hover:bg-[#4752C4] shadow-[0_0_15px_rgba(88,101,242,0.4)] text-white border-none shrink-0 flex items-center gap-2 font-bold">
+                                                <span>{lang === 'uk' ? 'Приєднатись до Discord' : 'Join Discord Voice'}</span>
+                                            </Button>
+                                        </a>
+                                    )}
                                 </div>
                             </div>
-                            <h5 className="font-medium text-center mb-4 text-nr-text">Flagspawn event</h5>
-                            <div className="flex gap-2">
-                                <Button variant="primary" className="flex-1 shrink-0 py-2">{t('rsvp.yes')}</Button>
-                                <Button variant="secondary" className="px-3 shrink-0" aria-label="Відмовляюсь">✕</Button>
+                        ) : (
+                            <div className="glass-card rounded-xl p-5 flex flex-col items-center justify-center min-h-[250px] text-nr-text/50 border border-nr-border/50">
+                                <Swords size={32} className="mb-3 opacity-20" />
+                                <span className="font-medium">{lang === 'uk' ? 'Немає майбутніх подій' : 'No upcoming events'}</span>
                             </div>
-                        </div>
+                        )}
 
                         {/* Discord Widget */}
                         <div className="glass-card rounded-xl overflow-hidden h-[400px]">
@@ -243,6 +369,18 @@ const Home: React.FC = () => {
 
                 </div>
             </section>
+
+            {nearestEvent && (
+                <EventDetailModal
+                    event={nearestEvent}
+                    isOpen={showDetail}
+                    onClose={() => setShowDetail(false)}
+                    onEventUpdated={() => {
+                        setShowDetail(false);
+                        fetchNearest();
+                    }}
+                />
+            )}
         </div>
     );
 };
