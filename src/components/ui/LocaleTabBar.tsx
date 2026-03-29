@@ -1,21 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { calendarApi } from '../../api/calendarApi';
-import type { SupportedLocaleDTO } from '../../types/calendar';
+import { localeApi } from '../../api/localeApi';
+import type { SupportedLocaleDTO } from '../../types/locale';
 
 interface LocaleTabBarProps {
     activeLocale: string;
     onLocaleChange: (locale: string) => void;
 }
 
-let cachedLocales: SupportedLocaleDTO[] | null = null;
 
 const LocaleTabBar: React.FC<LocaleTabBarProps> = ({ activeLocale, onLocaleChange }) => {
-    const [locales, setLocales] = useState<SupportedLocaleDTO[]>(cachedLocales || []);
+    const [locales, setLocales] = useState<SupportedLocaleDTO[]>([]);
 
     useEffect(() => {
-        if (cachedLocales) return;
-        calendarApi.getSupportedLocales().then((data) => {
-            cachedLocales = data;
+        localeApi.getSupportedLocales().then((data) => {
             setLocales(data);
         });
     }, []);

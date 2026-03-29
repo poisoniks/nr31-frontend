@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { useTheme } from '../ThemeProvider';
 import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '../../store/useAuthStore';
+import { localeApi } from '../../api/localeApi';
 
 interface SidebarProps {
     isOpen: boolean;
@@ -29,9 +30,14 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
         { name: t('sidebar.about'), icon: <Info size={18} />, path: '#' },
     ];
 
-    const toggleLanguage = () => {
-        const newLang = i18n.language?.startsWith('uk') ? 'en' : 'uk';
-        i18n.changeLanguage(newLang);
+    const toggleLanguage = async () => {
+        const codes = await localeApi.getAvailableLocaleCodes();
+        if (codes.length === 0) return;
+        
+        const currentCode = (i18n.language || '').split('-')[0];
+        const currentIndex = codes.indexOf(currentCode);
+        const nextIndex = currentIndex >= 0 ? (currentIndex + 1) % codes.length : 0;
+        i18n.changeLanguage(codes[nextIndex]);
     };
 
     return (

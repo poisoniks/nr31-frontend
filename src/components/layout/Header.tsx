@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import Button from '../ui/Button';
 import { useAuthStore } from '../../store/useAuthStore';
 import LoginModal from '../auth/LoginModal';
+import { localeApi } from '../../api/localeApi';
 
 const Header: React.FC = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -25,9 +26,14 @@ const Header: React.FC = () => {
         ...(hasAdminPermission ? [{ name: t('header.admin'), path: '/admin' }] : [])
     ];
 
-    const toggleLanguage = () => {
-        const newLang = i18n.language?.startsWith('uk') ? 'en' : 'uk';
-        i18n.changeLanguage(newLang);
+    const toggleLanguage = async () => {
+        const codes = await localeApi.getAvailableLocaleCodes();
+        if (codes.length === 0) return;
+        
+        const currentCode = (i18n.language || '').split('-')[0];
+        const currentIndex = codes.indexOf(currentCode);
+        const nextIndex = currentIndex >= 0 ? (currentIndex + 1) % codes.length : 0;
+        i18n.changeLanguage(codes[nextIndex]);
     };
 
     return (

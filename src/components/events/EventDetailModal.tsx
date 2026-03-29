@@ -9,6 +9,7 @@ import Button from '../ui/Button';
 import type { CalendarEventDTO, EventType, UnitType, UpdateMode } from '../../types/calendar';
 import { DateFormatter } from '../../utils/dateFormatter';
 import { calendarApi } from '../../api/calendarApi';
+import { localeApi } from '../../api/localeApi';
 import { useAuthStore } from '../../store/useAuthStore';
 
 interface EventDetailModalProps {
@@ -19,7 +20,7 @@ interface EventDetailModalProps {
 
 const localized = (map: Record<string, string> | undefined, lang: string): string => {
     if (!map) return '';
-    return map[lang] || map['en'] || Object.values(map)[0] || '';
+    return map[lang] || Object.values(map)[0] || '';
 };
 
 const toLocalDatetime = (iso: string): string => {
@@ -30,7 +31,7 @@ const toLocalDatetime = (iso: string): string => {
 
 const EventDetailModal: React.FC<EventDetailModalProps> = ({ event, onClose, onEventUpdated }) => {
     const { t, i18n } = useTranslation();
-    const lang = i18n.language?.startsWith('uk') ? 'uk' : 'en';
+    const lang = (i18n.language || '').split('-')[0] || 'en';
     const user = useAuthStore((s) => s.user);
     const canEdit = user?.authorities?.includes('event:write') ?? false;
 
@@ -47,6 +48,7 @@ const EventDetailModal: React.FC<EventDetailModalProps> = ({ event, onClose, onE
     const [editServerName, setEditServerName] = useState('');
     const [editTypeId, setEditTypeId] = useState<number>(0);
     const [editUnitIds, setEditUnitIds] = useState<number[]>([]);
+    const [titleError, setTitleError] = useState(false);
 
     // Locale editing
     const [titleLocale, setTitleLocale] = useState(lang);
@@ -83,6 +85,7 @@ const EventDetailModal: React.FC<EventDetailModalProps> = ({ event, onClose, onE
         setEditUnitIds(event.participatingUnits?.map((u) => u.id) || []);
         setTitleLocale(lang);
         setDescLocale(lang);
+        setTitleError(false);
         setIsEditing(true);
     }, [event, lang]);
 
@@ -93,16 +96,42 @@ const EventDetailModal: React.FC<EventDetailModalProps> = ({ event, onClose, onE
 
     const handleSave = async (mode: UpdateMode) => {
         if (!event) return;
+
+        const filledTitleEntries = Object.entries(editTitle).filter(([_, v]) => v.trim());
+        if (!isDiscord && filledTitleEntries.length === 0) {
+            setTitleError(true);
+            return;
+        }
+        setTitleError(false);
+
         setIsSaving(true);
         setShowModeDropdown(false);
         try {
             const startISO = new Date(editStart).toISOString();
             const endISO = editEnd ? new Date(editEnd).toISOString() : undefined;
 
+            const firstTitle = filledTitleEntries.length > 0 ? filledTitleEntries[0][1] : '';
+            const finalTitle: Record<string, string> = { ...editTitle };
+            const availableLocales = await localeApi.getAvailableLocaleCodes();
+            if (!isDiscord) {
+                availableLocales.forEach(l => {
+                    if (!finalTitle[l]?.trim()) finalTitle[l] = firstTitle;
+                });
+            }
+
+            const filledDescEntries = Object.entries(editDescription).filter(([_, v]) => v.trim());
+            const finalDesc: Record<string, string> = { ...editDescription };
+            if (!isDiscord && filledDescEntries.length > 0) {
+                const firstDesc = filledDescEntries[0][1];
+                availableLocales.forEach(l => {
+                    if (!finalDesc[l]?.trim()) finalDesc[l] = firstDesc;
+                });
+            }
+
             await calendarApi.updateEvent(event.id, {
                 mode,
-                title: isDiscord ? undefined : editTitle,
-                description: isDiscord ? undefined : editDescription,
+                title: isDiscord ? undefined : finalTitle,
+                description: isDiscord ? undefined : (Object.keys(finalDesc).length > 0 ? finalDesc : undefined),
                 start: isDiscord ? event.start : startISO,
                 end: isDiscord ? event.end : endISO,
                 originalStart: event.start,
@@ -256,12 +285,20 @@ const EventDetailModal: React.FC<EventDetailModalProps> = ({ event, onClose, onE
                             </div>
                             <input
                                 type="text"
-                                className={inputClass}
+                                className={`${inputClass} ${titleError ? 'border-red-500 focus:border-red-500' : ''}`}
                                 value={editTitle[titleLocale] || ''}
-                                onChange={(e) => setEditTitle({ ...editTitle, [titleLocale]: e.target.value })}
+                                onChange={(e) => {
+                                    setEditTitle({ ...editTitle, [titleLocale]: e.target.value });
+                                    if (e.target.value.trim()) setTitleError(false);
+                                }}
                                 placeholder={t('events.edit.title_placeholder')}
                                 disabled={isDiscord}
                             />
+                            {titleError && (
+                                <p className="text-red-500 text-[10px] mt-1 font-medium">
+                                    {t('events.edit.title_required')}
+                                </p>
+                            )}
                             {isDiscord && (
                                 <p className="text-[10px] text-purple-400/70 mt-1 flex items-center gap-1">
                                     <Lock size={8} /> {t('events.edit.discord_readonly')}

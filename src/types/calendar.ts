@@ -29,6 +29,14 @@ export interface CalendarEventDTO {
 
 export type UpdateMode = 'SINGLE' | 'ALL' | 'FUTURE';
 
+export interface Recurrence {
+    frequency?: string;
+    interval?: number;
+    count?: number;
+    until?: string;
+    byDay?: string[];
+}
+
 export interface UpdateEventRequest {
     mode: UpdateMode;
     title?: Record<string, string>;
@@ -39,12 +47,7 @@ export interface UpdateEventRequest {
     type: number;
     serverName: string;
     participatingUnits?: number[];
-    recurrence?: {
-        frequency?: string;
-        interval?: number;
-        until?: string;
-        byDay?: string[];
-    };
+    recurrence?: Recurrence;
 }
 
 export interface CreateEventRequest {
@@ -55,10 +58,7 @@ export interface CreateEventRequest {
     type: number;
     serverName?: string;
     participatingUnits?: number[];
+    recurrence?: Recurrence;
 }
 
-export interface SupportedLocaleDTO {
-    id: number;
-    code: string;
-    description: string;
-}
+

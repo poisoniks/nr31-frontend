@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
 import Button from '../components/ui/Button';
 import { useTranslation } from 'react-i18next';
+import { useLocation } from 'react-router-dom';
 import { calendarApi } from '../api/calendarApi';
 import type { CalendarEventDTO } from '../types/calendar';
 import EventDetailModal from '../components/events/EventDetailModal';
@@ -14,7 +15,8 @@ type ViewMode = 'week' | 'month';
 
 const localized = (map: Record<string, string> | undefined, lang: string): string => {
     if (!map) return '';
-    return map[lang] || map['en'] || Object.values(map)[0] || '';
+    if (!map) return '';
+    return map[lang] || Object.values(map)[0] || '';
 };
 
 // ── Date helpers ──
@@ -48,17 +50,17 @@ const formatDateParam = (d: Date): string => {
 
 const formatWeekLabel = (from: Date, to: Date, lang: string): string => {
     const opts: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'short' };
-    const locale = lang.startsWith('uk') ? 'uk-UA' : 'en-US';
+    const locale = lang || 'en';
     return `${from.toLocaleDateString(locale, opts)} – ${to.toLocaleDateString(locale, { ...opts, year: 'numeric' })}`;
 };
 
 const formatMonthLabel = (date: Date, lang: string): string => {
-    const locale = lang.startsWith('uk') ? 'uk-UA' : 'en-US';
+    const locale = lang || 'en';
     return date.toLocaleDateString(locale, { month: 'long', year: 'numeric' });
 };
 
 const getDaysOfWeek = (lang: string): string[] => {
-    const locale = lang.startsWith('uk') ? 'uk-UA' : 'en-US';
+    const locale = lang || 'en';
     const base = new Date(2024, 0, 1); // Monday
     const days: string[] = [];
     for (let i = 0; i < 7; i++) {
@@ -133,12 +135,18 @@ const EventBox = ({ ev, lang, onClick }: { ev: CalendarEventDTO, lang: string, o
 
 const Events: React.FC = () => {
     const { t, i18n } = useTranslation();
-    const lang = i18n.language?.startsWith('uk') ? 'uk' : 'en';
+    const lang = (i18n.language || '').split('-')[0] || 'en';
     const user = useAuthStore((s) => s.user);
     const canCreate = user?.authorities?.includes('event:write') ?? false;
 
+    const location = useLocation();
+    
     const [viewMode, setViewMode] = useState<ViewMode>('week');
-    const [currentDate, setCurrentDate] = useState(new Date());
+    const [currentDate, setCurrentDate] = useState(() => {
+        const queryDate = new URLSearchParams(location.search).get('date');
+        const parsed = queryDate ? new Date(queryDate) : new Date();
+        return isNaN(parsed.getTime()) ? new Date() : parsed;
+    });
     const [events, setEvents] = useState<CalendarEventDTO[]>([]);
     const [showSpinner, setShowSpinner] = useState(false);
     const [selectedEvent, setSelectedEvent] = useState<CalendarEventDTO | null>(null);

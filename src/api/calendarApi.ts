@@ -1,5 +1,5 @@
 import api from './axiosConfig';
-import type { CalendarEventDTO, UpdateEventRequest, CreateEventRequest, SupportedLocaleDTO, EventType, UnitType } from '../types/calendar';
+import type { CalendarEventDTO, UpdateEventRequest, CreateEventRequest, EventType, UnitType } from '../types/calendar';
 
 export const calendarApi = {
     getEvents: async (from: string, to: string, timezone?: string): Promise<CalendarEventDTO[]> => {
@@ -16,9 +16,20 @@ export const calendarApi = {
         return response.data;
     },
 
-    getSupportedLocales: async (): Promise<SupportedLocaleDTO[]> => {
-        const response = await api.get('/v1/public/locales');
-        return response.data;
+    getNearestEvent: async (date: string, timezone?: string): Promise<CalendarEventDTO | null> => {
+        try {
+            const params: Record<string, string> = { date };
+            if (timezone) {
+                params.timezone = timezone;
+            }
+            const response = await api.get('/v1/calendar/events/nearest', { params });
+            return response.data;
+        } catch (error: any) {
+            if (error.response && error.response.status === 404) {
+                return null;
+            }
+            throw error;
+        }
     },
 
     getEventTypes: async (): Promise<EventType[]> => {

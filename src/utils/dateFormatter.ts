@@ -4,7 +4,7 @@ export class DateFormatter {
      */
     static formatDate(isoString: string, lang: string): string {
         const date = new Date(isoString);
-        const locale = lang.startsWith('uk') ? 'uk-UA' : 'en-US';
+        const locale = lang || 'en';
         return date.toLocaleDateString(locale, { 
             day: 'numeric', 
             month: 'long', 
@@ -17,7 +17,7 @@ export class DateFormatter {
      */
     static formatTime(isoString: string, lang: string): string {
         const date = new Date(isoString);
-        const locale = lang.startsWith('uk') ? 'uk-UA' : 'en-US';
+        const locale = lang || 'en';
         return date.toLocaleTimeString(locale, { 
             hour: '2-digit', 
             minute: '2-digit' 
@@ -29,7 +29,7 @@ export class DateFormatter {
      */
     static formatDateTime(isoString: string, lang: string): string {
         const date = new Date(isoString);
-        const locale = lang.startsWith('uk') ? 'uk-UA' : 'en-US';
+        const locale = lang || 'en';
         return date.toLocaleString(locale, {
             day: 'numeric',
             month: 'long',
