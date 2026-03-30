@@ -16,6 +16,14 @@ export const calendarApi = {
         return response.data;
     },
 
+    deleteEvent: async (id: string, mode: 'SINGLE' | 'FUTURE' | 'ALL', exceptionDate?: string): Promise<void> => {
+        const params: Record<string, string> = { mode };
+        if (exceptionDate) {
+            params.exceptionDate = exceptionDate;
+        }
+        await api.delete(`/v1/calendar/events/${id}`, { params });
+    },
+
     getNearestEvent: async (date: string, timezone?: string): Promise<CalendarEventDTO | null> => {
         try {
             const params: Record<string, string> = { date };

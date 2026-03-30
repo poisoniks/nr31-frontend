@@ -30,15 +30,20 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, content
     if (!isOpen) return null;
 
     return ReactDOM.createPortal(
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+        <div 
+            className="fixed inset-0 z-[100] overflow-y-auto overflow-x-hidden flex items-start justify-center p-4 sm:p-6 md:p-8 pt-16 sm:pt-20 md:pt-24"
+            onClick={onClose}
+        >
             {/* Backdrop */}
             <div
-                className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-fade-in"
-                onClick={onClose}
+                className="fixed inset-0 bg-black/60 backdrop-blur-sm animate-fade-in -z-10"
             />
 
             {/* Modal Content */}
-            <div className={`relative w-full max-w-md glass-card rounded-xl p-6 animate-fade-in-up z-10 ${contentClassName}`}>
+            <div 
+                className={`relative w-full max-w-md glass-card rounded-xl p-6 animate-fade-in-up z-10 my-auto ${contentClassName}`}
+                onClick={(e) => e.stopPropagation()}
+            >
                 {/* Header */}
                 <div className="flex items-center justify-between mb-6">
                     {title && (

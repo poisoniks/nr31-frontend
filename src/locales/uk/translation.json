@@ -174,5 +174,15 @@
     "days.TH": "Чт",
     "days.FR": "Пт",
     "days.SA": "Сб",
-    "days.SU": "Нд"
+    "days.SU": "Нд",
+    "events.delete.mode.title": "Режим видалення",
+    "events.delete.cancel": "Скасувати",
+    "events.delete.button": "Видалити",
+    "events.delete.mode.single.title": "Одиночна подія",
+    "events.delete.mode.single.desc": "Обрану подію буде скасовано",
+    "events.delete.mode.single.desc_single": "Це назавжди видалить цю подію з календаря",
+    "events.delete.mode.all.title": "Всі події",
+    "events.delete.mode.all.desc": "Будуть видалені всі події в серії",
+    "events.delete.mode.future.title": "Майбутні події",
+    "events.delete.mode.future.desc": "Всі наступні події в серії буде видалено"
 }

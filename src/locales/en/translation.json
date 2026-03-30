@@ -174,5 +174,15 @@
     "days.TH": "Thu",
     "days.FR": "Fri",
     "days.SA": "Sat",
-    "days.SU": "Sun"
+    "days.SU": "Sun",
+    "events.delete.mode.title": "Delete Mode",
+    "events.delete.cancel": "Cancel",
+    "events.delete.button": "Delete Event",
+    "events.delete.mode.single.title": "Single Event",
+    "events.delete.mode.single.desc": "The selected event will be cancelled",
+    "events.delete.mode.single.desc_single": "This will permanently remove this event from the calendar",
+    "events.delete.mode.all.title": "All Events",
+    "events.delete.mode.all.desc": "All events in the series will be cancelled",
+    "events.delete.mode.future.title": "Future Events",
+    "events.delete.mode.future.desc": "All future events in the series will be removed"
 }

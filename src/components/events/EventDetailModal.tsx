@@ -1,16 +1,19 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Clock, Globe, Lock, ChevronDown } from 'lucide-react';
+import { ChevronDown, Repeat, Clock, Globe, Lock } from 'lucide-react';
 import Modal from '../ui/Modal';
 import EditBookmarkButton from '../ui/EditBookmarkButton';
+import DeleteBookmarkButton from '../ui/DeleteBookmarkButton';
 import LocaleTabBar from '../ui/LocaleTabBar';
 import SaveModeDropdown from './SaveModeDropdown';
+import DeleteModeDropdown from './DeleteModeDropdown';
 import Button from '../ui/Button';
-import type { CalendarEventDTO, EventType, UnitType, UpdateMode } from '../../types/calendar';
+import type { CalendarEventDTO, EventType, UnitType, UpdateMode, Recurrence } from '../../types/calendar';
 import { DateFormatter } from '../../utils/dateFormatter';
 import { calendarApi } from '../../api/calendarApi';
 import { localeApi } from '../../api/localeApi';
 import { useAuthStore } from '../../store/useAuthStore';
+import { useUIStore } from '../../store/useUIStore';
 
 interface EventDetailModalProps {
     event: CalendarEventDTO | null;
@@ -18,6 +21,11 @@ interface EventDetailModalProps {
     onClose: () => void;
     onEventUpdated?: () => void;
 }
+
+type RecurrenceFrequency = 'DAILY' | 'WEEKLY' | 'MONTHLY';
+type EndMode = 'count' | 'date' | 'none';
+
+const ALL_DAYS = ['MO', 'TU', 'WE', 'TH', 'FR', 'SA', 'SU'] as const;
 
 const localized = (map: Record<string, string> | undefined, lang: string): string => {
     if (!map) return '';
@@ -30,16 +38,25 @@ const toLocalDatetime = (iso: string): string => {
     return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
 };
 
+const toLocalDate = (iso: string): string => {
+    const d = new Date(iso);
+    const pad = (n: number) => n.toString().padStart(2, '0');
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+};
+
 const EventDetailModal: React.FC<EventDetailModalProps> = ({ event, isOpen, onClose, onEventUpdated }) => {
     const { t, i18n } = useTranslation();
     const lang = (i18n.language || '').split('-')[0] || 'en';
     const user = useAuthStore((s) => s.user);
+    const { setError } = useUIStore();
     const canEdit = user?.authorities?.includes('event:write') ?? false;
 
     // Edit state
     const [isEditing, setIsEditing] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
     const [showModeDropdown, setShowModeDropdown] = useState(false);
+    const [showDeleteDropdown, setShowDeleteDropdown] = useState(false);
 
     // Editable form fields
     const [editTitle, setEditTitle] = useState<Record<string, string>>({});
@@ -50,6 +67,15 @@ const EventDetailModal: React.FC<EventDetailModalProps> = ({ event, isOpen, onCl
     const [editTypeId, setEditTypeId] = useState<number>(0);
     const [editUnitIds, setEditUnitIds] = useState<number[]>([]);
     const [titleError, setTitleError] = useState(false);
+
+    // Recurrence state
+    const [isRecurring, setIsRecurring] = useState(false);
+    const [recFrequency, setRecFrequency] = useState<RecurrenceFrequency>('WEEKLY');
+    const [recInterval, setRecInterval] = useState(1);
+    const [recByDay, setRecByDay] = useState<string[]>([]);
+    const [recEndMode, setRecEndMode] = useState<EndMode>('count');
+    const [recCount, setRecCount] = useState(10);
+    const [recUntil, setRecUntil] = useState('');
 
     // Locale editing
     const [titleLocale, setTitleLocale] = useState(lang);
@@ -88,7 +114,44 @@ const EventDetailModal: React.FC<EventDetailModalProps> = ({ event, isOpen, onCl
         setDescLocale(lang);
         setTitleError(false);
         setIsEditing(true);
+
+        // Initialize recurrence from event
+        setIsRecurring(!!event.recurring);
+        // Note: EventDTO doesn't seem to have full recurrence info yet, 
+        // using defaults or placeholder logic if we had it.
+        // For now resetting to a default state when entering edit mode.
+        setRecFrequency('WEEKLY');
+        setRecInterval(1);
+        setRecByDay([]);
+        setRecEndMode('count');
+        setRecCount(10);
+        const untilDefault = new Date(event.start);
+        untilDefault.setMonth(untilDefault.getMonth() + 3);
+        setRecUntil(toLocalDate(untilDefault.toISOString()));
     }, [event, lang]);
+
+    const toggleDay = (day: string) => {
+        setRecByDay((prev) =>
+            prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day]
+        );
+    };
+
+    const buildRecurrence = (): Recurrence | undefined => {
+        if (!isRecurring) return undefined;
+        const rec: Recurrence = {
+            frequency: recFrequency,
+            interval: recInterval > 1 ? recInterval : undefined,
+        };
+        if (recFrequency === 'WEEKLY' && recByDay.length > 0) {
+            rec.byDay = recByDay;
+        }
+        if (recEndMode === 'count' && recCount > 0) {
+            rec.count = recCount;
+        } else if (recEndMode === 'date' && recUntil) {
+            rec.until = new Date(recUntil + 'T23:59:59').toISOString();
+        }
+        return rec;
+    };
 
     const cancelEdit = () => {
         setIsEditing(false);
@@ -139,11 +202,13 @@ const EventDetailModal: React.FC<EventDetailModalProps> = ({ event, isOpen, onCl
                 type: editTypeId,
                 serverName: editServerName,
                 participatingUnits: editUnitIds,
+                recurrence: isDiscord ? undefined : buildRecurrence(),
             });
             setIsEditing(false);
             onEventUpdated?.();
-        } catch (err) {
+        } catch (err: any) {
             console.error('Failed to update event', err);
+            setError(err?.response?.data?.message || t('events.create.error'));
         } finally {
             setIsSaving(false);
         }
@@ -155,6 +220,26 @@ const EventDetailModal: React.FC<EventDetailModalProps> = ({ event, isOpen, onCl
         } else {
             handleSave('SINGLE');
         }
+    };
+
+    const handleDelete = async (mode: UpdateMode) => {
+        if (!event) return;
+        setIsDeleting(true);
+        try {
+            await calendarApi.deleteEvent(event.id, mode, event.start);
+            setShowDeleteDropdown(false);
+            onClose();
+            onEventUpdated?.();
+        } catch (err: any) {
+            console.error('Failed to delete event', err);
+            setError(err?.response?.data?.message || t('events.create.error'));
+        } finally {
+            setIsDeleting(false);
+        }
+    };
+
+    const onDeleteClick = () => {
+        setShowDeleteDropdown(prev => !prev);
     };
 
     const toggleUnit = (id: number) => {
@@ -190,6 +275,24 @@ const EventDetailModal: React.FC<EventDetailModalProps> = ({ event, isOpen, onCl
                 )}
                 {canEdit && isEditing && (
                     <EditBookmarkButton isActive={true} onClick={cancelEdit} className="top-[-3.5rem]" />
+                )}
+
+                {/* Delete Bookmark Button */}
+                {canEdit && !isEditing && event?.source !== 'DISCORD' && (
+                    <DeleteBookmarkButton 
+                        isActive={showDeleteDropdown} 
+                        onClick={!isDeleting ? onDeleteClick : () => {}} 
+                        className="top-[-0.5rem]" 
+                    />
+                )}
+
+                {/* Mode dropdowns */}
+                {showDeleteDropdown && (
+                    <DeleteModeDropdown
+                        onSelect={handleDelete}
+                        onCancel={() => setShowDeleteDropdown(false)}
+                        isRecurring={!!event?.recurring}
+                    />
                 )}
 
                 {/* Type badge and Units */}
@@ -353,6 +456,150 @@ const EventDetailModal: React.FC<EventDetailModalProps> = ({ event, isOpen, onCl
                                 onChange={(e) => setEditServerName(e.target.value)}
                                 placeholder={t('events.edit.server_placeholder')}
                             />
+                        </div>
+
+                        {/* Recurrence */}
+                        <div className={`p-4 bg-nr-bg/30 rounded-xl border border-nr-border/60 ${isDiscord ? lockedClass : ''}`}>
+                            <div className="flex items-center justify-between mb-3">
+                                <div className="flex items-center gap-2">
+                                    <div className={`p-1.5 rounded-lg transition-colors ${isRecurring ? 'bg-blue-500/20 text-blue-400' : 'bg-nr-bg text-nr-text/30'}`}>
+                                        <Repeat size={14} />
+                                    </div>
+                                    <span className="text-xs font-bold text-nr-text/70 uppercase">
+                                        {t('events.create.recurring')}
+                                    </span>
+                                </div>
+                                <button
+                                    onClick={() => setIsRecurring(!isRecurring)}
+                                    className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none 
+                                        ${isRecurring ? 'bg-blue-500' : 'bg-nr-border/40'}`}
+                                    disabled={isDiscord}
+                                >
+                                    <span className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out 
+                                        ${isRecurring ? 'translate-x-4' : 'translate-x-0'}`} />
+                                </button>
+                            </div>
+
+                            {isRecurring && (
+                                <div className="space-y-4 animate-fade-in">
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <div>
+                                            <label className="text-[10px] font-bold text-nr-text/40 uppercase mb-1 block">
+                                                {t('events.create.recurrence.frequency')}
+                                            </label>
+                                            <div className="relative">
+                                                <select
+                                                    className={`${inputClass} appearance-none pr-8 cursor-pointer text-xs`}
+                                                    value={recFrequency}
+                                                    onChange={(e) => setRecFrequency(e.target.value as RecurrenceFrequency)}
+                                                    disabled={isDiscord}
+                                                >
+                                                    <option value="DAILY">{t('events.create.recurrence.daily')}</option>
+                                                    <option value="WEEKLY">{t('events.create.recurrence.weekly')}</option>
+                                                    <option value="MONTHLY">{t('events.create.recurrence.monthly')}</option>
+                                                </select>
+                                                <ChevronDown size={12} className="absolute right-3 top-1/2 -translate-y-1/2 text-nr-text/40 pointer-events-none" />
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label className="text-[10px] font-bold text-nr-text/40 uppercase mb-1 block">
+                                                {t('events.create.recurrence.interval')}
+                                            </label>
+                                            <div className="flex items-center gap-2">
+                                                <input
+                                                    type="number"
+                                                    min={1}
+                                                    max={99}
+                                                    className={`${inputClass} text-xs w-16 text-center`}
+                                                    value={recInterval}
+                                                    onChange={(e) => setRecInterval(Math.max(1, parseInt(e.target.value) || 1))}
+                                                    disabled={isDiscord}
+                                                />
+                                                <span className="text-xs text-nr-text/50">
+                                                    {t(`events.create.recurrence.interval_suffix_${recFrequency.toLowerCase()}`)}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {recFrequency === 'WEEKLY' && (
+                                        <div>
+                                            <label className="text-[10px] font-bold text-nr-text/40 uppercase mb-1.5 block">
+                                                {t('events.create.recurrence.on_days')}
+                                            </label>
+                                            <div className="flex gap-1">
+                                                {ALL_DAYS.map((day) => {
+                                                    const isActive = recByDay.includes(day);
+                                                    return (
+                                                        <button
+                                                            key={day}
+                                                            onClick={() => toggleDay(day)}
+                                                            className={`flex-1 py-1.5 rounded-md text-[10px] font-bold uppercase transition-all cursor-pointer border
+                                                                ${isActive
+                                                                    ? 'bg-blue-500/20 text-blue-400 border-blue-500/40'
+                                                                    : 'bg-nr-bg text-nr-text/40 border-nr-border hover:text-nr-text/60 hover:border-nr-text/30'
+                                                                }`}
+                                                            disabled={isDiscord}
+                                                        >
+                                                            {t(`days.${day}`)}
+                                                        </button>
+                                                    );
+                                                })}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    <div>
+                                        <label className="text-[10px] font-bold text-nr-text/40 uppercase mb-1.5 block">
+                                            {t('events.create.recurrence.ends')}
+                                        </label>
+                                        <div className="flex gap-2">
+                                            {(['none', 'count', 'date'] as EndMode[]).map((mode) => (
+                                                <button
+                                                    key={mode}
+                                                    onClick={() => setRecEndMode(mode)}
+                                                    className={`px-3 py-1.5 rounded-md text-xs font-medium border transition-colors cursor-pointer
+                                                        ${recEndMode === mode
+                                                            ? 'bg-blue-500/20 text-blue-400 border-blue-500/40'
+                                                            : 'bg-nr-bg text-nr-text/50 border-nr-border hover:border-nr-text/30'
+                                                        }`}
+                                                    disabled={isDiscord}
+                                                >
+                                                    {t(`events.create.recurrence.ends_${mode}`)}
+                                                </button>
+                                            ))}
+                                        </div>
+                                        {recEndMode !== 'none' && (
+                                            <div className="mt-2">
+                                                {recEndMode === 'count' ? (
+                                                    <input
+                                                        type="number"
+                                                        min={1}
+                                                        max={365}
+                                                        className={`${inputClass} text-xs w-24`}
+                                                        value={recCount}
+                                                        onChange={(e) => setRecCount(Math.max(1, parseInt(e.target.value) || 1))}
+                                                        disabled={isDiscord}
+                                                    />
+                                                ) : (
+                                                    <input
+                                                        type="date"
+                                                        className={`${inputClass} text-xs`}
+                                                        value={recUntil}
+                                                        onChange={(e) => setRecUntil(e.target.value)}
+                                                        disabled={isDiscord}
+                                                    />
+                                                )}
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+                            {isDiscord && (
+                                <p className="text-[10px] text-purple-400/70 mt-2 flex items-center gap-1">
+                                    <Lock size={8} /> {t('events.edit.discord_readonly')}
+                                </p>
+                            )}
                         </div>
 
                         {/* Event Type */}
