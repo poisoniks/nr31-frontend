@@ -15,33 +15,31 @@ This project serves as the central hub for soldiers, officers, and recruits, pro
 ## 📋 Features
 
 ### 🌍 Public Access
-- **Home Page:** News feed, event announcements, Discord & YouTube integration.
-- **Roster:** Interactive regiment structure tree, soldier cards, service history, and medals.
-- **Calendar:** Schedule for trainings, linebattles, and meetings.
-- **Library:** Guides, regiment statutes, and resource downloads.
-- **Localization:** Full support for Ukrainian (UA) and English (EN).
+- **Regiment Roster:** Interactive structure tree with service history and member statistics.
+- **Calendar:** Real-time schedule for trainings, linebattles, and community events.
+- **Library:** Repository of tactical guides, regiment statutes, and training materials.
 - **Theming:** Dark (Default) and Light themes.
+- **Localization:** Comprehensive support for Ukrainian (UA) and English (EN) languages.
 
-### 🔒 Restricted Access (Members Only)
-- **Authentication:** JWT (Access + Refresh tokens).
-- **Profile:** Linking in-game character to the user account.
-- **Admin Dashboard:**
-  - Roster management (Promotions, discharges).
-  - CMS for news and events.
-  - Role-Based Access Control (RBAC).
+### 🔒 Member & Administrative Access
+- **Authentication:** Secure JWT-based session management with automated token refreshing.
+- **Event Orchestration:** Full lifecycle management (CRUD) for calendar events, including complex recurrence rule configurations.
+- **Personnel Management:** Administrative tools for promotions, recruitment, and service record updates.
+- **Security:** Granular Role-Based Access Control (RBAC) protecting administrative interfaces.
 
 ---
 
 ## 🛠 Tech Stack
 
-- **Core:** [React 18](https://react.dev/), [Vite](https://vitejs.dev/)
-- **Styling:** [Tailwind CSS](https://tailwindcss.com/), [shadcn/ui](https://ui.shadcn.com/)
-- **State Management:** [Zustand](https://github.com/pmndrs/zustand) (Auth), React Context (Theme)
-- **Routing:** React Router v6
-- **Forms:** React Hook Form + Zod (Validation)
-- **Networking:** Axios (with JWT interceptors)
-- **Internationalization:** i18next
-- **Visuals:** Lucide React (Icons), Framer Motion (Animations)
+- **Framework:** [React 19](https://react.dev/)
+- **Build System:** [Vite 7](https://vite.dev/)
+- **Styling:** [Tailwind CSS 4](https://tailwindcss.com/) (Vite-integrated CSS-first architecture)
+- **Navigation:** [React Router 7](https://reactrouter.com/)
+- **State Management:** [Zustand 5](https://github.com/pmndrs/zustand)
+- **Type Integration:** [openapi-typescript](https://github.com/drwpow/openapi-typescript) (Automated frontend types from Backend OpenAPI specs)
+- **Networking:** Axios (configured with JWT interceptors)
+- **Internationalization:** i18next (with browser detection and async backend loading)
+- **Iconography:** Lucide React
 
 ---
 
@@ -49,50 +47,36 @@ This project serves as the central hub for soldiers, officers, and recruits, pro
 
 ### Prerequisites
 - Node.js (v18 or newer)
-- npm or yarn
+- npm
 
-### 1. Clone the repository
+### 1. Installation
 ```bash
-git clone [https://github.com/your-username/Nr.31 FKR-frontend.git](https://github.com/your-username/Nr.31 FKR-frontend.git)
-cd Nr.31 FKR-frontend
-
-```
-
-### 2. Install dependencies
-
-```bash
+git clone https://github.com/poisoniks/nr31-frontend.git
+cd nr31-frontend
 npm install
-# or
-yarn install
-
 ```
 
-### 3. Environment Configuration
+### 2. Environment Setup
+Create a `.env` file in the root directory:
+```env
+VITE_API_BASE_URL=http://localhost:8080
+```
 
-TODO
-
-### 4. Run Development Server
-
+### 3. Development
 ```bash
 npm run dev
-
 ```
-
-Open your browser at `http://localhost:5173`.
+The application will be served at `http://localhost:5173`.
 
 ---
 
-## 🐳 Docker Deployment
+## 🐳 Deployment
 
-To build and run the production version in a container:
+Containerized production builds are supported:
 
 ```bash
-# Build the image
-docker build -t Nr.31 FKR-frontend .
-
-# Run the container
-docker run -p 80:80 -d Nr.31 FKR-frontend
-
+docker build -t nr31-frontend .
+docker run -p 80:80 -d nr31-frontend
 ```
 
 ---
@@ -111,16 +95,10 @@ This project is **Open Source**. Contributions are welcome!
 
 ## ⚖️ License & Copyright
 
-### 💻 Code
+- **Software:** Distributed under the **MIT License**.
+- **Branding:** "Nr.31 FKR Regiment" name, logos, and specific regiment assets are the properties of the Nr.31 FKR Regiment Community.
 
-The source code of this project is distributed under the **MIT License**. You are free to use, modify, and distribute it.
-
-### 🎨 Content & Brand
-
-The name "Nr.31 FKR Regiment", the regiment logo, historical descriptions, and graphic assets are the property of the Nr.31 FKR Community.
 **© 2026 Nr.31 FKR Regiment.**
-
-If you fork this project for your own use, please replace the name, logo, and content with your own.
 
 ---
 
