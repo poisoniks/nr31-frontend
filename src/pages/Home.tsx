@@ -6,7 +6,9 @@ import { useTranslation, Trans } from 'react-i18next';
 import DiscordWidget from '../components/ui/DiscordWidget';
 import YoutubeWidget from '../components/ui/YoutubeWidget';
 import { calendarApi } from '../api/calendarApi';
-import type { CalendarEventDTO } from '../types/calendar';
+import type { components } from '../api/types';
+
+type CalendarEventDTO = components['schemas']['CalendarEventDTO'];
 import EventDetailModal from '../components/events/EventDetailModal';
 
 const Home: React.FC = () => {
@@ -28,7 +30,7 @@ const Home: React.FC = () => {
         const updateCountdown = () => {
             const now = new Date().getTime();
             const start = new Date(nearestEvent.start).getTime();
-            const end = nearestEvent.end ? new Date(nearestEvent.end).getTime() : start + 90 * 60 * 1000;
+            const end = new Date(nearestEvent.end).getTime();
 
             if (now >= start && now <= end) {
                 setTimeRemaining({ days: 0, hours: 0, minutes: 0, inProgress: true });

@@ -1,5 +1,11 @@
 import api from './axiosConfig';
-import type { CalendarEventDTO, UpdateEventRequest, CreateEventRequest, EventType, UnitType } from '../types/calendar';
+import type { components } from './types';
+
+type CalendarEventDTO = components['schemas']['CalendarEventDTO'];
+type UpdateEventRequest = components['schemas']['UpdateEventRequest'];
+type CreateEventRequest = components['schemas']['CreateEventRequest'];
+type EventType = components['schemas']['EventTypeDTO'];
+type UnitType = components['schemas']['UnitTypeDTO'];
 
 export const calendarApi = {
     getEvents: async (from: string, to: string, timezone?: string): Promise<CalendarEventDTO[]> => {

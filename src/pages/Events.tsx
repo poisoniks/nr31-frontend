@@ -4,7 +4,9 @@ import Button from '../components/ui/Button';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
 import { calendarApi } from '../api/calendarApi';
-import type { CalendarEventDTO } from '../types/calendar';
+import type { components } from '../api/types';
+
+type CalendarEventDTO = components['schemas']['CalendarEventDTO'];
 import EventDetailModal from '../components/events/EventDetailModal';
 import EventCreateModal from '../components/events/EventCreateModal';
 import { DateFormatter } from '../utils/dateFormatter';

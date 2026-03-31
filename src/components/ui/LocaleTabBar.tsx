@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { localeApi } from '../../api/localeApi';
-import type { SupportedLocaleDTO } from '../../types/locale';
+import type { components } from '../../api/types';
+
+type SupportedLocaleDTO = components['schemas']['SupportedLocaleDTO'];
 
 interface LocaleTabBarProps {
     activeLocale: string;

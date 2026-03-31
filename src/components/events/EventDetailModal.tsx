@@ -8,7 +8,13 @@ import LocaleTabBar from '../ui/LocaleTabBar';
 import SaveModeDropdown from './SaveModeDropdown';
 import DeleteModeDropdown from './DeleteModeDropdown';
 import Button from '../ui/Button';
-import type { CalendarEventDTO, EventType, UnitType, UpdateMode, Recurrence } from '../../types/calendar';
+import type { components } from '../../api/types';
+
+type CalendarEventDTO = components['schemas']['CalendarEventDTO'];
+type EventType = components['schemas']['EventTypeDTO'];
+type UnitType = components['schemas']['UnitTypeDTO'];
+type Recurrence = components['schemas']['Recurrence'];
+type UpdateMode = components['schemas']['UpdateEventRequest']['mode'];
 import { DateFormatter } from '../../utils/dateFormatter';
 import { calendarApi } from '../../api/calendarApi';
 import { localeApi } from '../../api/localeApi';
@@ -104,12 +110,12 @@ const EventDetailModal: React.FC<EventDetailModalProps> = ({ event, isOpen, onCl
     const enterEditMode = useCallback(() => {
         if (!event) return;
         setEditTitle({ ...event.title });
-        setEditDescription({ ...(event.description || {}) });
-        setEditStart(event.start ? toLocalDatetime(event.start) : '');
-        setEditEnd(event.end ? toLocalDatetime(event.end) : '');
-        setEditServerName(event.serverName || '');
-        setEditTypeId(event.type?.id || 0);
-        setEditUnitIds(event.participatingUnits?.map((u) => u.id) || []);
+        setEditDescription({ ...event.description });
+        setEditStart(toLocalDatetime(event.start));
+        setEditEnd(toLocalDatetime(event.end));
+        setEditServerName(event.serverName);
+        setEditTypeId(event.type.id);
+        setEditUnitIds(event.participatingUnits.map((u) => u.id));
         setTitleLocale(lang);
         setDescLocale(lang);
         setTitleError(false);
@@ -125,7 +131,7 @@ const EventDetailModal: React.FC<EventDetailModalProps> = ({ event, isOpen, onCl
         setRecByDay([]);
         setRecEndMode('count');
         setRecCount(10);
-        const untilDefault = new Date(event.start);
+        const untilDefault = new Date(event.start || new Date().toISOString());
         untilDefault.setMonth(untilDefault.getMonth() + 3);
         setRecUntil(toLocalDate(untilDefault.toISOString()));
     }, [event, lang]);
@@ -252,11 +258,11 @@ const EventDetailModal: React.FC<EventDetailModalProps> = ({ event, isOpen, onCl
 
     const titleText = localized(event.title, lang);
     const description = localized(event.description, lang);
-    const typeName = localized(event.type?.name, lang);
+    const typeName = localized(event.type.name, lang);
 
     const modalTitle = (
         <>
-            {event.type?.customIcon && (
+            {event.type.customIcon && (
                 <img src={event.type.customIcon} alt="" className="w-6 h-6 object-contain shrink-0" />
             )}
             <span>{titleText}</span>
@@ -309,7 +315,7 @@ const EventDetailModal: React.FC<EventDetailModalProps> = ({ event, isOpen, onCl
                         </span>
                     )}
 
-                    {event.participatingUnits && event.participatingUnits.length > 0 && !isEditing && (
+                    {event.participatingUnits.length > 0 && !isEditing && (
                         <div className="ml-1 flex items-center -space-x-1">
                             {event.participatingUnits.map((u) => {
                                 const unitName = localized(u.name, lang);
@@ -347,7 +353,7 @@ const EventDetailModal: React.FC<EventDetailModalProps> = ({ event, isOpen, onCl
                                     <p className="font-bold text-sm truncate">{DateFormatter.formatDate(event.start, lang)}</p>
                                     <p className="text-xs text-nr-text/70">
                                         {DateFormatter.formatTime(event.start, lang)}
-                                        {event.end && ` – ${DateFormatter.formatTime(event.end, lang)}`}
+                                        {` – ${DateFormatter.formatTime(event.end, lang)}`}
                                     </p>
                                 </div>
                             </div>

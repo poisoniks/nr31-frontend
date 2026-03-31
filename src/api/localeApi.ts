@@ -1,5 +1,7 @@
 import axios from './axiosConfig';
-import type { SupportedLocaleDTO } from '../types/locale';
+import type { components } from './types';
+
+type SupportedLocaleDTO = components['schemas']['SupportedLocaleDTO'];
 
 let cachedLocales: SupportedLocaleDTO[] | null = null;
 let fetchPromise: Promise<SupportedLocaleDTO[]> | null = null;

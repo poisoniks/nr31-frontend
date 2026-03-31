@@ -4,7 +4,11 @@ import { ChevronDown, Repeat } from 'lucide-react';
 import Modal from '../ui/Modal';
 import LocaleTabBar from '../ui/LocaleTabBar';
 import Button from '../ui/Button';
-import type { EventType, UnitType, Recurrence } from '../../types/calendar';
+import type { components } from '../../api/types';
+
+type EventType = components['schemas']['EventTypeDTO'];
+type UnitType = components['schemas']['UnitTypeDTO'];
+type Recurrence = components['schemas']['Recurrence'];
 import { calendarApi } from '../../api/calendarApi';
 import { localeApi } from '../../api/localeApi';
 

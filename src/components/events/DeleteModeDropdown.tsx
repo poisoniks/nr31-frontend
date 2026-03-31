@@ -1,6 +1,8 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import type { UpdateMode } from '../../types/calendar';
+import type { components } from '../../api/types';
+
+type UpdateMode = components['schemas']['UpdateEventRequest']['mode'];
 
 interface DeleteModeDropdownProps {
     onSelect: (mode: UpdateMode) => void;
