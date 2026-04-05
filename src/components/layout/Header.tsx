@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Menu, Globe, Moon, Sun, LogIn, User } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { Menu, Globe, Moon, Sun, LogIn, User, LogOut } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import { useTheme } from '../ThemeProvider';
@@ -12,12 +12,25 @@ import { localeApi } from '../../api/localeApi';
 const Header: React.FC = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [isLoginOpen, setIsLoginOpen] = useState(false);
+    const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
+    const profileDropdownRef = useRef<HTMLDivElement>(null);
     const location = useLocation();
     const { theme, toggleTheme } = useTheme();
     const { t, i18n } = useTranslation();
     const user = useAuthStore(state => state.user);
     const isAuthenticated = useAuthStore(state => state.isAuthenticated);
+    const logout = useAuthStore(state => state.logout);
     const hasAdminPermission = user?.authorities?.includes('admin:view') ?? false;
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (profileDropdownRef.current && !profileDropdownRef.current.contains(event.target as Node)) {
+                setIsProfileDropdownOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
 
     const navLinks = [
         { name: t('header.home'), path: '/' },
@@ -97,9 +110,47 @@ const Header: React.FC = () => {
                         </button>
 
                         {isAuthenticated ? (
-                            <Button variant="ghost" size="icon" className="border border-nr-border text-nr-text/80" aria-label="Profile">
-                                <User size={20} />
-                            </Button>
+                            <div className="relative" ref={profileDropdownRef}>
+                                <Button 
+                                    variant="ghost" 
+                                    size="icon" 
+                                    className="border border-nr-border text-nr-text/80" 
+                                    aria-label="Profile"
+                                    onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
+                                >
+                                    <User size={20} />
+                                </Button>
+                                
+                                {isProfileDropdownOpen && (
+                                    <div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg glass border border-nr-border py-1 z-50">
+                                        <div className="px-4 py-2 border-b border-nr-border">
+                                            <p className="text-sm font-medium text-nr-text truncate">{user?.sub || 'User'}</p>
+                                        </div>
+                                        <Link 
+                                            to="/profile" 
+                                            className="block px-4 py-2 text-sm text-nr-text/80 hover:bg-black/5 dark:hover:bg-white/10 hover:text-nr-text transition-colors"
+                                            onClick={() => setIsProfileDropdownOpen(false)}
+                                        >
+                                            <div className="flex items-center gap-2">
+                                                <User size={16} />
+                                                <span>{t('header.my_profile')}</span>
+                                            </div>
+                                        </Link>
+                                        <button
+                                            onClick={() => {
+                                                logout();
+                                                setIsProfileDropdownOpen(false);
+                                            }}
+                                            className="w-full text-left block px-4 py-2 text-sm text-red-500 hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+                                        >
+                                            <div className="flex items-center gap-2">
+                                                <LogOut size={16} />
+                                                <span>{t('header.logout')}</span>
+                                            </div>
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
                         ) : (
                             <Button
                                 variant="ghost"

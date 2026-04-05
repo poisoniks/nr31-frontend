@@ -193,5 +193,10 @@
     "events.delete.mode.all.title": "All Events",
     "events.delete.mode.all.desc": "All events in the series will be cancelled",
     "events.delete.mode.future.title": "Future Events",
-    "events.delete.mode.future.desc": "All future events in the series will be removed"
+    "events.delete.mode.future.desc": "All future events in the series will be removed",
+    "common.access_denied": "Access Denied",
+    "common.access_denied_desc": "You do not have the necessary permissions to view this page. If you believe this is an error, please contact your unit commander.",
+    "common.go_back": "Go Back",
+    "header.my_profile": "My Profile",
+    "header.logout": "Log Out"
 }

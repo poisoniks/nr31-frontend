@@ -7,6 +7,8 @@ import Home from './pages/Home';
 import Roster from './pages/Roster';
 import Events from './pages/Events';
 import Admin from './pages/Admin';
+import Profile from './pages/Profile';
+import AccessDenied from './pages/AccessDenied';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { RequirePermission } from './components/auth/RequirePermission';
 import { useTranslation } from 'react-i18next';
@@ -42,9 +44,17 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/roster" element={<Roster />} />
             <Route path="/events" element={<Events />} />
+            <Route path="/profile" element={
+              <ProtectedRoute>
+                <Profile />
+              </ProtectedRoute>
+            } />
             <Route path="/admin" element={
               <ProtectedRoute>
-                <RequirePermission permission="admin:view" fallback={<div className="p-8 text-center text-nr-text">Access Denied</div>}>
+                <RequirePermission 
+                  permission="admin:view" 
+                  fallback={<AccessDenied />}
+                >
                   <Admin />
                 </RequirePermission>
               </ProtectedRoute>

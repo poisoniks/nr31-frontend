@@ -193,5 +193,10 @@
     "events.delete.mode.all.title": "Всі події",
     "events.delete.mode.all.desc": "Будуть видалені всі події в серії",
     "events.delete.mode.future.title": "Майбутні події",
-    "events.delete.mode.future.desc": "Всі наступні події в серії буде видалено"
+    "events.delete.mode.future.desc": "Всі наступні події в серії буде видалено",
+    "common.access_denied": "Доступ заборонено",
+    "common.access_denied_desc": "У Вас немає необхідних дозволів для доступу до цієї сторінки. Якщо Ви вважаєте, що це помилка, будь ласка, зверніться до командира підрозділу.",
+    "common.go_back": "Повернутися назад",
+    "header.my_profile": "Мій профіль",
+    "header.logout": "Вийти"
 }
