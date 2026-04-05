@@ -332,7 +332,7 @@ const LogsPage: React.FC = () => {
                             id="log-file-selector"
                             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                             disabled={isLoadingList}
-                            className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium bg-black/20 border border-nr-border/30 text-nr-text hover:bg-black/30 transition-colors min-w-[200px] justify-between"
+                            className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium bg-black/20 border border-nr-border/30 text-nr-text hover:bg-black/30 transition-colors min-w-[200px] justify-between cursor-pointer disabled:cursor-not-allowed"
                         >
                             <span className="truncate">
                                 {isLoadingList
@@ -353,7 +353,7 @@ const LogsPage: React.FC = () => {
                                     <button
                                         key={file}
                                         onClick={() => { setSelectedFile(file); setIsDropdownOpen(false); }}
-                                        className={`w-full text-left px-3 py-2 text-sm transition-colors truncate ${file === selectedFile
+                                        className={`w-full text-left px-3 py-2 text-sm transition-colors truncate cursor-pointer ${file === selectedFile
                                                 ? 'bg-nr-accent/15 text-nr-accent'
                                                 : 'text-nr-text/80 hover:bg-black/10 dark:hover:bg-white/5'
                                             }`}
@@ -392,7 +392,7 @@ const LogsPage: React.FC = () => {
                         <button
                             onClick={goToPreviousMatch}
                             disabled={highlightedMatches.length === 0}
-                            className="p-1.5 rounded text-nr-text/50 hover:text-nr-text hover:bg-black/20 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                            className="p-1.5 rounded text-nr-text/50 hover:text-nr-text hover:bg-black/20 disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer"
                             title={t('admin.logs.previous_match')}
                         >
                             <ArrowUp size={14} />
@@ -400,7 +400,7 @@ const LogsPage: React.FC = () => {
                         <button
                             onClick={goToNextMatch}
                             disabled={highlightedMatches.length === 0}
-                            className="p-1.5 rounded text-nr-text/50 hover:text-nr-text hover:bg-black/20 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                            className="p-1.5 rounded text-nr-text/50 hover:text-nr-text hover:bg-black/20 disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer"
                             title={t('admin.logs.next_match')}
                         >
                             <ArrowDown size={14} />
@@ -412,7 +412,7 @@ const LogsPage: React.FC = () => {
                         <button
                             id="log-auto-scroll-toggle"
                             onClick={() => setAutoScroll((v) => !v)}
-                            className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-colors ${autoScroll
+                            className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-colors cursor-pointer ${autoScroll
                                     ? 'bg-nr-accent/15 text-nr-accent border border-nr-accent/25'
                                     : 'bg-black/20 border border-nr-border/30 text-nr-text/60 hover:text-nr-text hover:bg-black/30'
                                 }`}
@@ -425,7 +425,7 @@ const LogsPage: React.FC = () => {
                             id="log-refresh-button"
                             onClick={handleRefresh}
                             disabled={!selectedFile || isLoadingContent}
-                            className="p-2 rounded-lg text-nr-text/60 hover:text-nr-text hover:bg-black/20 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                            className="p-2 rounded-lg text-nr-text/60 hover:text-nr-text hover:bg-black/20 disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer"
                             title={t('admin.logs.refresh')}
                         >
                             <RefreshCw size={16} className={isLoadingContent ? 'animate-spin' : ''} />
@@ -435,7 +435,7 @@ const LogsPage: React.FC = () => {
                             id="log-download-button"
                             onClick={handleDownload}
                             disabled={!selectedFile || isDownloading}
-                            className="p-2 rounded-lg text-nr-text/60 hover:text-nr-text hover:bg-black/20 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                            className="p-2 rounded-lg text-nr-text/60 hover:text-nr-text hover:bg-black/20 disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer"
                             title={t('admin.logs.download')}
                         >
                             {isDownloading
