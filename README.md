@@ -68,6 +68,11 @@ npm run dev
 ```
 The application will be served at `http://localhost:5173`.
 
+### 4. Generating types
+```bash
+npx openapi-typescript http://localhost:8080/v3/api-docs -o src/api/types.ts
+```
+
 ---
 
 ## 🐳 Deployment
