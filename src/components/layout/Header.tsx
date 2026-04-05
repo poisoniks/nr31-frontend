@@ -105,7 +105,7 @@ const Header: React.FC = () => {
                             <Globe size={16} />
                         </div>
 
-                        <button onClick={toggleTheme} className="p-2 hover:bg-black/10 dark:hover:bg-white/10 rounded-full transition text-nr-accent" aria-label="Toggle Theme">
+                        <button onClick={toggleTheme} className="p-2 hover:bg-black/10 dark:hover:bg-white/10 rounded-full transition text-nr-accent cursor-pointer" aria-label="Toggle Theme">
                             {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
                         </button>
 
@@ -141,7 +141,7 @@ const Header: React.FC = () => {
                                                 logout();
                                                 setIsProfileDropdownOpen(false);
                                             }}
-                                            className="w-full text-left block px-4 py-2 text-sm text-red-500 hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+                                            className="w-full text-left block px-4 py-2 text-sm text-red-500 hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer"
                                         >
                                             <div className="flex items-center gap-2">
                                                 <LogOut size={16} />
