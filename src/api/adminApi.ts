@@ -1,0 +1,34 @@
+import api from './axiosConfig';
+import type { components, paths } from './types';
+
+type LogFilesListResponse = components['schemas']['LogFilesListResponse'];
+type LogFileContent = paths['/api/v1/admin/logs/{fileName}']['get']['responses']['200']['content']['*/*'];
+type LogFileQueryParams = paths['/api/v1/admin/logs/{fileName}']['get']['parameters']['query'];
+
+export const adminApi = {
+    clearCache: async (): Promise<paths['/api/v1/admin/cache/clear']['post']['responses']['204']['content'] extends { 'application/json': infer T } ? T : void> => {
+        await api.post('/v1/admin/cache/clear');
+    },
+
+    listLogFiles: async (): Promise<LogFilesListResponse> => {
+        const response = await api.get<LogFilesListResponse>('/v1/admin/logs/list');
+        return response.data;
+    },
+
+    getLogFile: async (fileName: string, params?: LogFileQueryParams): Promise<LogFileContent> => {
+        const response = await api.get<LogFileContent>(`/v1/admin/logs/${encodeURIComponent(fileName)}`, {
+            responseType: 'text',
+            transformResponse: [(data: string) => data],
+            params,
+        });
+        return response.data;
+    },
+
+    downloadLogFile: async (fileName: string): Promise<LogFileContent> => {
+        const response = await api.get<LogFileContent>(`/v1/admin/logs/${encodeURIComponent(fileName)}`, {
+            responseType: 'text',
+            transformResponse: [(data: string) => data],
+        });
+        return response.data;
+    },
+};

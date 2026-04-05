@@ -1,9 +1,11 @@
 import React, { useState, useMemo } from 'react';
-import { LayoutDashboard, Globe } from 'lucide-react';
+import { LayoutDashboard, Globe, Database, ScrollText } from 'lucide-react';
 import AdminSidebar from '../components/admin/AdminSidebar';
 import type { AdminPageNode } from '../components/admin/AdminSidebar';
 import { useAuthStore } from '../store/useAuthStore';
 import OverviewPage from './admin/OverviewPage';
+import CacheResetPage from './admin/CacheResetPage';
+import LogsPage from './admin/LogsPage';
 
 const findPageComponent = (nodes: AdminPageNode[], pageId: string): React.ComponentType | undefined => {
     for (const node of nodes) {
@@ -45,6 +47,19 @@ const Admin: React.FC = () => {
                     labelKey: 'admin.sidebar.overview',
                     icon: <LayoutDashboard size={16} />,
                     component: OverviewPage,
+                },
+                {
+                    id: 'cache',
+                    labelKey: 'admin.sidebar.cache',
+                    icon: <Database size={16} />,
+                    component: CacheResetPage,
+                },
+                {
+                    id: 'logs',
+                    labelKey: 'admin.sidebar.logs',
+                    icon: <ScrollText size={16} />,
+                    permission: 'logs:read',
+                    component: LogsPage,
                 },
             ],
         },
