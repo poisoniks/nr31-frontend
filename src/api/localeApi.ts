@@ -1,18 +1,19 @@
-import axios from './axiosConfig';
-import type { components } from './types';
+import api from './axiosConfig';
+import type { paths } from './types';
 
-type SupportedLocaleDTO = components['schemas']['SupportedLocaleDTO'];
+type GetSupportedLocalesPath = paths['/api/v1/public/locales']['get'];
+type GetSupportedLocalesResponse = GetSupportedLocalesPath['responses']['200']['content']['application/json'];
 
-let cachedLocales: SupportedLocaleDTO[] | null = null;
-let fetchPromise: Promise<SupportedLocaleDTO[]> | null = null;
+let cachedLocales: GetSupportedLocalesResponse | null = null;
+let fetchPromise: Promise<GetSupportedLocalesResponse> | null = null;
 
 export const localeApi = {
-    getSupportedLocales: async (): Promise<SupportedLocaleDTO[]> => {
+    getSupportedLocales: async (): Promise<GetSupportedLocalesResponse> => {
         if (cachedLocales) return cachedLocales;
         if (!fetchPromise) {
-            fetchPromise = axios.get('/v1/public/locales').then((response) => {
+            fetchPromise = api.get<GetSupportedLocalesResponse>('/v1/public/locales').then((response) => {
                 cachedLocales = response.data;
-                return cachedLocales as SupportedLocaleDTO[];
+                return cachedLocales;
             }).finally(() => {
                 fetchPromise = null;
             });
