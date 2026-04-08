@@ -112,6 +112,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/admin/permissions/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Update permission description
+         * @description Updates localized description of a permission
+         */
+        put: operations["updatePermission"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/admin/config/{name}": {
         parameters: {
             query?: never;
@@ -288,6 +308,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/admin/users/{userId}/roles/{roleId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Assign role to user
+         * @description Assigns a specific role to a user
+         */
+        post: operations["assignRoleToUser"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/admin/roles": {
         parameters: {
             query?: never;
@@ -444,6 +484,26 @@ export interface paths {
          * @description Retrieves the nearest calendar event to a provided datetime
          */
         get: operations["getNearestEvent"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/permissions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get all permissions
+         * @description Retrieves a list of all application permissions
+         */
+        get: operations["getAllPermissions"];
         put?: never;
         post?: never;
         delete?: never;
@@ -857,6 +917,16 @@ export interface components {
              * @example ROLE_NEW
              */
             name: string;
+            /**
+             * @description Localized name of the role
+             * @example {
+             *       "en": "Admin",
+             *       "uk": "Адміністратор"
+             *     }
+             */
+            localizedName?: {
+                [key: string]: string;
+            };
         };
         /** @description DTO representing an user role */
         RoleDTO: {
@@ -871,6 +941,53 @@ export interface components {
              * @example ROLE_ADMIN
              */
             name: string;
+            /**
+             * @description Localized name of the role
+             * @example {
+             *       "en": "Admin",
+             *       "uk": "Адміністратор"
+             *     }
+             */
+            localizedName?: {
+                [key: string]: string;
+            };
+        };
+        /** @description Request object for updating a permission's description */
+        PermissionUpdateRequest: {
+            /**
+             * @description Localized description of the permission
+             * @example {
+             *       "en": "Manages roles",
+             *       "uk": "Керує ролями"
+             *     }
+             */
+            description?: {
+                [key: string]: string;
+            };
+        };
+        /** @description DTO representing an application permission */
+        PermissionDTO: {
+            /**
+             * Format: int64
+             * @description Unique identifier of the permission
+             * @example 1
+             */
+            id: number;
+            /**
+             * @description Permission identifier name
+             * @example access:manage
+             */
+            name: string;
+            /**
+             * @description Detailed description of what this permission allows
+             * @example {
+             *       "en": "Allows managing user roles and permissions",
+             *       "uk": "Дозволяє керувати ролями користувачів і дозволами"
+             *     }
+             */
+            description?: {
+                [key: string]: string;
+            };
         };
         /** @description DTO for application configuration */
         AppConfigDto: {
@@ -1008,6 +1125,35 @@ export interface components {
              */
             password: string;
         };
+        Pageable: {
+            /** Format: int32 */
+            page: number;
+            /** Format: int32 */
+            size: number;
+            sort?: string[];
+        };
+        PageMetadata: {
+            /** Format: int64 */
+            size: number;
+            /** Format: int64 */
+            number: number;
+            /** Format: int64 */
+            totalElements: number;
+            /** Format: int64 */
+            totalPages: number;
+        };
+        PagedModelUnitTypeDTO: {
+            content: components["schemas"]["UnitTypeDTO"][];
+            page: components["schemas"]["PageMetadata"];
+        };
+        PagedModelEventTypeDTO: {
+            content: components["schemas"]["EventTypeDTO"][];
+            page: components["schemas"]["PageMetadata"];
+        };
+        PagedModelSupportedLocaleDTO: {
+            content: components["schemas"]["SupportedLocaleDTO"][];
+            page: components["schemas"]["PageMetadata"];
+        };
         /** @description DTO representing a supported locale */
         SupportedLocaleDTO: {
             /**
@@ -1027,13 +1173,17 @@ export interface components {
              */
             description: string;
         };
-        /** @description Response object containing list of available log files */
-        LogFilesListResponse: {
-            /**
-             * @description Array of available log files
-             * @example [/app/logs/application.log]
-             */
-            logFiles: string[];
+        PagedModelRoleDTO: {
+            content: components["schemas"]["RoleDTO"][];
+            page: components["schemas"]["PageMetadata"];
+        };
+        PagedModelPermissionDTO: {
+            content: components["schemas"]["PermissionDTO"][];
+            page: components["schemas"]["PageMetadata"];
+        };
+        PagedModelString: {
+            content: string[];
+            page: components["schemas"]["PageMetadata"];
         };
         /** @description Response object containing discord bot status */
         DiscordBotStatusResponse: {
@@ -1042,23 +1192,6 @@ export interface components {
              * @example OFFLINE
              */
             status: string;
-        };
-        Pageable: {
-            /** Format: int32 */
-            page: number;
-            /** Format: int32 */
-            size: number;
-            sort?: string[];
-        };
-        PageMetadata: {
-            /** Format: int64 */
-            size: number;
-            /** Format: int64 */
-            number: number;
-            /** Format: int64 */
-            totalElements: number;
-            /** Format: int64 */
-            totalPages: number;
         };
         PagedModelAppConfigDto: {
             content: components["schemas"]["AppConfigDto"][];
@@ -1099,7 +1232,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -1179,7 +1312,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -1253,7 +1386,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -1329,7 +1462,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -1409,7 +1542,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -1483,7 +1616,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -1708,7 +1841,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -1788,7 +1921,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -1862,7 +1995,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -1884,6 +2017,86 @@ export interface operations {
                 };
             };
             /** @description Role not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Content Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    updatePermission: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PermissionUpdateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successfully updated permission description */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PermissionDTO"];
+                };
+            };
+            /** @description Invalid request payload */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Permission not found */
             404: {
                 headers: {
                     [name: string]: unknown;
@@ -1938,7 +2151,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -2018,7 +2231,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -2070,7 +2283,9 @@ export interface operations {
     };
     getAllUnitTypes: {
         parameters: {
-            query?: never;
+            query: {
+                pageable: components["schemas"]["Pageable"];
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -2083,7 +2298,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["UnitTypeDTO"][];
+                    "application/json": components["schemas"]["PagedModelUnitTypeDTO"];
                 };
             };
             /** @description Bad Request */
@@ -2092,7 +2307,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -2170,7 +2385,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -2222,7 +2437,9 @@ export interface operations {
     };
     getAllEventTypes: {
         parameters: {
-            query?: never;
+            query: {
+                pageable: components["schemas"]["Pageable"];
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -2235,7 +2452,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["EventTypeDTO"][];
+                    "application/json": components["schemas"]["PagedModelEventTypeDTO"];
                 };
             };
             /** @description Bad Request */
@@ -2244,7 +2461,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -2322,7 +2539,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -2819,9 +3036,86 @@ export interface operations {
             };
         };
     };
-    getAllRoles: {
+    assignRoleToUser: {
         parameters: {
             query?: never;
+            header?: never;
+            path: {
+                userId: number;
+                roleId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successfully assigned role */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description User or Role not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Content Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    getAllRoles: {
+        parameters: {
+            query: {
+                pageable: components["schemas"]["Pageable"];
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -2834,7 +3128,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["RoleDTO"][];
+                    "*/*": components["schemas"]["PagedModelRoleDTO"];
                 };
             };
             /** @description Bad Request */
@@ -2843,7 +3137,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -2921,7 +3215,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -2996,7 +3290,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -3068,7 +3362,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -3140,7 +3434,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -3212,7 +3506,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -3288,7 +3582,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -3340,7 +3634,9 @@ export interface operations {
     };
     getSupportedLocales: {
         parameters: {
-            query?: never;
+            query: {
+                pageable: components["schemas"]["Pageable"];
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -3353,7 +3649,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["SupportedLocaleDTO"][];
+                    "application/json": components["schemas"]["PagedModelSupportedLocaleDTO"];
                 };
             };
             /** @description Bad Request */
@@ -3362,7 +3658,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -3439,7 +3735,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -3461,6 +3757,82 @@ export interface operations {
                 };
             };
             /** @description No event found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Content Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    getAllPermissions: {
+        parameters: {
+            query: {
+                pageable: components["schemas"]["Pageable"];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successfully retrieved permissions list */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PagedModelPermissionDTO"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not Found */
             404: {
                 headers: {
                     [name: string]: unknown;
@@ -3518,7 +3890,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -3570,7 +3942,9 @@ export interface operations {
     };
     listLogFiles: {
         parameters: {
-            query?: never;
+            query: {
+                pageable: components["schemas"]["Pageable"];
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -3583,7 +3957,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["LogFilesListResponse"];
+                    "application/json": components["schemas"]["PagedModelString"];
                 };
             };
             /** @description Bad Request */
@@ -3592,7 +3966,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -3666,7 +4040,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -3742,7 +4116,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -3816,7 +4190,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Not authenticated */

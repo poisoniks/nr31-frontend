@@ -96,8 +96,12 @@ const EventDetailModal: React.FC<EventDetailModalProps> = ({ event, isOpen, onCl
     // Load reference data on first edit
     useEffect(() => {
         if (isEditing && eventTypes.length === 0) {
-            calendarApi.getEventTypes().then(setEventTypes).catch(console.error);
-            calendarApi.getUnitTypes().then(setUnitTypes).catch(console.error);
+            calendarApi.getEventTypes({ page: 0, size: 200 }).then((response) => {
+                setEventTypes(response.content);
+            }).catch(console.error);
+            calendarApi.getUnitTypes({ page: 0, size: 200 }).then((response) => {
+                setUnitTypes(response.content);
+            }).catch(console.error);
         }
     }, [isEditing, eventTypes.length]);
 

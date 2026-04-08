@@ -1,7 +1,8 @@
 import api from './axiosConfig';
 import type { components, paths } from './types';
 
-type LogFilesListResponse = components['schemas']['LogFilesListResponse'];
+type PagedLogFilesResponse = components['schemas']['PagedModelString'];
+type Pageable = components['schemas']['Pageable'];
 type LogFileContent = paths['/api/v1/admin/logs/{fileName}']['get']['responses']['200']['content']['*/*'];
 type LogFileQueryParams = paths['/api/v1/admin/logs/{fileName}']['get']['parameters']['query'];
 type DiscordBotStatusResponse = components['schemas']['DiscordBotStatusResponse'];
@@ -11,8 +12,10 @@ export const adminApi = {
         await api.post('/v1/admin/cache/clear');
     },
 
-    listLogFiles: async (): Promise<LogFilesListResponse> => {
-        const response = await api.get<LogFilesListResponse>('/v1/admin/logs/list');
+    listLogFiles: async (pageable?: Pageable): Promise<PagedLogFilesResponse> => {
+        const response = await api.get<PagedLogFilesResponse>('/v1/admin/logs/list', {
+            params: pageable,
+        });
         return response.data;
     },
 

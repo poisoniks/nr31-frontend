@@ -156,10 +156,10 @@ const LogsPage: React.FC = () => {
     const fetchLogFiles = useCallback(async () => {
         try {
             setIsLoadingList(true);
-            const response = await adminApi.listLogFiles();
-            setLogFiles(response.logFiles);
-            if (response.logFiles.length > 0 && !selectedFile) {
-                setSelectedFile(response.logFiles[0]);
+            const response = await adminApi.listLogFiles({ page: 0, size: 200 });
+            setLogFiles(response.content);
+            if (response.content.length > 0 && !selectedFile) {
+                setSelectedFile(response.content[0]);
             }
         } catch (err: unknown) {
             console.error('Failed to fetch log files:', err);

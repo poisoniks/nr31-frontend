@@ -1,5 +1,5 @@
 import api from './axiosConfig';
-import type { paths } from './types';
+import type { components, paths } from './types';
 
 type GetEventsPath = paths['/api/v1/calendar/events']['get'];
 type GetEventsResponse = GetEventsPath['responses']['200']['content']['application/json'];
@@ -17,9 +17,9 @@ type GetNearestEventResponse = GetNearestEventPath['responses']['200']['content'
 
 type GetEventTypesPath = paths['/api/v1/roster/event-types']['get'];
 type GetEventTypesResponse = GetEventTypesPath['responses']['200']['content']['application/json'];
-
 type GetUnitTypesPath = paths['/api/v1/roster/unit-types']['get'];
 type GetUnitTypesResponse = GetUnitTypesPath['responses']['200']['content']['application/json'];
+type Pageable = components['schemas']['Pageable'];
 
 export const calendarApi = {
     getEvents: async (from: string, to: string, timezone?: string): Promise<GetEventsResponse> => {
@@ -60,13 +60,17 @@ export const calendarApi = {
         }
     },
 
-    getEventTypes: async (): Promise<GetEventTypesResponse> => {
-        const response = await api.get<GetEventTypesResponse>('/v1/roster/event-types');
+    getEventTypes: async (pageable?: Pageable): Promise<GetEventTypesResponse> => {
+        const response = await api.get<GetEventTypesResponse>('/v1/roster/event-types', {
+            params: pageable,
+        });
         return response.data;
     },
 
-    getUnitTypes: async (): Promise<GetUnitTypesResponse> => {
-        const response = await api.get<GetUnitTypesResponse>('/v1/roster/unit-types');
+    getUnitTypes: async (pageable?: Pageable): Promise<GetUnitTypesResponse> => {
+        const response = await api.get<GetUnitTypesResponse>('/v1/roster/unit-types', {
+            params: pageable,
+        });
         return response.data;
     },
 

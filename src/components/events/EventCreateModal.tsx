@@ -75,13 +75,15 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({ isOpen, initialDate
     // Load reference data on open
     useEffect(() => {
         if (isOpen) {
-            calendarApi.getEventTypes().then((types) => {
-                setEventTypes(types);
-                if (types.length > 0 && typeId === 0) {
-                    setTypeId(types[0].id);
+            calendarApi.getEventTypes({ page: 0, size: 200 }).then((response) => {
+                setEventTypes(response.content);
+                if (response.content.length > 0 && typeId === 0) {
+                    setTypeId(response.content[0].id);
                 }
             }).catch(console.error);
-            calendarApi.getUnitTypes().then(setUnitTypes).catch(console.error);
+            calendarApi.getUnitTypes({ page: 0, size: 200 }).then((response) => {
+                setUnitTypes(response.content);
+            }).catch(console.error);
         }
     }, [isOpen]);
 

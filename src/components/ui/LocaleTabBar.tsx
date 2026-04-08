@@ -15,7 +15,7 @@ const LocaleTabBar: React.FC<LocaleTabBarProps> = ({ activeLocale, onLocaleChang
 
     useEffect(() => {
         localeApi.getSupportedLocales().then((data) => {
-            setLocales(data);
+            setLocales(data.content);
         });
     }, []);
 
