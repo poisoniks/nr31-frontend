@@ -1,11 +1,12 @@
 import React, { useState, useMemo } from 'react';
-import { LayoutDashboard, Globe, Database, ScrollText } from 'lucide-react';
+import { LayoutDashboard, Globe, Database, ScrollText, Bot } from 'lucide-react';
 import AdminSidebar from '../components/admin/AdminSidebar';
 import type { AdminPageNode } from '../components/admin/AdminSidebar';
 import { useAuthStore } from '../store/useAuthStore';
 import OverviewPage from './admin/OverviewPage';
 import CacheResetPage from './admin/CacheResetPage';
 import LogsPage from './admin/LogsPage';
+import DiscordPage from './admin/DiscordPage';
 
 const findPageComponent = (nodes: AdminPageNode[], pageId: string): React.ComponentType | undefined => {
     for (const node of nodes) {
@@ -60,6 +61,13 @@ const Admin: React.FC = () => {
                     icon: <ScrollText size={16} />,
                     permission: 'logs:read',
                     component: LogsPage,
+                },
+                {
+                    id: 'discord',
+                    labelKey: 'admin.sidebar.discord',
+                    icon: <Bot size={16} />,
+                    permission: 'discord:manage',
+                    component: DiscordPage,
                 },
             ],
         },
