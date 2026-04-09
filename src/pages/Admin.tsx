@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { LayoutDashboard, Globe, Database, ScrollText, Bot } from 'lucide-react';
+import { LayoutDashboard, Globe, Database, ScrollText, Bot, Shield } from 'lucide-react';
 import AdminSidebar from '../components/admin/AdminSidebar';
 import type { AdminPageNode } from '../components/admin/AdminSidebar';
 import { useAuthStore } from '../store/useAuthStore';
@@ -7,6 +7,7 @@ import OverviewPage from './admin/OverviewPage';
 import CacheResetPage from './admin/CacheResetPage';
 import LogsPage from './admin/LogsPage';
 import DiscordPage from './admin/DiscordPage';
+import AccessManagementPage from './admin/AccessManagementPage';
 
 const findPageComponent = (nodes: AdminPageNode[], pageId: string): React.ComponentType | undefined => {
     for (const node of nodes) {
@@ -68,6 +69,13 @@ const Admin: React.FC = () => {
                     icon: <Bot size={16} />,
                     permission: 'discord:manage',
                     component: DiscordPage,
+                },
+                {
+                    id: 'access',
+                    labelKey: 'admin.sidebar.access',
+                    icon: <Shield size={16} />,
+                    permission: 'access:manage',
+                    component: AccessManagementPage,
                 },
             ],
         },
