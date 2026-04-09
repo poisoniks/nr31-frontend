@@ -54,6 +54,7 @@ const Admin: React.FC = () => {
                     id: 'cache',
                     labelKey: 'admin.sidebar.cache',
                     icon: <Database size={16} />,
+                    permission: 'cache:clear',
                     component: CacheResetPage,
                 },
                 {
