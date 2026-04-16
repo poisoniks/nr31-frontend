@@ -309,5 +309,17 @@
     "admin.access.modal.cancel": "Cancel",
     "admin.access.modal.saving": "Saving...",
     "admin.access.modal.deleting": "Deleting...",
-    "admin.access.modal.delete": "Delete"
+    "admin.access.modal.delete": "Delete",
+    "admin.sidebar.config": "System Config",
+    "admin.config.title": "System Configuration",
+    "admin.config.subtitle": "View and edit application configuration values stored as JSON.",
+    "admin.config.empty": "No configuration entries found",
+    "admin.config.save": "Save",
+    "admin.config.saving": "Saving...",
+    "admin.config.reset": "Reset",
+    "admin.config.save_success": "Configuration saved successfully",
+    "admin.config.error_load": "Failed to load configuration",
+    "admin.config.error_save": "Failed to save configuration",
+    "admin.config.unsaved": "Unsaved",
+    "admin.config.no_schema": "No JSON schema — editing raw value"
 }

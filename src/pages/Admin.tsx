@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { LayoutDashboard, Globe, Database, ScrollText, Bot, Shield } from 'lucide-react';
+import { LayoutDashboard, Globe, Database, ScrollText, Bot, Shield, Settings2 } from 'lucide-react';
 import AdminSidebar from '../components/admin/AdminSidebar';
 import type { AdminPageNode } from '../components/admin/AdminSidebar';
 import { useAuthStore } from '../store/useAuthStore';
@@ -8,6 +8,7 @@ import CacheResetPage from './admin/CacheResetPage';
 import LogsPage from './admin/LogsPage';
 import DiscordPage from './admin/DiscordPage';
 import AccessManagementPage from './admin/AccessManagementPage';
+import SystemConfigPage from './admin/SystemConfigPage';
 
 const findPageComponent = (nodes: AdminPageNode[], pageId: string): React.ComponentType | undefined => {
     for (const node of nodes) {
@@ -77,6 +78,13 @@ const Admin: React.FC = () => {
                     icon: <Shield size={16} />,
                     permission: 'access:manage',
                     component: AccessManagementPage,
+                },
+                {
+                    id: 'config',
+                    labelKey: 'admin.sidebar.config',
+                    icon: <Settings2 size={16} />,
+                    permission: 'config:read',
+                    component: SystemConfigPage,
                 },
             ],
         },

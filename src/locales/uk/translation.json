@@ -309,5 +309,17 @@
     "admin.access.modal.cancel": "Скасувати",
     "admin.access.modal.saving": "Збереження...",
     "admin.access.modal.deleting": "Видалення...",
-    "admin.access.modal.delete": "Видалити"
+    "admin.access.modal.delete": "Видалити",
+    "admin.sidebar.config": "Конфігурація системи",
+    "admin.config.title": "Конфігурація системи",
+    "admin.config.subtitle": "Перегляд та редагування значень конфігурації застосунку у форматі JSON.",
+    "admin.config.empty": "Налаштування відсутні",
+    "admin.config.save": "Зберегти",
+    "admin.config.saving": "Збереження...",
+    "admin.config.reset": "Скинути",
+    "admin.config.save_success": "Конфігурацію збережено",
+    "admin.config.error_load": "Не вдалося завантажити конфігурацію",
+    "admin.config.error_save": "Не вдалося зберегти конфігурацію",
+    "admin.config.unsaved": "Не збережено",
+    "admin.config.no_schema": "Немає JSON-схеми — редагування сирого значення"
 }
