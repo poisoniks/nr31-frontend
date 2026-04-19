@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { libraryApi, type FileMetadataDTO, type MediaFolderDTO } from '../../api/libraryApi';
 import { useUIStore } from '../../store/useUIStore';
+import { getErrorMessage } from '../../utils/errorUtils';
 
 interface BreadcrumbItem {
     id?: string;
@@ -138,8 +139,8 @@ const FileLibraryModal: React.FC<FileLibraryModalProps> = ({ isOpen, onClose, on
         try {
             const result = await libraryApi.listFolders(currentFolderId);
             setFolders(result);
-        } catch {
-            setError(t('admin.library.error_load'));
+        } catch (error) {
+            setError(getErrorMessage(error, t));
         } finally {
             setFoldersLoading(false);
         }
@@ -152,8 +153,8 @@ const FileLibraryModal: React.FC<FileLibraryModalProps> = ({ isOpen, onClose, on
             setFiles(result.content);
             setTotalPages(result.page.totalPages || 1);
             setPage(p);
-        } catch {
-            setError(t('admin.library.error_load'));
+        } catch (error) {
+            setError(getErrorMessage(error, t));
         } finally {
             setFilesLoading(false);
         }
@@ -195,8 +196,8 @@ const FileLibraryModal: React.FC<FileLibraryModalProps> = ({ isOpen, onClose, on
         try {
             const created = await libraryApi.createFolder({ name, parentId: currentFolderId });
             setFolders((prev) => [...prev, created]);
-        } catch {
-            setError(t('admin.library.error_create_folder'));
+        } catch (error) {
+            setError(getErrorMessage(error, t));
         }
     };
 
@@ -206,8 +207,8 @@ const FileLibraryModal: React.FC<FileLibraryModalProps> = ({ isOpen, onClose, on
         try {
             const updated = await libraryApi.updateFolder(folder.id, { name: newName, parentId: folder.parentId });
             setFolders((prev) => prev.map((f) => (f.id === folder.id ? updated : f)));
-        } catch {
-            setError(t('admin.library.error_rename'));
+        } catch (error) {
+            setError(getErrorMessage(error, t));
         }
     };
 
@@ -217,8 +218,8 @@ const FileLibraryModal: React.FC<FileLibraryModalProps> = ({ isOpen, onClose, on
         try {
             await libraryApi.deleteFolder(folder.id);
             setFolders((prev) => prev.filter((f) => f.id !== folder.id));
-        } catch {
-            setError(t('admin.library.error_delete_folder'));
+        } catch (error) {
+            setError(getErrorMessage(error, t));
         } finally {
             setDeletingFolderId(null);
         }
@@ -240,8 +241,8 @@ const FileLibraryModal: React.FC<FileLibraryModalProps> = ({ isOpen, onClose, on
                 await libraryApi.uploadFile(file, currentFolderId);
             }
             await loadFiles(0);
-        } catch {
-            setError(t('admin.library.error_upload'));
+        } catch (error) {
+            setError(getErrorMessage(error, t));
         } finally {
             setUploading(false);
         }
@@ -284,8 +285,8 @@ const FileLibraryModal: React.FC<FileLibraryModalProps> = ({ isOpen, onClose, on
         try {
             const updated = await libraryApi.updateFile(file.id, { name: newName });
             setFiles((prev) => prev.map((f) => (f.id === file.id ? updated : f)));
-        } catch {
-            setError(t('admin.library.error_rename'));
+        } catch (error) {
+            setError(getErrorMessage(error, t));
         }
     };
 
@@ -295,8 +296,8 @@ const FileLibraryModal: React.FC<FileLibraryModalProps> = ({ isOpen, onClose, on
         try {
             await libraryApi.deleteFile(file.id);
             setFiles((prev) => prev.filter((f) => f.id !== file.id));
-        } catch {
-            setError(t('admin.library.error_delete_file'));
+        } catch (error) {
+            setError(getErrorMessage(error, t));
         } finally {
             setDeletingFileId(null);
         }
