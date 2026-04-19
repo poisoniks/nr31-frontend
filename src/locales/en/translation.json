@@ -368,6 +368,8 @@
     "admin.library.select": "Select",
     "admin.library.cancel": "Cancel",
     "admin.library.refresh": "Refresh",
+    "admin.library.drop_hint": "Drop files to upload",
+    "admin.library.drop_hint_sub": "Supports JPG, PNG, WEBP",
     "admin.entities.icon": "Icon",
     "admin.entities.icon_none": "No icon",
     "admin.entities.icon_change": "Change Icon",

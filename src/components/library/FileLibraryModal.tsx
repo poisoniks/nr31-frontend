@@ -129,6 +129,7 @@ const FileLibraryModal: React.FC<FileLibraryModalProps> = ({ isOpen, onClose, on
     const [confirmDeleteFolder, setConfirmDeleteFolder] = useState<MediaFolderDTO | null>(null);
     const [confirmDeleteFile, setConfirmDeleteFile] = useState<FileMetadataDTO | null>(null);
     const [uploading, setUploading] = useState(false);
+    const [isDragging, setIsDragging] = useState(false);
 
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -227,15 +228,53 @@ const FileLibraryModal: React.FC<FileLibraryModalProps> = ({ isOpen, onClose, on
     const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
+        uploadFiles([file]);
         e.target.value = '';
+    };
+
+    const uploadFiles = async (filesToUpload: File[]) => {
+        if (filesToUpload.length === 0) return;
         setUploading(true);
         try {
-            await libraryApi.uploadFile(file, currentFolderId);
+            for (const file of filesToUpload) {
+                await libraryApi.uploadFile(file, currentFolderId);
+            }
             await loadFiles(0);
         } catch {
             setError(t('admin.library.error_upload'));
         } finally {
             setUploading(false);
+        }
+    };
+
+    const handleDragOver = (e: React.DragEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+    };
+
+    const handleDragEnter = (e: React.DragEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsDragging(true);
+    };
+
+    const handleDragLeave = (e: React.DragEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsDragging(false);
+    };
+
+    const handleDrop = async (e: React.DragEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsDragging(false);
+
+        const droppedFiles = Array.from(e.dataTransfer.files).filter(f =>
+            IMAGE_TYPES.includes(f.type)
+        );
+
+        if (droppedFiles.length > 0) {
+            uploadFiles(droppedFiles);
         }
     };
 
@@ -290,11 +329,10 @@ const FileLibraryModal: React.FC<FileLibraryModalProps> = ({ isOpen, onClose, on
                                 <React.Fragment key={index}>
                                     {index > 0 && <ChevronRight size={14} className="text-nr-text/30 shrink-0" />}
                                     <button
-                                        className={`hover:text-nr-accent transition-colors truncate max-w-[120px] cursor-pointer ${
-                                            index === breadcrumbs.length - 1
+                                        className={`hover:text-nr-accent transition-colors truncate max-w-[120px] cursor-pointer ${index === breadcrumbs.length - 1
                                                 ? 'text-nr-accent font-medium'
                                                 : 'text-nr-text/50'
-                                        }`}
+                                            }`}
                                         onClick={() => navigateToBreadcrumb(index)}
                                     >
                                         {index === 0 ? <Home size={14} /> : crumb.name}
@@ -422,7 +460,25 @@ const FileLibraryModal: React.FC<FileLibraryModalProps> = ({ isOpen, onClose, on
                         </div>
 
                         {/* File grid */}
-                        <div className="flex-1 overflow-y-auto p-4">
+                        <div
+                            className="flex-1 overflow-y-auto p-4 relative"
+                            onDragOver={handleDragOver}
+                            onDragEnter={handleDragEnter}
+                            onDragLeave={handleDragLeave}
+                            onDrop={handleDrop}
+                        >
+                            {isDragging && (
+                                <div className="absolute inset-0 z-50 bg-nr-accent/10 backdrop-blur-[2px] flex items-center justify-center p-8 pointer-events-none">
+                                    <div className="w-full h-full border-2 border-dashed border-nr-accent rounded-2xl flex flex-col items-center justify-center gap-4 bg-nr-bg/80 animate-in fade-in zoom-in duration-200">
+                                        <div className="w-16 h-16 rounded-full bg-nr-accent/20 flex items-center justify-center text-nr-accent">
+                                            <Upload size={32} className="animate-bounce" />
+                                        </div>
+                                        <p className="text-lg font-serif font-bold text-nr-text">{t('admin.library.drop_hint')}</p>
+                                        <p className="text-xs text-nr-text/50 uppercase tracking-widest">{t('admin.library.drop_hint_sub')}</p>
+                                    </div>
+                                </div>
+                            )}
+
                             {filesLoading ? (
                                 <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3">
                                     {Array.from({ length: 12 }).map((_, i) => <FileSkeleton key={i} />)}
@@ -562,11 +618,10 @@ const FileCard: React.FC<FileCardProps> = ({
 
     return (
         <div
-            className={`group relative rounded-xl border overflow-hidden transition-all cursor-pointer ${
-                isSelected
+            className={`group relative rounded-xl border overflow-hidden transition-all cursor-pointer ${isSelected
                     ? 'border-nr-accent ring-2 ring-nr-accent/30'
                     : 'border-nr-border/30 hover:border-nr-accent/40'
-            } ${isDeleting ? 'opacity-40 pointer-events-none' : ''}`}
+                } ${isDeleting ? 'opacity-40 pointer-events-none' : ''}`}
         >
             {/* Thumbnail */}
             <button

@@ -368,6 +368,8 @@
     "admin.library.select": "Обрати",
     "admin.library.cancel": "Скасувати",
     "admin.library.refresh": "Оновити",
+    "admin.library.drop_hint": "Перетягніть файли для завантаження",
+    "admin.library.drop_hint_sub": "Підтримує JPG, PNG, WEBP",
     "admin.entities.icon": "Іконка",
     "admin.entities.icon_none": "Немає іконки",
     "admin.entities.icon_change": "Змінити іконку",
