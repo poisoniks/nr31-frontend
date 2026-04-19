@@ -341,5 +341,8 @@
     "admin.entities.error_load": "Failed to load entities",
     "admin.entities.error_create": "Failed to create entity",
     "admin.entities.error_update": "Failed to update entity",
-    "admin.entities.error_delete": "Failed to delete entity"
+    "admin.entities.error_delete": "Failed to delete entity",
+    "common.pagination.prev": "Previous",
+    "common.pagination.next": "Next",
+    "common.pagination.showing_page": "Page {{current}} of {{total}}"
 }

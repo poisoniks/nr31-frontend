@@ -341,5 +341,8 @@
     "admin.entities.error_load": "Не вдалося завантажити сутності",
     "admin.entities.error_create": "Не вдалося створити сутність",
     "admin.entities.error_update": "Не вдалося оновити сутність",
-    "admin.entities.error_delete": "Не вдалося видалити сутність"
+    "admin.entities.error_delete": "Не вдалося видалити сутність",
+    "common.pagination.prev": "Попередня",
+    "common.pagination.next": "Наступна",
+    "common.pagination.showing_page": "Сторінка {{current}} з {{total}}"
 }

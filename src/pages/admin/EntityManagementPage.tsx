@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ChevronDown, ChevronRight, Plus, Pencil, Trash2, Layers, CalendarDays } from 'lucide-react';
 import { rosterApi } from '../../api/rosterApi';
@@ -8,6 +8,8 @@ import type { components } from '../../api/types';
 import Modal from '../../components/ui/Modal';
 import Button from '../../components/ui/Button';
 import LocaleTabBar from '../../components/ui/LocaleTabBar';
+import Pagination from '../../components/ui/Pagination';
+import { usePagination } from '../../hooks/usePagination';
 
 type UnitTypeDTO = components['schemas']['UnitTypeDTO'];
 type EventTypeDTO = components['schemas']['EventTypeDTO'];
@@ -39,6 +41,8 @@ const UnitTypesSection: React.FC<{ lang: string }> = ({ lang }) => {
     const [loading, setLoading] = useState(false);
     const [fetched, setFetched] = useState(false);
 
+    const { page, size, totalPages, setTotalPages, handlePageChange } = usePagination(10);
+
     // Modal
     const [modalOpen, setModalOpen] = useState(false);
     const [editingEntity, setEditingEntity] = useState<UnitTypeDTO | null>(null);
@@ -51,24 +55,26 @@ const UnitTypesSection: React.FC<{ lang: string }> = ({ lang }) => {
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const [deletingId, setDeletingId] = useState<number | null>(null);
 
-    const loadData = async () => {
+    const loadData = useCallback(async () => {
         setLoading(true);
         try {
-            const res = await rosterApi.getUnitTypes({ page: 0, size: 200 });
+            const res = await rosterApi.getUnitTypes({ page, size });
             setEntities(res.content);
+            setTotalPages(res.page?.totalPages || 1);
             setFetched(true);
         } catch (e) {
             setError(t('admin.entities.error_load'));
         } finally {
             setLoading(false);
         }
-    };
+    }, [page, size, setError, t, setTotalPages]);
+
 
     useEffect(() => {
-        if (isExpanded && !fetched) {
+        if (isExpanded) {
             loadData();
         }
-    }, [isExpanded]);
+    }, [isExpanded, loadData]);
 
     const openCreateModal = () => {
         setEditingEntity(null);
@@ -163,58 +169,63 @@ const UnitTypesSection: React.FC<{ lang: string }> = ({ lang }) => {
                         </Button>
                     </div>
 
-                    <div className="overflow-x-auto rounded-lg border border-nr-border">
-                        <table className="w-full text-left text-sm text-nr-text">
-                            <thead className="bg-nr-border/30 text-xs uppercase font-bold text-nr-text/70 border-b border-nr-border">
-                                <tr>
-                                    <th className="px-4 py-3">ID</th>
-                                    <th className="px-4 py-3">{t('admin.entities.name')}</th>
-                                    <th className="px-4 py-3">{t('admin.entities.description')}</th>
-                                    <th className="px-4 py-3 text-right">{t('admin.entities.actions')}</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {loading ? (
-                                    <>
-                                        <SkeletonRow cols={4} />
-                                        <SkeletonRow cols={4} />
-                                        <SkeletonRow cols={4} />
-                                    </>
-                                ) : entities.length === 0 ? (
+                    <div className="flex flex-col min-h-[600px] justify-between rounded-lg border border-nr-border overflow-hidden">
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-left text-sm text-nr-text">
+                                <thead className="bg-nr-border/30 text-xs uppercase font-bold text-nr-text/70 border-b border-nr-border">
                                     <tr>
-                                        <td colSpan={4} className="px-4 py-8 text-center text-nr-text/50">
-                                            {t('admin.entities.empty')}
-                                        </td>
+                                        <th className="px-4 py-3">ID</th>
+                                        <th className="px-4 py-3">{t('admin.entities.name')}</th>
+                                        <th className="px-4 py-3">{t('admin.entities.description')}</th>
+                                        <th className="px-4 py-3 text-right">{t('admin.entities.actions')}</th>
                                     </tr>
-                                ) : (
-                                    entities.map((ent) => (
-                                        <tr key={ent.id} className="border-b border-nr-border/30 hover:bg-nr-border/10 transition-colors">
-                                            <td className="px-4 py-3 font-mono text-nr-text/70">{ent.id}</td>
-                                            <td className="px-4 py-3 font-bold">{localized(ent.name, lang)}</td>
-                                            <td className="px-4 py-3 text-nr-text/70 max-w-xs truncate">
-                                                {localized(ent.description, lang) || '—'}
-                                            </td>
-                                            <td className="px-4 py-3">
-                                                <div className="flex items-center justify-end gap-2">
-                                                    <button
-                                                        onClick={() => openEditModal(ent)}
-                                                        className="p-1.5 text-nr-text/60 hover:text-blue-400 hover:bg-blue-500/10 rounded-md transition-colors"
-                                                    >
-                                                        <Pencil size={14} />
-                                                    </button>
-                                                    <button
-                                                        onClick={() => { setDeletingId(ent.id); setDeleteModalOpen(true); }}
-                                                        className="p-1.5 text-nr-text/60 hover:text-red-400 hover:bg-red-500/10 rounded-md transition-colors"
-                                                    >
-                                                        <Trash2 size={14} />
-                                                    </button>
-                                                </div>
+                                </thead>
+                                <tbody>
+                                    {loading ? (
+                                        Array.from({ length: size }).map((_, i) => (
+                                            <SkeletonRow key={i} cols={4} />
+                                        ))
+                                    ) : entities.length === 0 ? (
+                                        <tr>
+                                            <td colSpan={4} className="px-4 py-8 text-center text-nr-text/50">
+                                                {t('admin.entities.empty')}
                                             </td>
                                         </tr>
-                                    ))
-                                )}
-                            </tbody>
-                        </table>
+                                    ) : (
+                                        entities.map((ent) => (
+                                            <tr key={ent.id} className="border-b border-nr-border/30 hover:bg-nr-border/10 transition-colors">
+                                                <td className="px-4 py-3 font-mono text-nr-text/70">{ent.id}</td>
+                                                <td className="px-4 py-3 font-bold">{localized(ent.name, lang)}</td>
+                                                <td className="px-4 py-3 text-nr-text/70 max-w-xs truncate">
+                                                    {localized(ent.description, lang) || '—'}
+                                                </td>
+                                                <td className="px-4 py-3">
+                                                    <div className="flex items-center justify-end gap-2">
+                                                        <button
+                                                            onClick={() => openEditModal(ent)}
+                                                            className="p-1.5 text-nr-text/60 hover:text-blue-400 hover:bg-blue-500/10 rounded-md transition-colors"
+                                                        >
+                                                            <Pencil size={14} />
+                                                        </button>
+                                                        <button
+                                                            onClick={() => { setDeletingId(ent.id); setDeleteModalOpen(true); }}
+                                                            className="p-1.5 text-nr-text/60 hover:text-red-400 hover:bg-red-500/10 rounded-md transition-colors"
+                                                        >
+                                                            <Trash2 size={14} />
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        ))
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
+                        <Pagination
+                            currentPage={page}
+                            totalPages={totalPages}
+                            onPageChange={handlePageChange}
+                        />
                     </div>
                 </div>
             )}
@@ -307,6 +318,8 @@ const EventTypesSection: React.FC<{ lang: string }> = ({ lang }) => {
     const [loading, setLoading] = useState(false);
     const [fetched, setFetched] = useState(false);
 
+    const { page, size, totalPages, setTotalPages, handlePageChange } = usePagination(10);
+
     // Modal
     const [modalOpen, setModalOpen] = useState(false);
     const [editingEntity, setEditingEntity] = useState<EventTypeDTO | null>(null);
@@ -317,24 +330,24 @@ const EventTypesSection: React.FC<{ lang: string }> = ({ lang }) => {
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const [deletingId, setDeletingId] = useState<number | null>(null);
 
-    const loadData = async () => {
+    const loadData = useCallback(async () => {
         setLoading(true);
         try {
-            const res = await rosterApi.getEventTypes({ page: 0, size: 200 });
+            const res = await rosterApi.getEventTypes({ page, size });
             setEntities(res.content);
+            setTotalPages(res.page?.totalPages || 1);
             setFetched(true);
         } catch (e) {
             setError(t('admin.entities.error_load'));
         } finally {
             setLoading(false);
         }
-    };
-
+    }, [page, size, setError, t, setTotalPages]);
     useEffect(() => {
-        if (isExpanded && !fetched) {
+        if (isExpanded) {
             loadData();
         }
-    }, [isExpanded]);
+    }, [isExpanded, loadData]);
 
     const openCreateModal = () => {
         setEditingEntity(null);
@@ -418,54 +431,59 @@ const EventTypesSection: React.FC<{ lang: string }> = ({ lang }) => {
                         </Button>
                     </div>
 
-                    <div className="overflow-x-auto rounded-lg border border-nr-border">
-                        <table className="w-full text-left text-sm text-nr-text">
-                            <thead className="bg-nr-border/30 text-xs uppercase font-bold text-nr-text/70 border-b border-nr-border">
-                                <tr>
-                                    <th className="px-4 py-3">ID</th>
-                                    <th className="px-4 py-3 w-full">{t('admin.entities.name')}</th>
-                                    <th className="px-4 py-3 text-right">{t('admin.entities.actions')}</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {loading ? (
-                                    <>
-                                        <SkeletonRow cols={3} />
-                                        <SkeletonRow cols={3} />
-                                        <SkeletonRow cols={3} />
-                                    </>
-                                ) : entities.length === 0 ? (
+                    <div className="flex flex-col min-h-[600px] justify-between rounded-lg border border-nr-border overflow-hidden">
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-left text-sm text-nr-text">
+                                <thead className="bg-nr-border/30 text-xs uppercase font-bold text-nr-text/70 border-b border-nr-border">
                                     <tr>
-                                        <td colSpan={3} className="px-4 py-8 text-center text-nr-text/50">
-                                            {t('admin.entities.empty')}
-                                        </td>
+                                        <th className="px-4 py-3">ID</th>
+                                        <th className="px-4 py-3 w-full">{t('admin.entities.name')}</th>
+                                        <th className="px-4 py-3 text-right">{t('admin.entities.actions')}</th>
                                     </tr>
-                                ) : (
-                                    entities.map((ent) => (
-                                        <tr key={ent.id} className="border-b border-nr-border/30 hover:bg-nr-border/10 transition-colors">
-                                            <td className="px-4 py-3 font-mono text-nr-text/70">{ent.id}</td>
-                                            <td className="px-4 py-3 font-bold">{localized(ent.name, lang)}</td>
-                                            <td className="px-4 py-3">
-                                                <div className="flex items-center justify-end gap-2">
-                                                    <button
-                                                        onClick={() => openEditModal(ent)}
-                                                        className="p-1.5 text-nr-text/60 hover:text-blue-400 hover:bg-blue-500/10 rounded-md transition-colors"
-                                                    >
-                                                        <Pencil size={14} />
-                                                    </button>
-                                                    <button
-                                                        onClick={() => { setDeletingId(ent.id); setDeleteModalOpen(true); }}
-                                                        className="p-1.5 text-nr-text/60 hover:text-red-400 hover:bg-red-500/10 rounded-md transition-colors"
-                                                    >
-                                                        <Trash2 size={14} />
-                                                    </button>
-                                                </div>
+                                </thead>
+                                <tbody>
+                                    {loading ? (
+                                        Array.from({ length: size }).map((_, i) => (
+                                            <SkeletonRow key={i} cols={3} />
+                                        ))
+                                    ) : entities.length === 0 ? (
+                                        <tr>
+                                            <td colSpan={3} className="px-4 py-8 text-center text-nr-text/50">
+                                                {t('admin.entities.empty')}
                                             </td>
                                         </tr>
-                                    ))
-                                )}
-                            </tbody>
-                        </table>
+                                    ) : (
+                                        entities.map((ent) => (
+                                            <tr key={ent.id} className="border-b border-nr-border/30 hover:bg-nr-border/10 transition-colors">
+                                                <td className="px-4 py-3 font-mono text-nr-text/70">{ent.id}</td>
+                                                <td className="px-4 py-3 font-bold">{localized(ent.name, lang)}</td>
+                                                <td className="px-4 py-3">
+                                                    <div className="flex items-center justify-end gap-2">
+                                                        <button
+                                                            onClick={() => openEditModal(ent)}
+                                                            className="p-1.5 text-nr-text/60 hover:text-blue-400 hover:bg-blue-500/10 rounded-md transition-colors"
+                                                        >
+                                                            <Pencil size={14} />
+                                                        </button>
+                                                        <button
+                                                            onClick={() => { setDeletingId(ent.id); setDeleteModalOpen(true); }}
+                                                            className="p-1.5 text-nr-text/60 hover:text-red-400 hover:bg-red-500/10 rounded-md transition-colors"
+                                                        >
+                                                            <Trash2 size={14} />
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        ))
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
+                        <Pagination
+                            currentPage={page}
+                            totalPages={totalPages}
+                            onPageChange={handlePageChange}
+                        />
                     </div>
                 </div>
             )}

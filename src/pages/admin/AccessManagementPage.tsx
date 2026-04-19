@@ -8,6 +8,8 @@ import type { components } from '../../api/types';
 import Modal from '../../components/ui/Modal';
 import Button from '../../components/ui/Button';
 import LocaleTabBar from '../../components/ui/LocaleTabBar';
+import Pagination from '../../components/ui/Pagination';
+import { usePagination } from '../../hooks/usePagination';
 
 type RoleDTO = components['schemas']['RoleDTO'];
 type PermissionDTO = components['schemas']['PermissionDTO'];
@@ -52,6 +54,8 @@ const RolesTab: React.FC<RolesTabProps> = ({ lang }) => {
     const [permissions, setPermissions] = useState<PermissionDTO[]>([]);
     const [loading, setLoading] = useState(true);
 
+    const { page, size, totalPages, setTotalPages, handlePageChange } = usePagination(10);
+
     // Role modal
     const [modalOpen, setModalOpen] = useState(false);
     const [editingRole, setEditingRole] = useState<RoleDTO | null>(null);
@@ -73,8 +77,8 @@ const RolesTab: React.FC<RolesTabProps> = ({ lang }) => {
         setLoading(true);
         try {
             const [rolesData, permsData] = await Promise.all([
-                accessApi.getRoles({ page: 0, size: 200 }),
-                accessApi.getPermissions({ page: 0, size: 200 }),
+                accessApi.getRoles({ page, size }),
+                accessApi.getPermissions({ page: 0, size: 200 }), // Keep fetching all permissions for the assignment panel
             ]);
 
             const initialRolePerms: Record<number, Set<number>> = {};
@@ -84,13 +88,14 @@ const RolesTab: React.FC<RolesTabProps> = ({ lang }) => {
             setRolePermissions(initialRolePerms);
 
             setRoles(rolesData.content);
+            setTotalPages(rolesData.page?.totalPages || 1);
             setPermissions(permsData.content);
         } catch {
             setError(t('admin.access.roles.error_load'));
         } finally {
             setLoading(false);
         }
-    }, [setError, t]);
+    }, [page, size, setError, t, setTotalPages]);
 
     useEffect(() => { fetchRoles(); }, [fetchRoles]);
 
@@ -207,88 +212,95 @@ const RolesTab: React.FC<RolesTabProps> = ({ lang }) => {
                 </button>
             </div>
 
-            <div className="overflow-hidden rounded-xl border border-nr-border/50 bg-white/5 dark:bg-black/20 backdrop-blur-md">
-                <table className="w-full text-sm">
-                    <thead>
-                        <tr className="border-b border-nr-border/50 bg-nr-bg/30">
-                            <th className="px-4 py-2.5 text-left text-xs font-bold text-nr-text/40 uppercase tracking-wider w-8" />
-                            <th className="px-4 py-2.5 text-left text-xs font-bold text-nr-text/40 uppercase tracking-wider">
-                                {t('admin.access.roles.name')}
-                            </th>
-                            <th className="px-4 py-2.5 text-left text-xs font-bold text-nr-text/40 uppercase tracking-wider">
-                                {t('admin.access.roles.localized_name')}
-                            </th>
-                            <th className="px-4 py-2.5 text-right text-xs font-bold text-nr-text/40 uppercase tracking-wider w-28">
-                                {t('admin.access.roles.actions')}
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {loading ? (
-                            Array.from({ length: 4 }).map((_, i) => <SkeletonRow key={i} cols={4} />)
-                        ) : roles.length === 0 ? (
-                            <tr>
-                                <td colSpan={4} className="px-4 py-10 text-center text-nr-text/40 text-sm">
-                                    {t('admin.access.roles.empty')}
-                                </td>
+            <div className="flex flex-col min-h-[600px] justify-between overflow-hidden rounded-xl border border-nr-border/50 bg-white/5 dark:bg-black/20 backdrop-blur-md">
+                <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                        <thead>
+                            <tr className="border-b border-nr-border/50 bg-nr-bg/30">
+                                <th className="px-4 py-2.5 text-left text-xs font-bold text-nr-text/40 uppercase tracking-wider w-8" />
+                                <th className="px-4 py-2.5 text-left text-xs font-bold text-nr-text/40 uppercase tracking-wider">
+                                    {t('admin.access.roles.name')}
+                                </th>
+                                <th className="px-4 py-2.5 text-left text-xs font-bold text-nr-text/40 uppercase tracking-wider">
+                                    {t('admin.access.roles.localized_name')}
+                                </th>
+                                <th className="px-4 py-2.5 text-right text-xs font-bold text-nr-text/40 uppercase tracking-wider w-28">
+                                    {t('admin.access.roles.actions')}
+                                </th>
                             </tr>
-                        ) : (
-                            roles.map(role => (
-                                <React.Fragment key={role.id}>
-                                    <tr className="border-b border-nr-border/20 hover:bg-nr-text/[0.02] transition-colors">
-                                        <td className="px-4 py-2.5">
-                                            <button
-                                                onClick={() => toggleExpand(role.id)}
-                                                className="p-0.5 rounded text-nr-text/30 hover:text-nr-text/60 transition-colors cursor-pointer"
-                                            >
-                                                {expandedRoleId === role.id ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
-                                            </button>
-                                        </td>
-                                        <td className="px-4 py-2.5 font-mono text-xs text-nr-text/70">
-                                            {role.name}
-                                        </td>
-                                        <td className="px-4 py-2.5 text-nr-text/80">
-                                            {localized(role.localizedName, lang) || <span className="text-nr-text/30 italic">—</span>}
-                                        </td>
-                                        <td className="px-4 py-2.5 text-right">
-                                            <div className="flex items-center justify-end gap-1">
+                        </thead>
+                        <tbody>
+                            {loading ? (
+                                Array.from({ length: size }).map((_, i) => <SkeletonRow key={i} cols={4} />)
+                            ) : roles.length === 0 ? (
+                                <tr>
+                                    <td colSpan={4} className="px-4 py-10 text-center text-nr-text/40 text-sm">
+                                        {t('admin.access.roles.empty')}
+                                    </td>
+                                </tr>
+                            ) : (
+                                roles.map(role => (
+                                    <React.Fragment key={role.id}>
+                                        <tr className="border-b border-nr-border/20 hover:bg-nr-text/[0.02] transition-colors">
+                                            <td className="px-4 py-2.5">
                                                 <button
-                                                    onClick={() => openEdit(role)}
-                                                    className="p-1.5 rounded-lg text-nr-text/40 hover:text-nr-accent hover:bg-nr-accent/10 transition-colors cursor-pointer"
-                                                    title={t('admin.access.roles.edit')}
+                                                    onClick={() => toggleExpand(role.id)}
+                                                    className="p-0.5 rounded text-nr-text/30 hover:text-nr-text/60 transition-colors cursor-pointer"
                                                 >
-                                                    <Pencil size={14} />
+                                                    {expandedRoleId === role.id ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
                                                 </button>
-                                                <button
-                                                    onClick={() => setDeleteTarget(role)}
-                                                    className="p-1.5 rounded-lg text-nr-text/40 hover:text-red-400 hover:bg-red-500/10 transition-colors cursor-pointer"
-                                                    title={t('admin.access.modal.delete')}
-                                                >
-                                                    <Trash2 size={14} />
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    {expandedRoleId === role.id && (
-                                        <tr className="border-b border-nr-border/20 bg-nr-bg/20">
-                                            <td colSpan={4} className="px-6 py-4">
-                                                <RolePermissionPanel
-                                                    roleId={role.id}
-                                                    role={role}
-                                                    permissions={permissions}
-                                                    rolePermissions={rolePermissions}
-                                                    setRolePermissions={setRolePermissions}
-                                                    permActionLoading={permActionLoading}
-                                                    onToggle={togglePermission}
-                                                />
+                                            </td>
+                                            <td className="px-4 py-2.5 font-mono text-xs text-nr-text/70">
+                                                {role.name}
+                                            </td>
+                                            <td className="px-4 py-2.5 text-nr-text/80">
+                                                {localized(role.localizedName, lang) || <span className="text-nr-text/30 italic">—</span>}
+                                            </td>
+                                            <td className="px-4 py-2.5 text-right">
+                                                <div className="flex items-center justify-end gap-1">
+                                                    <button
+                                                        onClick={() => openEdit(role)}
+                                                        className="p-1.5 rounded-lg text-nr-text/40 hover:text-nr-accent hover:bg-nr-accent/10 transition-colors cursor-pointer"
+                                                        title={t('admin.access.roles.edit')}
+                                                    >
+                                                        <Pencil size={14} />
+                                                    </button>
+                                                    <button
+                                                        onClick={() => setDeleteTarget(role)}
+                                                        className="p-1.5 rounded-lg text-nr-text/40 hover:text-red-400 hover:bg-red-500/10 transition-colors cursor-pointer"
+                                                        title={t('admin.access.modal.delete')}
+                                                    >
+                                                        <Trash2 size={14} />
+                                                    </button>
+                                                </div>
                                             </td>
                                         </tr>
-                                    )}
-                                </React.Fragment>
-                            ))
-                        )}
-                    </tbody>
-                </table>
+                                        {expandedRoleId === role.id && (
+                                            <tr className="border-b border-nr-border/20 bg-nr-bg/20">
+                                                <td colSpan={4} className="px-6 py-4">
+                                                    <RolePermissionPanel
+                                                        roleId={role.id}
+                                                        role={role}
+                                                        permissions={permissions}
+                                                        rolePermissions={rolePermissions}
+                                                        setRolePermissions={setRolePermissions}
+                                                        permActionLoading={permActionLoading}
+                                                        onToggle={togglePermission}
+                                                    />
+                                                </td>
+                                            </tr>
+                                        )}
+                                    </React.Fragment>
+                                ))
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+                <Pagination
+                    currentPage={page}
+                    totalPages={totalPages}
+                    onPageChange={handlePageChange}
+                />
             </div>
 
             {/* Create / Edit Modal */}
@@ -429,6 +441,8 @@ const PermissionsTab: React.FC<PermissionsTabProps> = ({ lang }) => {
     const [permissions, setPermissions] = useState<PermissionDTO[]>([]);
     const [loading, setLoading] = useState(true);
 
+    const { page, size, totalPages, setTotalPages, handlePageChange } = usePagination(10);
+
     // Edit modal
     const [editTarget, setEditTarget] = useState<PermissionDTO | null>(null);
     const [description, setDescription] = useState<Record<string, string>>({});
@@ -438,14 +452,15 @@ const PermissionsTab: React.FC<PermissionsTabProps> = ({ lang }) => {
     const fetchPermissions = useCallback(async () => {
         setLoading(true);
         try {
-            const data = await accessApi.getPermissions({ page: 0, size: 200 });
+            const data = await accessApi.getPermissions({ page, size });
             setPermissions(data.content);
+            setTotalPages(data.page?.totalPages || 1);
         } catch {
             setError(t('admin.access.permissions.error_load'));
         } finally {
             setLoading(false);
         }
-    }, [setError, t]);
+    }, [page, size, setError, t, setTotalPages]);
 
     useEffect(() => { fetchPermissions(); }, [fetchPermissions]);
 
@@ -489,7 +504,7 @@ const PermissionsTab: React.FC<PermissionsTabProps> = ({ lang }) => {
                 {t('admin.access.tab.permissions')}
             </h2>
 
-            <div className="overflow-hidden rounded-xl border border-nr-border/50 bg-white/5 dark:bg-black/20 backdrop-blur-md">
+            <div className="flex flex-col min-h-[600px] justify-between overflow-hidden rounded-xl border border-nr-border/50 bg-white/5 dark:bg-black/20 backdrop-blur-md">
                 <table className="w-full text-sm">
                     <thead>
                         <tr className="border-b border-nr-border/50 bg-nr-bg/30">
@@ -506,7 +521,7 @@ const PermissionsTab: React.FC<PermissionsTabProps> = ({ lang }) => {
                     </thead>
                     <tbody>
                         {loading ? (
-                            Array.from({ length: 6 }).map((_, i) => <SkeletonRow key={i} cols={3} />)
+                            Array.from({ length: size }).map((_, i) => <SkeletonRow key={i} cols={3} />)
                         ) : permissions.length === 0 ? (
                             <tr>
                                 <td colSpan={3} className="px-4 py-10 text-center text-nr-text/40 text-sm">
@@ -537,8 +552,18 @@ const PermissionsTab: React.FC<PermissionsTabProps> = ({ lang }) => {
                                 </tr>
                             ))
                         )}
+                        {!loading && permissions.length > 0 && permissions.length < size && Array.from({ length: size - permissions.length }).map((_, i) => (
+                            <tr key={`empty-perm-${i}`} className="border-b border-nr-border/10 h-[45px]">
+                                <td colSpan={3} className="px-4 py-3">&nbsp;</td>
+                            </tr>
+                        ))}
                     </tbody>
                 </table>
+                <Pagination
+                    currentPage={page}
+                    totalPages={totalPages}
+                    onPageChange={handlePageChange}
+                />
             </div>
 
             {/* Edit Permission Description Modal */}
@@ -594,6 +619,8 @@ const UsersTab: React.FC<UsersTabProps> = ({ lang }) => {
     const [searchQuery, setSearchQuery] = useState('');
     const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+    const { page, size, totalPages, setTotalPages, handlePageChange, resetPage } = usePagination(10);
+
     // Expanded user for role management
     const [expandedUserId, setExpandedUserId] = useState<number | null>(null);
     const [roleActionLoading, setRoleActionLoading] = useState<string | null>(null);
@@ -603,23 +630,25 @@ const UsersTab: React.FC<UsersTabProps> = ({ lang }) => {
         try {
             const [usersData, rolesData] = await Promise.all([
                 query && query.trim()
-                    ? accessApi.searchUsers(query.trim(), { page: 0, size: 50 })
-                    : accessApi.getUsers({ page: 0, size: 50 }),
+                    ? accessApi.searchUsers(query.trim(), { page, size })
+                    : accessApi.getUsers({ page, size }),
                 accessApi.getRoles({ page: 0, size: 200 }),
             ]);
             setUsers(usersData.content);
+            setTotalPages(usersData.page?.totalPages || 1);
             setAllRoles(rolesData.content);
         } catch {
             setError(query ? t('admin.access.users.error_search') : t('admin.access.users.error_load'));
         } finally {
             setLoading(false);
         }
-    }, [setError, t]);
+    }, [page, size, setError, t, setTotalPages]);
 
     useEffect(() => { fetchUsers(); }, [fetchUsers]);
 
     const handleSearchChange = (value: string) => {
         setSearchQuery(value);
+        resetPage(); // Reset to first page on search change
         if (debounceRef.current) clearTimeout(debounceRef.current);
         debounceRef.current = setTimeout(() => {
             fetchUsers(value);
@@ -641,8 +670,8 @@ const UsersTab: React.FC<UsersTabProps> = ({ lang }) => {
             }
             // Refresh user data
             const updatedUsers = await (searchQuery.trim()
-                ? accessApi.searchUsers(searchQuery.trim(), { page: 0, size: 50 })
-                : accessApi.getUsers({ page: 0, size: 50 }));
+                ? accessApi.searchUsers(searchQuery.trim(), { page, size })
+                : accessApi.getUsers({ page, size }));
             setUsers(updatedUsers.content);
         } catch {
             setError(isAssigned ? t('admin.access.users.error_unassign') : t('admin.access.users.error_assign'));
@@ -679,7 +708,7 @@ const UsersTab: React.FC<UsersTabProps> = ({ lang }) => {
                 </div>
             </div>
 
-            <div className="overflow-hidden rounded-xl border border-nr-border/50 bg-white/5 dark:bg-black/20 backdrop-blur-md">
+            <div className="flex flex-col min-h-[600px] justify-between overflow-hidden rounded-xl border border-nr-border/50 bg-white/5 dark:bg-black/20 backdrop-blur-md">
                 <table className="w-full text-sm">
                     <thead>
                         <tr className="border-b border-nr-border/50 bg-nr-bg/30">
@@ -694,7 +723,7 @@ const UsersTab: React.FC<UsersTabProps> = ({ lang }) => {
                     </thead>
                     <tbody>
                         {loading ? (
-                            Array.from({ length: 5 }).map((_, i) => <SkeletonRow key={i} cols={3} />)
+                            Array.from({ length: size }).map((_, i) => <SkeletonRow key={i} cols={3} />)
                         ) : users.length === 0 ? (
                             <tr>
                                 <td colSpan={3} className="px-4 py-10 text-center text-nr-text/40 text-sm">
@@ -777,6 +806,11 @@ const UsersTab: React.FC<UsersTabProps> = ({ lang }) => {
                         )}
                     </tbody>
                 </table>
+                <Pagination
+                    currentPage={page}
+                    totalPages={totalPages}
+                    onPageChange={handlePageChange}
+                />
             </div>
         </div>
     );

@@ -6,6 +6,8 @@ import { useUIStore } from '../../store/useUIStore';
 import { useAuthStore } from '../../store/useAuthStore';
 import type { components } from '../../api/types';
 import Button from '../../components/ui/Button';
+import Pagination from '../../components/ui/Pagination';
+import { usePagination } from '../../hooks/usePagination';
 
 type AppConfigDto = components['schemas']['AppConfigDto'];
 
@@ -427,17 +429,20 @@ const SystemConfigPage: React.FC = () => {
     const [configs, setConfigs] = useState<AppConfigDto[]>([]);
     const [loading, setLoading] = useState(true);
 
+    const { page, size, totalPages, setTotalPages, handlePageChange } = usePagination(10);
+
     const fetchConfigs = useCallback(async () => {
         setLoading(true);
         try {
-            const data = await configApi.getAllConfigs({ page: 0, size: 200 });
+            const data = await configApi.getAllConfigs({ page, size });
             setConfigs(data.content);
+            setTotalPages(data.page?.totalPages || 1);
         } catch {
             setError(t('admin.config.error_load'));
         } finally {
             setLoading(false);
         }
-    }, [setError, t]);
+    }, [page, size, setError, t, setTotalPages]);
 
     useEffect(() => {
         fetchConfigs();
@@ -459,9 +464,9 @@ const SystemConfigPage: React.FC = () => {
             </div>
 
             {/* Config list */}
-            <div className="space-y-3">
+            <div className="space-y-3 min-h-[800px]">
                 {loading ? (
-                    Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} />)
+                    Array.from({ length: size }).map((_, i) => <SkeletonCard key={i} />)
                 ) : configs.length === 0 ? (
                     <div className="rounded-xl border border-nr-border/40 bg-white/5 dark:bg-black/20 backdrop-blur-md px-6 py-10 text-center text-nr-text/40 text-sm">
                         {t('admin.config.empty')}
@@ -477,6 +482,11 @@ const SystemConfigPage: React.FC = () => {
                         />
                     ))
                 )}
+                <Pagination
+                    currentPage={page}
+                    totalPages={totalPages}
+                    onPageChange={handlePageChange}
+                />
             </div>
         </div>
     );
