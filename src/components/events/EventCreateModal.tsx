@@ -11,6 +11,7 @@ type UnitType = components['schemas']['UnitTypeDTO'];
 type Recurrence = components['schemas']['Recurrence'];
 import { calendarApi } from '../../api/calendarApi';
 import { localeApi } from '../../api/localeApi';
+import { rosterApi } from '../../api/rosterApi';
 
 interface EventCreateModalProps {
     isOpen: boolean;
@@ -75,13 +76,13 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({ isOpen, initialDate
     // Load reference data on open
     useEffect(() => {
         if (isOpen) {
-            calendarApi.getEventTypes({ page: 0, size: 200 }).then((response) => {
+            rosterApi.getEventTypes({ page: 0, size: 200 }).then((response) => {
                 setEventTypes(response.content);
                 if (response.content.length > 0 && typeId === 0) {
                     setTypeId(response.content[0].id);
                 }
             }).catch(console.error);
-            calendarApi.getUnitTypes({ page: 0, size: 200 }).then((response) => {
+            rosterApi.getUnitTypes({ page: 0, size: 200 }).then((response) => {
                 setUnitTypes(response.content);
             }).catch(console.error);
         }

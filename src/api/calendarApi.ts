@@ -15,12 +15,6 @@ type UpdateEventResponse = UpdateEventPath['responses']['200']['content']['appli
 type GetNearestEventPath = paths['/api/v1/calendar/events/nearest']['get'];
 type GetNearestEventResponse = GetNearestEventPath['responses']['200']['content']['application/json'];
 
-type GetEventTypesPath = paths['/api/v1/roster/event-types']['get'];
-type GetEventTypesResponse = GetEventTypesPath['responses']['200']['content']['application/json'];
-type GetUnitTypesPath = paths['/api/v1/roster/unit-types']['get'];
-type GetUnitTypesResponse = GetUnitTypesPath['responses']['200']['content']['application/json'];
-type Pageable = components['schemas']['Pageable'];
-
 export const calendarApi = {
     getEvents: async (from: string, to: string, timezone?: string): Promise<GetEventsResponse> => {
         const params: Record<string, string> = { from, to };
@@ -60,19 +54,6 @@ export const calendarApi = {
         }
     },
 
-    getEventTypes: async (pageable?: Pageable): Promise<GetEventTypesResponse> => {
-        const response = await api.get<GetEventTypesResponse>('/v1/roster/event-types', {
-            params: pageable,
-        });
-        return response.data;
-    },
-
-    getUnitTypes: async (pageable?: Pageable): Promise<GetUnitTypesResponse> => {
-        const response = await api.get<GetUnitTypesResponse>('/v1/roster/unit-types', {
-            params: pageable,
-        });
-        return response.data;
-    },
 
     createEvent: async (data: CreateEventRequest): Promise<CreateEventResponse> => {
         const response = await api.post<CreateEventResponse>('/v1/calendar/events', data);

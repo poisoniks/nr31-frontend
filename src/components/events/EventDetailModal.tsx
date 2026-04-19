@@ -18,6 +18,7 @@ type UpdateMode = components['schemas']['UpdateEventRequest']['mode'];
 import { DateFormatter } from '../../utils/dateFormatter';
 import { calendarApi } from '../../api/calendarApi';
 import { localeApi } from '../../api/localeApi';
+import { rosterApi } from '../../api/rosterApi';
 import { useAuthStore } from '../../store/useAuthStore';
 import { useUIStore } from '../../store/useUIStore';
 
@@ -96,10 +97,10 @@ const EventDetailModal: React.FC<EventDetailModalProps> = ({ event, isOpen, onCl
     // Load reference data on first edit
     useEffect(() => {
         if (isEditing && eventTypes.length === 0) {
-            calendarApi.getEventTypes({ page: 0, size: 200 }).then((response) => {
+            rosterApi.getEventTypes({ page: 0, size: 200 }).then((response) => {
                 setEventTypes(response.content);
             }).catch(console.error);
-            calendarApi.getUnitTypes({ page: 0, size: 200 }).then((response) => {
+            rosterApi.getUnitTypes({ page: 0, size: 200 }).then((response) => {
                 setUnitTypes(response.content);
             }).catch(console.error);
         }

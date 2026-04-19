@@ -204,7 +204,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/files": {
+    "/api/v1/files/library/folders": {
         parameters: {
             query?: never;
             header?: never;
@@ -214,10 +214,54 @@ export interface paths {
         get?: never;
         put?: never;
         /**
-         * Upload a file
-         * @description Uploads a file and stores its metadata. Allowed types: image/png, image/jpeg, image/webp. Max size: 5MB.
+         * Create a folder
+         * @description Creates a new logical directory in the media library. Specify parentId to nest inside an existing folder; omit it for a root-level folder.
+         */
+        post: operations["createFolder"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/files/library/files": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List library files
+         * @description Returns a paginated list of LIBRARY files. Pass ?folderId to list files in a specific folder; omit it to list root-level files.
+         */
+        get: operations["listFiles"];
+        put?: never;
+        /**
+         * Upload a library file
+         * @description Uploads a file as a LIBRARY asset (immune to garbage collection). Pass folderId to place the file in a folder; omit it for root-level. Allowed types: image/png, image/jpeg, image/webp. Max size: 5MB.
          */
         post: operations["uploadFile"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/files/attachment": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Upload an attachment file
+         * @description Uploads a file as an ATTACHMENT (subject to garbage collection if not linked within 24h). Allowed types: image/png, image/jpeg, image/webp. Max size: 5MB.
+         */
+        post: operations["uploadAttachment"];
         delete?: never;
         options?: never;
         head?: never;
@@ -460,6 +504,54 @@ export interface paths {
         patch: operations["updateRoleQuota"];
         trace?: never;
     };
+    "/api/v1/files/library/folders/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Delete a folder
+         * @description Deletes a logical folder. Returns 409 Conflict if the folder contains files or sub-folders to prevent accidental mass-deletion of production assets.
+         */
+        delete: operations["deleteFolder"];
+        options?: never;
+        head?: never;
+        /**
+         * Rename or move a folder
+         * @description Updates the folder's name and/or parent. Pass a new parentId to move it; omit parentId (or set to null) to move it to root level.
+         */
+        patch: operations["updateFolder"];
+        trace?: never;
+    };
+    "/api/v1/files/library/files/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Delete a library file
+         * @description Drops the FileMetadata record (logical delete). The physical file on disk is left intact and will be cleaned up by the scheduled FileCleanupJob if no other metadata records reference the same hash.
+         */
+        delete: operations["deleteFile"];
+        options?: never;
+        head?: never;
+        /**
+         * Rename or move a library file
+         * @description Updates the file's user-defined name (original_name) and/or moves it to a different folder. The physical file on disk is completely untouched.
+         */
+        patch: operations["updateFile"];
+        trace?: never;
+    };
     "/api/v1/public/locales": {
         parameters: {
             query?: never;
@@ -475,6 +567,30 @@ export interface paths {
         put?: never;
         post?: never;
         delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/files/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get a file
+         * @description Resolves a file by UUID and returns an X-Accel-Redirect response for nginx to serve the physical file
+         */
+        get: operations["getFile"];
+        put?: never;
+        post?: never;
+        /**
+         * Delete a file
+         * @description Deletes a file's metadata by UUID. Physical file cleanup is handled by the scheduled garbage collector.
+         */
+        delete: operations["deleteFile_1"];
         options?: never;
         head?: never;
         patch?: never;
@@ -640,43 +756,10 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/files/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        /**
-         * Delete a file
-         * @description Deletes a file and its metadata by UUID
-         */
-        delete: operations["deleteFile"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
-        /** @description Generic error response */
-        ErrorResponse: {
-            /**
-             * @description Error message
-             * @example An unexpected error occurred
-             */
-            message: string;
-            /**
-             * Format: date-time
-             * @description Timestamp when the error occurred
-             */
-            timestamp: string;
-        };
         /** @description Response containing validation error details */
         ValidationErrorResponse: {
             /** @description Map of field names to error messages */
@@ -686,6 +769,19 @@ export interface components {
             /**
              * @description Error message
              * @example Validation failed
+             */
+            message: string;
+            /**
+             * Format: date-time
+             * @description Timestamp when the error occurred
+             */
+            timestamp: string;
+        };
+        /** @description Generic error response */
+        ErrorResponse: {
+            /**
+             * @description Error message
+             * @example An unexpected error occurred
              */
             message: string;
             /**
@@ -717,8 +813,9 @@ export interface components {
                 [key: string]: string;
             };
             /**
-             * @description Custom icon associated with this unit type
-             * @example /squad_icon
+             * Format: uuid
+             * @description UUID of the custom icon file to associate with this unit type
+             * @example 550e8400-e29b-41d4-a716-446655440000
              */
             customIcon?: string;
         };
@@ -751,8 +848,9 @@ export interface components {
                 [key: string]: string;
             };
             /**
-             * @description Custom icon associated with this unit type
-             * @example /squad_icon
+             * Format: uuid
+             * @description UUID of the custom icon file associated with this unit type
+             * @example 550e8400-e29b-41d4-a716-446655440000
              */
             customIcon?: string;
         };
@@ -769,8 +867,9 @@ export interface components {
                 [key: string]: string;
             };
             /**
-             * @description Custom icon associated with this event type
-             * @example /aim_icon
+             * Format: uuid
+             * @description UUID of the custom icon file to associate with this event type
+             * @example 550e8400-e29b-41d4-a716-446655440000
              */
             customIcon?: string;
         };
@@ -793,8 +892,9 @@ export interface components {
                 [key: string]: string;
             };
             /**
-             * @description Custom icon associated with this event type
-             * @example target
+             * Format: uuid
+             * @description UUID of the custom icon file associated with this event type
+             * @example 550e8400-e29b-41d4-a716-446655440000
              */
             customIcon?: string;
         };
@@ -1058,6 +1158,45 @@ export interface components {
             /** @description JSON schema used to validate the configValue */
             configSchema?: string;
         };
+        /** @description Request payload for creating or updating a media folder */
+        MediaFolderRequest: {
+            /**
+             * @description Folder name
+             * @example Banners
+             */
+            name: string;
+            /**
+             * Format: uuid
+             * @description UUID of the parent folder; omit for a root-level folder
+             * @example 550e8400-e29b-41d4-a716-446655440000
+             */
+            parentId?: string;
+        };
+        /** @description Representation of a media library folder */
+        MediaFolderDTO: {
+            /**
+             * Format: uuid
+             * @description Unique folder identifier
+             * @example 550e8400-e29b-41d4-a716-446655440000
+             */
+            id: string;
+            /**
+             * @description Folder name
+             * @example Banners
+             */
+            name: string;
+            /**
+             * Format: uuid
+             * @description Parent folder UUID; null for root-level folders
+             * @example 550e8400-e29b-41d4-a716-446655440001
+             */
+            parentId?: string;
+            /**
+             * Format: date-time
+             * @description Creation timestamp
+             */
+            createdAt: string;
+        };
         /** @description Response containing uploaded file metadata */
         FileUploadResponse: {
             /**
@@ -1072,8 +1211,8 @@ export interface components {
              */
             originalName: string;
             /**
-             * @description Temporary download URL for the file
-             * @example upload/550e8400-e29b-41d4-a716-446655440000
+             * @description File access URL
+             * @example /api/v1/files/550e8400-e29b-41d4-a716-446655440000
              */
             url: string;
             /**
@@ -1175,6 +1314,64 @@ export interface components {
              */
             password: string;
         };
+        /** @description Payload for patching a library file record (rename and/or move) */
+        LibraryFileUpdateRequest: {
+            /**
+             * @description New user-defined name for the file (renames original_name); omit to leave unchanged
+             * @example new-banner.png
+             */
+            name?: string;
+            /**
+             * Format: uuid
+             * @description UUID of the target folder; send null to move the file to root level; omit the field to leave unchanged
+             */
+            folderId?: string;
+        };
+        /** @description Rich metadata representation of a file in the media library */
+        FileMetadataDTO: {
+            /**
+             * Format: uuid
+             * @description Unique file identifier
+             * @example 550e8400-e29b-41d4-a716-446655440000
+             */
+            id: string;
+            /**
+             * @description User-defined file name (original_name column)
+             * @example banner-spring.png
+             */
+            name: string;
+            /**
+             * @description Public access URL
+             * @example /api/v1/files/550e8400-e29b-41d4-a716-446655440000
+             */
+            url: string;
+            /**
+             * @description MIME content type
+             * @example image/png
+             */
+            contentType: string;
+            /**
+             * Format: int64
+             * @description File size in bytes
+             * @example 204800
+             */
+            sizeBytes: number;
+            /**
+             * Format: uuid
+             * @description UUID of the containing folder; null if file lives at root level
+             */
+            folderId?: string;
+            /**
+             * @description Username of the uploader
+             * @example admin
+             */
+            uploaderUsername: string;
+            /**
+             * Format: date-time
+             * @description Upload timestamp
+             */
+            createdAt: string;
+        };
         Pageable: {
             /** Format: int32 */
             page: number;
@@ -1222,6 +1419,10 @@ export interface components {
              * @example English
              */
             description: string;
+        };
+        PagedModel: {
+            content: unknown[];
+            page: components["schemas"]["PageMetadata"];
         };
         PagedModelUserDTO: {
             content: components["schemas"]["UserDTO"][];
@@ -1302,7 +1503,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -1325,6 +1526,15 @@ export interface operations {
             };
             /** @description Unit type not found */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1382,7 +1592,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -1405,6 +1615,15 @@ export interface operations {
             };
             /** @description Unit type not found */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1456,7 +1675,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -1479,6 +1698,15 @@ export interface operations {
             };
             /** @description Unit type not found */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1532,7 +1760,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -1555,6 +1783,15 @@ export interface operations {
             };
             /** @description Event type not found */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1612,7 +1849,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -1635,6 +1872,15 @@ export interface operations {
             };
             /** @description Event type not found */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1686,7 +1932,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -1709,6 +1955,15 @@ export interface operations {
             };
             /** @description Event type not found */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1792,6 +2047,15 @@ export interface operations {
                 };
                 content?: never;
             };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
             /** @description Content Too Large */
             413: {
                 headers: {
@@ -1865,6 +2129,15 @@ export interface operations {
                 };
                 content?: never;
             };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
             /** @description Content Too Large */
             413: {
                 headers: {
@@ -1911,7 +2184,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -1934,6 +2207,15 @@ export interface operations {
             };
             /** @description Role not found */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1991,7 +2273,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -2014,6 +2296,15 @@ export interface operations {
             };
             /** @description Role not found */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -2065,7 +2356,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -2088,6 +2379,15 @@ export interface operations {
             };
             /** @description Role not found */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -2145,7 +2445,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -2168,6 +2468,15 @@ export interface operations {
             };
             /** @description Permission not found */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -2221,7 +2530,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -2244,6 +2553,15 @@ export interface operations {
             };
             /** @description Config not found */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -2301,7 +2619,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -2324,6 +2642,15 @@ export interface operations {
             };
             /** @description Not Found */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -2377,7 +2704,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -2400,6 +2727,15 @@ export interface operations {
             };
             /** @description Not Found */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -2455,7 +2791,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -2478,6 +2814,15 @@ export interface operations {
             };
             /** @description Not Found */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -2531,7 +2876,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -2554,6 +2899,15 @@ export interface operations {
             };
             /** @description Not Found */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -2609,7 +2963,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -2639,6 +2993,174 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Content Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    createFolder: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MediaFolderRequest"];
+            };
+        };
+        responses: {
+            /** @description Folder created successfully */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MediaFolderDTO"];
+                };
+            };
+            /** @description Validation error (blank name, name too long) */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Insufficient permissions */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Parent folder not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Content Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    listFiles: {
+        parameters: {
+            query: {
+                folderId?: string;
+                pageable: components["schemas"]["Pageable"];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Page of file metadata */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PagedModel"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
+                };
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Insufficient permissions */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Folder not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
             /** @description Content Too Large */
             413: {
                 headers: {
@@ -2660,6 +3182,90 @@ export interface operations {
         };
     };
     uploadFile: {
+        parameters: {
+            query?: {
+                folderId?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "multipart/form-data": {
+                    /** Format: binary */
+                    file: string;
+                };
+            };
+        };
+        responses: {
+            /** @description File uploaded successfully */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FileUploadResponse"];
+                };
+            };
+            /** @description Invalid file (empty, wrong type, or too large) */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Insufficient permissions */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Folder not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Content Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    uploadAttachment: {
         parameters: {
             query?: never;
             header?: never;
@@ -2707,6 +3313,15 @@ export interface operations {
             };
             /** @description Not Found */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -2790,6 +3405,15 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
             /** @description Content Too Large */
             413: {
                 headers: {
@@ -2859,6 +3483,15 @@ export interface operations {
             };
             /** @description Not Found */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -2940,6 +3573,15 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
             /** @description Content Too Large */
             413: {
                 headers: {
@@ -3005,6 +3647,15 @@ export interface operations {
             };
             /** @description Not Found */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -3086,6 +3737,15 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
             /** @description Content Too Large */
             413: {
                 headers: {
@@ -3131,7 +3791,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -3154,6 +3814,15 @@ export interface operations {
             };
             /** @description User or Role not found */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -3206,7 +3875,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -3229,6 +3898,15 @@ export interface operations {
             };
             /** @description User or Role not found */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -3282,7 +3960,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -3305,6 +3983,15 @@ export interface operations {
             };
             /** @description Not Found */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -3360,7 +4047,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -3383,6 +4070,15 @@ export interface operations {
             };
             /** @description Not Found */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -3435,7 +4131,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -3458,6 +4154,15 @@ export interface operations {
             };
             /** @description Role or Permission not found */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -3510,7 +4215,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -3533,6 +4238,15 @@ export interface operations {
             };
             /** @description Role or Permission not found */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -3582,7 +4296,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -3605,6 +4319,15 @@ export interface operations {
             };
             /** @description Not Found */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -3654,7 +4377,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -3677,6 +4400,15 @@ export interface operations {
             };
             /** @description Not Found */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -3726,7 +4458,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -3749,6 +4481,15 @@ export interface operations {
             };
             /** @description Not Found */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -3802,7 +4543,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -3825,6 +4566,329 @@ export interface operations {
             };
             /** @description Role not found */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Content Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    deleteFolder: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Folder deleted successfully */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
+                };
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Insufficient permissions */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Folder not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Folder is not empty */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Content Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    updateFolder: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MediaFolderRequest"];
+            };
+        };
+        responses: {
+            /** @description Folder updated successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MediaFolderDTO"];
+                };
+            };
+            /** @description Validation error */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Insufficient permissions */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Folder or parent folder not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Content Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    deleteFile: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description File deleted successfully */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
+                };
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Insufficient permissions */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description File not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Content Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    updateFile: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LibraryFileUpdateRequest"];
+            };
+        };
+        responses: {
+            /** @description File metadata updated */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FileMetadataDTO"];
+                };
+            };
+            /** @description Validation error */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Insufficient permissions */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description File or target folder not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Conflict */
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -3878,7 +4942,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -3901,6 +4965,173 @@ export interface operations {
             };
             /** @description Not Found */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Content Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    getFile: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description File resolved, X-Accel-Redirect header set */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description File not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Content Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    deleteFile_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description File deleted successfully */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
+                };
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Insufficient permissions */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description File not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Conflict */
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -3955,7 +5186,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -3978,6 +5209,15 @@ export interface operations {
             };
             /** @description No event found */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -4031,7 +5271,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -4054,6 +5294,15 @@ export interface operations {
             };
             /** @description Not Found */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -4108,7 +5357,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -4131,6 +5380,15 @@ export interface operations {
             };
             /** @description Not Found */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -4184,7 +5442,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -4207,6 +5465,15 @@ export interface operations {
             };
             /** @description Not Found */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -4263,7 +5530,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -4286,6 +5553,15 @@ export interface operations {
             };
             /** @description Log file not found */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -4339,7 +5615,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -4362,6 +5638,15 @@ export interface operations {
             };
             /** @description Not Found */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -4413,7 +5698,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -4436,6 +5721,15 @@ export interface operations {
             };
             /** @description Not Found */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -4489,7 +5783,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -4519,73 +5813,14 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
-            /** @description Content Too Large */
-            413: {
+            /** @description Conflict */
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
-            };
-            /** @description Internal Server Error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["ErrorResponse"];
-                };
-            };
-        };
-    };
-    deleteFile: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description File deleted successfully */
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
-                };
-            };
-            /** @description Not authenticated */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Insufficient permissions */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description File not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
             };
             /** @description Content Too Large */
             413: {
