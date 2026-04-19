@@ -6,6 +6,7 @@ import { useTranslation, Trans } from 'react-i18next';
 import DiscordWidget from '../components/ui/DiscordWidget';
 import YoutubeWidget from '../components/ui/YoutubeWidget';
 import { calendarApi } from '../api/calendarApi';
+import { libraryApi } from '../api/libraryApi';
 import type { components } from '../api/types';
 
 type CalendarEventDTO = components['schemas']['CalendarEventDTO'];
@@ -285,7 +286,7 @@ const Home: React.FC = () => {
                                 <h4 className="font-serif text-lg font-bold mb-4 flex items-center justify-between text-nr-text relative z-10">
                                     <div className="flex items-center gap-2">
                                         {nearestEvent.type?.customIcon ? (
-                                            <img src={nearestEvent.type.customIcon} alt="" className="w-5 h-5 object-contain" />
+                                            <img src={libraryApi.getFileUrl(nearestEvent.type.customIcon, 20)} alt="" className="w-5 h-5 object-contain" />
                                         ) : (
                                             <Swords size={20} className="text-nr-accent" />
                                         )}
@@ -316,7 +317,7 @@ const Home: React.FC = () => {
                                         {nearestEvent.participatingUnits.map(unit => (
                                             <div key={unit.id} className="relative group cursor-help transition-transform hover:scale-110">
                                                 {unit.customIcon ? (
-                                                    <img src={unit.customIcon} alt={localized(unit.name)} className="w-7 h-7 object-contain drop-shadow-md" />
+                                                    <img src={libraryApi.getFileUrl(unit.customIcon, 28)} alt={localized(unit.name)} className="w-7 h-7 object-contain drop-shadow-md" />
                                                 ) : (
                                                     <div className="w-7 h-7 bg-nr-border/50 rounded-sm flex items-center justify-center text-[10px] font-bold text-nr-text shadow-sm border border-nr-border">{localized(unit.name).substring(0,2)}</div>
                                                 )}

@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Loader2, Shield } from 'lucide-react';
 import Button from '../components/ui/Button';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
 import { calendarApi } from '../api/calendarApi';
+import { libraryApi } from '../api/libraryApi';
 import type { components } from '../api/types';
 
 type CalendarEventDTO = components['schemas']['CalendarEventDTO'];
@@ -98,7 +99,7 @@ const EventBox = ({ ev, lang, onClick }: { ev: CalendarEventDTO, lang: string, o
         >
             <div className="flex items-center gap-1.5 w-full">
                 {ev.type?.customIcon ? (
-                    <img src={ev.type.customIcon} alt="" className="w-3 h-3 md:w-4 md:h-4 object-contain shrink-0" />
+                    <img src={libraryApi.getFileUrl(ev.type.customIcon, 16)} alt="" className="w-3 h-3 md:w-4 md:h-4 object-contain shrink-0" />
                 ) : (
                     <div className="w-3 h-3 md:w-4 md:h-4 rounded-full bg-nr-accent/50 shrink-0" />
                 )}
@@ -111,14 +112,22 @@ const EventBox = ({ ev, lang, onClick }: { ev: CalendarEventDTO, lang: string, o
                     {DateFormatter.formatTime(ev.start, lang)}
                 </span>
                 {ev.participatingUnits && ev.participatingUnits.length > 0 && (
-                    <div className="flex -space-x-1 shrink-0 ml-1">
+                    <div className="flex flex-wrap gap-0.5 shrink-0 ml-1">
                         {ev.participatingUnits.slice(0, 4).map(unit => (
-                            <div 
+                            <div
                                 key={unit.id}
                                 title={localized(unit.description || unit.name, lang)}
-                                className="w-3.5 h-3.5 md:w-4 md:h-4 rounded-full bg-nr-accent/60 border border-nr-bg flex items-center justify-center text-[7px] md:text-[8px] font-bold text-white shadow-sm"
+                                className="flex items-center justify-center w-3.5 h-3.5 md:w-4 md:h-4 shrink-0"
                             >
-                                {localized(unit.name, lang).charAt(0).toUpperCase()}
+                                {unit.customIcon ? (
+                                    <img
+                                        src={libraryApi.getFileUrl(unit.customIcon, 16)}
+                                        alt={localized(unit.name, lang)}
+                                        className="w-full h-full object-contain"
+                                    />
+                                ) : (
+                                    <Shield className="w-full h-full text-nr-accent/70" />
+                                )}
                             </div>
                         ))}
                     </div>

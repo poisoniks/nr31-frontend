@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ChevronDown, Repeat, Clock, Globe, Lock } from 'lucide-react';
+import { ChevronDown, Repeat, Clock, Globe, Lock, Shield } from 'lucide-react';
 import Modal from '../ui/Modal';
 import EditBookmarkButton from '../ui/EditBookmarkButton';
 import DeleteBookmarkButton from '../ui/DeleteBookmarkButton';
@@ -18,6 +18,7 @@ type UpdateMode = components['schemas']['UpdateEventRequest']['mode'];
 import { DateFormatter } from '../../utils/dateFormatter';
 import { calendarApi } from '../../api/calendarApi';
 import { localeApi } from '../../api/localeApi';
+import { libraryApi } from '../../api/libraryApi';
 import { rosterApi } from '../../api/rosterApi';
 import { useAuthStore } from '../../store/useAuthStore';
 import { useUIStore } from '../../store/useUIStore';
@@ -268,7 +269,7 @@ const EventDetailModal: React.FC<EventDetailModalProps> = ({ event, isOpen, onCl
     const modalTitle = (
         <>
             {event.type.customIcon && (
-                <img src={event.type.customIcon} alt="" className="w-6 h-6 object-contain shrink-0" />
+                <img src={libraryApi.getFileUrl(event.type.customIcon, 24)} alt="" className="w-6 h-6 object-contain shrink-0" />
             )}
             <span>{titleText}</span>
         </>
@@ -321,24 +322,25 @@ const EventDetailModal: React.FC<EventDetailModalProps> = ({ event, isOpen, onCl
                     )}
 
                     {event.participatingUnits.length > 0 && !isEditing && (
-                        <div className="ml-1 flex items-center -space-x-1">
+                        <div className="flex items-center gap-1.5 flex-wrap">
                             {event.participatingUnits.map((u) => {
                                 const unitName = localized(u.name, lang);
                                 return (
                                     <div
                                         key={u.id}
-                                        className="relative group cursor-help z-10 hover:z-20 transition-transform hover:scale-110"
                                         title={unitName}
+                                        className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-nr-accent/10 border border-nr-accent/20 text-nr-accent cursor-help"
                                     >
                                         {u.customIcon ? (
-                                            <div className="w-6 h-6 rounded-full bg-black/40 border border-nr-border p-0.5 shadow-sm overflow-hidden flex items-center justify-center">
-                                                <img src={u.customIcon} alt={unitName} className="w-full h-full object-contain" />
-                                            </div>
+                                            <img
+                                                src={libraryApi.getFileUrl(u.customIcon, 14)}
+                                                alt={unitName}
+                                                className="w-3.5 h-3.5 object-contain shrink-0"
+                                            />
                                         ) : (
-                                            <div className="w-6 h-6 rounded-full bg-nr-accent border border-nr-bg flex items-center justify-center text-white text-[10px] font-bold shadow-sm">
-                                                {unitName.charAt(0).toUpperCase()}
-                                            </div>
+                                            <Shield className="w-3 h-3 shrink-0" />
                                         )}
+                                        {unitName}
                                     </div>
                                 );
                             })}
@@ -657,7 +659,7 @@ const EventDetailModal: React.FC<EventDetailModalProps> = ({ event, isOpen, onCl
                                             `}
                                         >
                                             {ut.customIcon && (
-                                                <img src={ut.customIcon} alt="" className="w-3.5 h-3.5 object-contain" />
+                                                <img src={libraryApi.getFileUrl(ut.customIcon, 14)} alt="" className="w-3.5 h-3.5 object-contain" />
                                             )}
                                             {name}
                                         </button>

@@ -12,6 +12,7 @@ type Recurrence = components['schemas']['Recurrence'];
 import { calendarApi } from '../../api/calendarApi';
 import { localeApi } from '../../api/localeApi';
 import { rosterApi } from '../../api/rosterApi';
+import { libraryApi } from '../../api/libraryApi';
 
 interface EventCreateModalProps {
     isOpen: boolean;
@@ -321,7 +322,7 @@ const EventCreateModal: React.FC<EventCreateModalProps> = ({ isOpen, initialDate
                                         `}
                                     >
                                         {ut.customIcon && (
-                                            <img src={ut.customIcon} alt="" className="w-3.5 h-3.5 object-contain" />
+                                            <img src={libraryApi.getFileUrl(ut.customIcon, 14)} alt="" className="w-3.5 h-3.5 object-contain" />
                                         )}
                                         {name}
                                     </button>
