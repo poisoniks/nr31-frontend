@@ -62,6 +62,7 @@ const RolesTab: React.FC<RolesTabProps> = ({ lang }) => {
     const [roleName, setRoleName] = useState('');
     const [localizedName, setLocalizedName] = useState<Record<string, string>>({});
     const [nameLocale, setNameLocale] = useState(lang);
+    const [fileQuotaMB, setFileQuotaMB] = useState<string>('');
     const [saving, setSaving] = useState(false);
 
     // Delete confirm
@@ -104,6 +105,7 @@ const RolesTab: React.FC<RolesTabProps> = ({ lang }) => {
         setRoleName('');
         setLocalizedName({});
         setNameLocale(lang);
+        setFileQuotaMB('');
         setModalOpen(true);
     };
 
@@ -112,6 +114,7 @@ const RolesTab: React.FC<RolesTabProps> = ({ lang }) => {
         setRoleName(role.name);
         setLocalizedName({ ...(role.localizedName || {}) });
         setNameLocale(lang);
+        setFileQuotaMB(role.filesUploadQuotaBytes ? String(Math.round(role.filesUploadQuotaBytes / (1024 * 1024))) : '');
         setModalOpen(true);
     };
 
@@ -129,15 +132,19 @@ const RolesTab: React.FC<RolesTabProps> = ({ lang }) => {
                 });
             }
 
+            const quotaBytes = fileQuotaMB.trim() ? Math.round(parseFloat(fileQuotaMB) * 1024 * 1024) : undefined;
+
             if (editingRole) {
                 await accessApi.updateRole(editingRole.id, {
                     name: roleName.trim(),
                     localizedName: Object.keys(cleanName).length > 0 ? cleanName : undefined,
+                    filesUploadQuotaBytes: quotaBytes,
                 });
             } else {
                 await accessApi.createRole({
                     name: roleName.trim(),
                     localizedName: Object.keys(cleanName).length > 0 ? cleanName : undefined,
+                    filesUploadQuotaBytes: quotaBytes,
                 });
             }
             setModalOpen(false);
@@ -332,6 +339,23 @@ const RolesTab: React.FC<RolesTabProps> = ({ lang }) => {
                             onChange={(e) => setLocalizedName({ ...localizedName, [nameLocale]: e.target.value })}
                             placeholder={t('admin.access.roles.localized_name_placeholder')}
                         />
+                    </div>
+                    <div>
+                        <label className="text-xs font-bold text-nr-text/50 uppercase mb-1 block">
+                            {t('admin.access.roles.file_quota')}
+                        </label>
+                        <input
+                            type="number"
+                            min="0"
+                            step="1"
+                            className={inputClass}
+                            value={fileQuotaMB}
+                            onChange={(e) => setFileQuotaMB(e.target.value)}
+                            placeholder={t('admin.access.roles.file_quota_placeholder')}
+                        />
+                        <p className="text-xs text-nr-text/40 mt-1">
+                            {t('admin.access.roles.file_quota_hint')}
+                        </p>
                     </div>
                     <div className="flex gap-2 pt-2">
                         <Button variant="primary" size="sm" onClick={handleSave} disabled={saving || !roleName.trim()} className="flex-1">
