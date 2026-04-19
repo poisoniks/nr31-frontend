@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ChevronDown, ChevronRight, Plus, Pencil, Trash2, Layers, CalendarDays } from 'lucide-react';
+import { ChevronDown, ChevronRight, Plus, Pencil, Trash2, Layers, CalendarDays, Image as ImageIcon } from 'lucide-react';
 import { rosterApi } from '../../api/rosterApi';
+import { libraryApi } from '../../api/libraryApi';
 import { localeApi } from '../../api/localeApi';
 import { useUIStore } from '../../store/useUIStore';
 import type { components } from '../../api/types';
@@ -10,6 +11,7 @@ import Button from '../../components/ui/Button';
 import LocaleTabBar from '../../components/ui/LocaleTabBar';
 import Pagination from '../../components/ui/Pagination';
 import { usePagination } from '../../hooks/usePagination';
+import FileLibraryModal from '../../components/library/FileLibraryModal';
 
 type UnitTypeDTO = components['schemas']['UnitTypeDTO'];
 type EventTypeDTO = components['schemas']['EventTypeDTO'];
@@ -48,10 +50,12 @@ const UnitTypesSection: React.FC<{ lang: string }> = ({ lang }) => {
     const [editingEntity, setEditingEntity] = useState<UnitTypeDTO | null>(null);
     const [name, setName] = useState<Record<string, string>>({});
     const [description, setDescription] = useState<Record<string, string>>({});
+    const [customIcon, setCustomIcon] = useState<string | undefined>(undefined);
     const [nameLocale, setNameLocale] = useState(lang);
     const [descLocale, setDescLocale] = useState(lang);
     const [saving, setSaving] = useState(false);
 
+    const [libraryModalOpen, setLibraryModalOpen] = useState(false);
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const [deletingId, setDeletingId] = useState<number | null>(null);
 
@@ -80,6 +84,7 @@ const UnitTypesSection: React.FC<{ lang: string }> = ({ lang }) => {
         setEditingEntity(null);
         setName({});
         setDescription({});
+        setCustomIcon(undefined);
         setNameLocale(lang);
         setDescLocale(lang);
         setModalOpen(true);
@@ -89,6 +94,7 @@ const UnitTypesSection: React.FC<{ lang: string }> = ({ lang }) => {
         setEditingEntity(entity);
         setName({ ...entity.name });
         setDescription(entity.description ? { ...entity.description } : {});
+        setCustomIcon(entity.customIcon);
         setNameLocale(lang);
         setDescLocale(lang);
         setModalOpen(true);
@@ -114,11 +120,13 @@ const UnitTypesSection: React.FC<{ lang: string }> = ({ lang }) => {
                 await rosterApi.updateUnitType(editingEntity.id, {
                     name: finalName,
                     description: Object.keys(finalDesc).length > 0 ? finalDesc : undefined,
+                    customIcon: customIcon,
                 });
             } else {
                 await rosterApi.createUnitType({
                     name: finalName,
                     description: Object.keys(finalDesc).length > 0 ? finalDesc : undefined,
+                    customIcon: customIcon,
                 });
             }
             setModalOpen(false);
@@ -148,7 +156,7 @@ const UnitTypesSection: React.FC<{ lang: string }> = ({ lang }) => {
     return (
         <div className="bg-nr-bg border border-nr-border rounded-lg overflow-hidden shadow-sm">
             <button
-                className="w-full flex items-center justify-between px-5 py-4 hover:bg-nr-border/20 transition-colors"
+                className="w-full flex items-center justify-between px-5 py-4 hover:bg-nr-border/20 transition-colors cursor-pointer"
                 onClick={() => setIsExpanded(!isExpanded)}
             >
                 <div className="flex items-center gap-3">
@@ -175,6 +183,7 @@ const UnitTypesSection: React.FC<{ lang: string }> = ({ lang }) => {
                                 <thead className="bg-nr-border/30 text-xs uppercase font-bold text-nr-text/70 border-b border-nr-border">
                                     <tr>
                                         <th className="px-4 py-3">ID</th>
+                                        <th className="px-4 py-3">{t('admin.entities.icon')}</th>
                                         <th className="px-4 py-3">{t('admin.entities.name')}</th>
                                         <th className="px-4 py-3">{t('admin.entities.description')}</th>
                                         <th className="px-4 py-3 text-right">{t('admin.entities.actions')}</th>
@@ -183,11 +192,11 @@ const UnitTypesSection: React.FC<{ lang: string }> = ({ lang }) => {
                                 <tbody>
                                     {loading ? (
                                         Array.from({ length: size }).map((_, i) => (
-                                            <SkeletonRow key={i} cols={4} />
+                                            <SkeletonRow key={i} cols={5} />
                                         ))
                                     ) : entities.length === 0 ? (
                                         <tr>
-                                            <td colSpan={4} className="px-4 py-8 text-center text-nr-text/50">
+                                            <td colSpan={5} className="px-4 py-8 text-center text-nr-text/50">
                                                 {t('admin.entities.empty')}
                                             </td>
                                         </tr>
@@ -195,6 +204,19 @@ const UnitTypesSection: React.FC<{ lang: string }> = ({ lang }) => {
                                         entities.map((ent) => (
                                             <tr key={ent.id} className="border-b border-nr-border/30 hover:bg-nr-border/10 transition-colors">
                                                 <td className="px-4 py-3 font-mono text-nr-text/70">{ent.id}</td>
+                                                <td className="px-4 py-3">
+                                                    {ent.customIcon ? (
+                                                        <img 
+                                                            src={libraryApi.getFileUrl(ent.customIcon, 40)} 
+                                                            alt="" 
+                                                            className="w-8 h-8 rounded object-cover border border-nr-border/50"
+                                                        />
+                                                    ) : (
+                                                        <div className="w-8 h-8 rounded bg-nr-border/20 flex items-center justify-center text-nr-text/30">
+                                                            <ImageIcon size={14} />
+                                                        </div>
+                                                    )}
+                                                </td>
                                                 <td className="px-4 py-3 font-bold">{localized(ent.name, lang)}</td>
                                                 <td className="px-4 py-3 text-nr-text/70 max-w-xs truncate">
                                                     {localized(ent.description, lang) || '—'}
@@ -203,13 +225,13 @@ const UnitTypesSection: React.FC<{ lang: string }> = ({ lang }) => {
                                                     <div className="flex items-center justify-end gap-2">
                                                         <button
                                                             onClick={() => openEditModal(ent)}
-                                                            className="p-1.5 text-nr-text/60 hover:text-blue-400 hover:bg-blue-500/10 rounded-md transition-colors"
+                                                            className="p-1.5 text-nr-text/60 hover:text-blue-400 hover:bg-blue-500/10 rounded-md transition-colors cursor-pointer"
                                                         >
                                                             <Pencil size={14} />
                                                         </button>
                                                         <button
                                                             onClick={() => { setDeletingId(ent.id); setDeleteModalOpen(true); }}
-                                                            className="p-1.5 text-nr-text/60 hover:text-red-400 hover:bg-red-500/10 rounded-md transition-colors"
+                                                            className="p-1.5 text-nr-text/60 hover:text-red-400 hover:bg-red-500/10 rounded-md transition-colors cursor-pointer"
                                                         >
                                                             <Trash2 size={14} />
                                                         </button>
@@ -270,6 +292,35 @@ const UnitTypesSection: React.FC<{ lang: string }> = ({ lang }) => {
                         />
                     </div>
 
+                    {/* Icon Selection */}
+                    <div>
+                        <label className="text-xs font-bold text-nr-text/50 uppercase mb-1 block">
+                            {t('admin.entities.icon')}
+                        </label>
+                        <div className="flex items-center gap-4">
+                            <div className="w-16 h-16 rounded-lg bg-nr-border/20 flex items-center justify-center overflow-hidden border border-nr-border">
+                                {customIcon ? (
+                                    <img src={libraryApi.getFileUrl(customIcon, 64)} alt="Preview" className="w-full h-full object-cover" />
+                                ) : (
+                                    <ImageIcon size={24} className="text-nr-text/20" />
+                                )}
+                            </div>
+                            <div className="flex flex-col gap-2">
+                                <Button variant="ghost" size="sm" onClick={() => setLibraryModalOpen(true)}>
+                                    {t('admin.entities.icon_change')}
+                                </Button>
+                                {customIcon && (
+                                    <button 
+                                        onClick={() => setCustomIcon(undefined)}
+                                        className="text-[10px] text-red-400 hover:text-red-300 transition-colors text-left pl-2 cursor-pointer"
+                                    >
+                                        {t('admin.entities.icon_remove')}
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+
                     <div className="flex gap-2 pt-2">
                         <Button variant="primary" size="sm" onClick={handleSave} disabled={saving} className="flex-1">
                             {t('admin.access.modal.save')}
@@ -280,6 +331,14 @@ const UnitTypesSection: React.FC<{ lang: string }> = ({ lang }) => {
                     </div>
                 </div>
             </Modal>
+
+            {/* File Library Modal */}
+            <FileLibraryModal 
+                isOpen={libraryModalOpen}
+                onClose={() => setLibraryModalOpen(false)}
+                onSelect={(file) => setCustomIcon(file.id)}
+                selectedFileId={customIcon}
+            />
 
             {/* Delete Confirm Modal */}
             <Modal isOpen={deleteModalOpen} onClose={() => !saving && setDeleteModalOpen(false)} title={t('admin.access.modal.delete')}>
@@ -324,9 +383,11 @@ const EventTypesSection: React.FC<{ lang: string }> = ({ lang }) => {
     const [modalOpen, setModalOpen] = useState(false);
     const [editingEntity, setEditingEntity] = useState<EventTypeDTO | null>(null);
     const [name, setName] = useState<Record<string, string>>({});
+    const [customIcon, setCustomIcon] = useState<string | undefined>(undefined);
     const [nameLocale, setNameLocale] = useState(lang);
     const [saving, setSaving] = useState(false);
 
+    const [libraryModalOpen, setLibraryModalOpen] = useState(false);
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const [deletingId, setDeletingId] = useState<number | null>(null);
 
@@ -352,6 +413,7 @@ const EventTypesSection: React.FC<{ lang: string }> = ({ lang }) => {
     const openCreateModal = () => {
         setEditingEntity(null);
         setName({});
+        setCustomIcon(undefined);
         setNameLocale(lang);
         setModalOpen(true);
     };
@@ -359,6 +421,7 @@ const EventTypesSection: React.FC<{ lang: string }> = ({ lang }) => {
     const openEditModal = (entity: EventTypeDTO) => {
         setEditingEntity(entity);
         setName({ ...entity.name });
+        setCustomIcon(entity.customIcon);
         setNameLocale(lang);
         setModalOpen(true);
     };
@@ -377,10 +440,12 @@ const EventTypesSection: React.FC<{ lang: string }> = ({ lang }) => {
             if (editingEntity) {
                 await rosterApi.updateEventType(editingEntity.id, {
                     name: finalName,
+                    customIcon: customIcon,
                 });
             } else {
                 await rosterApi.createEventType({
                     name: finalName,
+                    customIcon: customIcon,
                 });
             }
             setModalOpen(false);
@@ -410,7 +475,7 @@ const EventTypesSection: React.FC<{ lang: string }> = ({ lang }) => {
     return (
         <div className="bg-nr-bg border border-nr-border rounded-lg overflow-hidden shadow-sm">
             <button
-                className="w-full flex items-center justify-between px-5 py-4 hover:bg-nr-border/20 transition-colors"
+                className="w-full flex items-center justify-between px-5 py-4 hover:bg-nr-border/20 transition-colors cursor-pointer"
                 onClick={() => setIsExpanded(!isExpanded)}
             >
                 <div className="flex items-center gap-3">
@@ -437,6 +502,7 @@ const EventTypesSection: React.FC<{ lang: string }> = ({ lang }) => {
                                 <thead className="bg-nr-border/30 text-xs uppercase font-bold text-nr-text/70 border-b border-nr-border">
                                     <tr>
                                         <th className="px-4 py-3">ID</th>
+                                        <th className="px-4 py-3">{t('admin.entities.icon')}</th>
                                         <th className="px-4 py-3 w-full">{t('admin.entities.name')}</th>
                                         <th className="px-4 py-3 text-right">{t('admin.entities.actions')}</th>
                                     </tr>
@@ -444,11 +510,11 @@ const EventTypesSection: React.FC<{ lang: string }> = ({ lang }) => {
                                 <tbody>
                                     {loading ? (
                                         Array.from({ length: size }).map((_, i) => (
-                                            <SkeletonRow key={i} cols={3} />
+                                            <SkeletonRow key={i} cols={4} />
                                         ))
                                     ) : entities.length === 0 ? (
                                         <tr>
-                                            <td colSpan={3} className="px-4 py-8 text-center text-nr-text/50">
+                                            <td colSpan={4} className="px-4 py-8 text-center text-nr-text/50">
                                                 {t('admin.entities.empty')}
                                             </td>
                                         </tr>
@@ -456,18 +522,31 @@ const EventTypesSection: React.FC<{ lang: string }> = ({ lang }) => {
                                         entities.map((ent) => (
                                             <tr key={ent.id} className="border-b border-nr-border/30 hover:bg-nr-border/10 transition-colors">
                                                 <td className="px-4 py-3 font-mono text-nr-text/70">{ent.id}</td>
+                                                <td className="px-4 py-3">
+                                                    {ent.customIcon ? (
+                                                        <img 
+                                                            src={libraryApi.getFileUrl(ent.customIcon, 40)} 
+                                                            alt="" 
+                                                            className="w-8 h-8 rounded object-cover border border-nr-border/50"
+                                                        />
+                                                    ) : (
+                                                        <div className="w-8 h-8 rounded bg-nr-border/20 flex items-center justify-center text-nr-text/30">
+                                                            <ImageIcon size={14} />
+                                                        </div>
+                                                    )}
+                                                </td>
                                                 <td className="px-4 py-3 font-bold">{localized(ent.name, lang)}</td>
                                                 <td className="px-4 py-3">
                                                     <div className="flex items-center justify-end gap-2">
                                                         <button
                                                             onClick={() => openEditModal(ent)}
-                                                            className="p-1.5 text-nr-text/60 hover:text-blue-400 hover:bg-blue-500/10 rounded-md transition-colors"
+                                                            className="p-1.5 text-nr-text/60 hover:text-blue-400 hover:bg-blue-500/10 rounded-md transition-colors cursor-pointer"
                                                         >
                                                             <Pencil size={14} />
                                                         </button>
                                                         <button
                                                             onClick={() => { setDeletingId(ent.id); setDeleteModalOpen(true); }}
-                                                            className="p-1.5 text-nr-text/60 hover:text-red-400 hover:bg-red-500/10 rounded-md transition-colors"
+                                                            className="p-1.5 text-nr-text/60 hover:text-red-400 hover:bg-red-500/10 rounded-md transition-colors cursor-pointer"
                                                         >
                                                             <Trash2 size={14} />
                                                         </button>
@@ -512,6 +591,35 @@ const EventTypesSection: React.FC<{ lang: string }> = ({ lang }) => {
                         />
                     </div>
 
+                    {/* Icon Selection */}
+                    <div>
+                        <label className="text-xs font-bold text-nr-text/50 uppercase mb-1 block">
+                            {t('admin.entities.icon')}
+                        </label>
+                        <div className="flex items-center gap-4">
+                            <div className="w-16 h-16 rounded-lg bg-nr-border/20 flex items-center justify-center overflow-hidden border border-nr-border">
+                                {customIcon ? (
+                                    <img src={libraryApi.getFileUrl(customIcon, 64)} alt="Preview" className="w-full h-full object-cover" />
+                                ) : (
+                                    <ImageIcon size={24} className="text-nr-text/20" />
+                                )}
+                            </div>
+                            <div className="flex flex-col gap-2">
+                                <Button variant="ghost" size="sm" onClick={() => setLibraryModalOpen(true)}>
+                                    {t('admin.entities.icon_change')}
+                                </Button>
+                                {customIcon && (
+                                    <button 
+                                        onClick={() => setCustomIcon(undefined)}
+                                        className="text-[10px] text-red-400 hover:text-red-300 transition-colors text-left pl-2 cursor-pointer"
+                                    >
+                                        {t('admin.entities.icon_remove')}
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+
                     <div className="flex gap-2 pt-2">
                         <Button variant="primary" size="sm" onClick={handleSave} disabled={saving} className="flex-1">
                             {t('admin.access.modal.save')}
@@ -522,6 +630,14 @@ const EventTypesSection: React.FC<{ lang: string }> = ({ lang }) => {
                     </div>
                 </div>
             </Modal>
+
+            {/* File Library Modal */}
+            <FileLibraryModal 
+                isOpen={libraryModalOpen}
+                onClose={() => setLibraryModalOpen(false)}
+                onSelect={(file) => setCustomIcon(file.id)}
+                selectedFileId={customIcon}
+            />
 
             {/* Delete Confirm Modal */}
             <Modal isOpen={deleteModalOpen} onClose={() => !saving && setDeleteModalOpen(false)} title={t('admin.access.modal.delete')}>

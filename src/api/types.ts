@@ -551,7 +551,11 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /**
+         * List library folders
+         * @description Returns a list of logical folders in the media library. Pass parentId to list sub-folders; omit it to list root-level folders.
+         */
+        get: operations["listFolders"];
         put?: never;
         /**
          * Create a folder
@@ -1131,16 +1135,16 @@ export interface components {
             size: number;
             sort?: string[];
         };
-        PagedModel: {
-            content: unknown[];
-            page: components["schemas"]["PageMetadata"];
-        };
         PagedModelAppConfigDto: {
             content: components["schemas"]["AppConfigDto"][];
             page: components["schemas"]["PageMetadata"];
         };
         PagedModelEventTypeDTO: {
             content: components["schemas"]["EventTypeDTO"][];
+            page: components["schemas"]["PageMetadata"];
+        };
+        PagedModelFileMetadataDTO: {
+            content: components["schemas"]["FileMetadataDTO"][];
             page: components["schemas"]["PageMetadata"];
         };
         PagedModelPermissionDTO: {
@@ -4117,7 +4121,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["PagedModel"];
+                    "application/json": components["schemas"]["PagedModelFileMetadataDTO"];
                 };
             };
             /** @description Bad Request */
@@ -4391,6 +4395,87 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Content Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    listFolders: {
+        parameters: {
+            query?: {
+                parentId?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description List of folder metadata */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MediaFolderDTO"][];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Insufficient permissions */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
             };
             /** @description Conflict */
             409: {
