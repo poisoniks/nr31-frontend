@@ -8,6 +8,7 @@ import Button from '../ui/Button';
 import { useAuthStore } from '../../store/useAuthStore';
 import LoginModal from '../auth/LoginModal';
 import { localeApi } from '../../api/localeApi';
+import { useCmsStore } from '../../store/useCmsStore';
 
 const Header: React.FC = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -21,6 +22,9 @@ const Header: React.FC = () => {
     const isAuthenticated = useAuthStore(state => state.isAuthenticated);
     const logout = useAuthStore(state => state.logout);
     const hasAdminPermission = user?.authorities?.includes('admin:view') ?? false;
+    const hasCmsWritePermission = user?.authorities?.includes('cms:write') ?? false;
+    const isEditMode = useCmsStore(state => state.isEditMode);
+    const toggleEditMode = useCmsStore(state => state.toggleEditMode);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -97,6 +101,45 @@ const Header: React.FC = () => {
 
                     {/* Right section */}
                     <div className="flex items-center gap-4">
+                        {hasCmsWritePermission && (
+                            <button
+                                onClick={toggleEditMode}
+                                className={`p-2 rounded-full transition-colors cursor-pointer ${
+                                    isEditMode 
+                                        ? 'text-nr-accent bg-nr-accent/10 hover:bg-nr-accent/20' 
+                                        : 'text-nr-text/60 hover:text-nr-text hover:bg-black/10 dark:hover:bg-white/10'
+                                }`}
+                                aria-label="Toggle Edit Mode"
+                                title={t('cms.edit_mode')}
+                            >
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="20"
+                                    height="20"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                >
+                                    {isEditMode ? (
+                                        <>
+                                            <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
+                                            <circle cx="12" cy="12" r="3" />
+                                        </>
+                                    ) : (
+                                        <>
+                                            <path d="m15 18-.722-3.25" />
+                                            <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
+                                            <path d="m22 2-20 20" />
+                                            <path d="m8.5 14.5-.5 4.5" />
+                                        </>
+                                    )}
+                                </svg>
+                            </button>
+                        )}
+
                         <div
                             onClick={toggleLanguage}
                             className="hidden sm:flex items-center gap-2 hover:text-nr-text transition text-sm text-nr-text/70 cursor-pointer uppercase"

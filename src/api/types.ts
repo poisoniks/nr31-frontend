@@ -16,6 +16,9 @@ export interface paths {
         /**
          * Clear caches
          * @description Resets application cache
+         *
+         *     Security requirement:
+         *     - Must have authority cache:clear
          */
         post: operations["clearCache"];
         delete?: never;
@@ -34,6 +37,9 @@ export interface paths {
         /**
          * Get all application configs
          * @description Retrieves all application configurations with pagination
+         *
+         *     Security requirement:
+         *     - Must have authority config:read
          */
         get: operations["getAllConfigs"];
         put?: never;
@@ -54,11 +60,17 @@ export interface paths {
         /**
          * Get application config
          * @description Retrieves an application configuration by key
+         *
+         *     Security requirement:
+         *     - Must have authority config:read
          */
         get: operations["getConfig"];
         /**
          * Update application config
          * @description Updates or creates an application configuration
+         *
+         *     Security requirement:
+         *     - Must have authority config:write
          */
         put: operations["updateConfig"];
         post?: never;
@@ -80,6 +92,9 @@ export interface paths {
         /**
          * Start Discord bot
          * @description Starts the Discord bot integration
+         *
+         *     Security requirement:
+         *     - Must have authority discord:manage
          */
         post: operations["startBot"];
         delete?: never;
@@ -98,6 +113,9 @@ export interface paths {
         /**
          * Get Discord bot status
          * @description Retrieves the current status of the Discord bot
+         *
+         *     Security requirement:
+         *     - Must have authority discord:manage
          */
         get: operations["getBotStatus"];
         put?: never;
@@ -120,6 +138,9 @@ export interface paths {
         /**
          * Stop Discord bot
          * @description Stops the Discord bot integration
+         *
+         *     Security requirement:
+         *     - Must have authority discord:manage
          */
         post: operations["stopBot"];
         delete?: never;
@@ -138,6 +159,9 @@ export interface paths {
         /**
          * List log files
          * @description Retrieves a list of available application log files
+         *
+         *     Security requirement:
+         *     - Must have authority logs:read
          */
         get: operations["listLogFiles"];
         put?: never;
@@ -158,6 +182,9 @@ export interface paths {
         /**
          * Get log file
          * @description Retrieves the content of a specific log file
+         *
+         *     Security requirement:
+         *     - Must have authority logs:read
          */
         get: operations["getLogFile"];
         put?: never;
@@ -178,6 +205,9 @@ export interface paths {
         /**
          * Get all permissions
          * @description Retrieves a list of all application permissions
+         *
+         *     Security requirement:
+         *     - Must have authority access:manage
          */
         get: operations["getAllPermissions"];
         put?: never;
@@ -199,6 +229,9 @@ export interface paths {
         /**
          * Update permission description
          * @description Updates localized description of a permission
+         *
+         *     Security requirement:
+         *     - Must have authority access:manage
          */
         put: operations["updatePermission"];
         post?: never;
@@ -218,12 +251,18 @@ export interface paths {
         /**
          * Get all roles
          * @description Retrieves a list of all user roles
+         *
+         *     Security requirement:
+         *     - Must have authority access:manage
          */
         get: operations["getAllRoles"];
         put?: never;
         /**
          * Create role
          * @description Creates a new application role
+         *
+         *     Security requirement:
+         *     - Must have authority access:manage
          */
         post: operations["createRole"];
         delete?: never;
@@ -242,17 +281,26 @@ export interface paths {
         /**
          * Get role by id
          * @description Retrieves detailed information about a specific role
+         *
+         *     Security requirement:
+         *     - Must have authority access:manage
          */
         get: operations["getRole"];
         /**
          * Update role
          * @description Updates an existing application role's information
+         *
+         *     Security requirement:
+         *     - Must have authority access:manage
          */
         put: operations["updateRole"];
         post?: never;
         /**
          * Delete role
          * @description Permanently removes a role from the application
+         *
+         *     Security requirement:
+         *     - Must have authority access:manage
          */
         delete: operations["deleteRole"];
         options?: never;
@@ -272,11 +320,17 @@ export interface paths {
         /**
          * Assign permission to role
          * @description Assigns a specific permission to a role
+         *
+         *     Security requirement:
+         *     - Must have authority access:manage
          */
         post: operations["assignPermissionToRole"];
         /**
          * Unassign permission from role
          * @description Removes a specific permission from a role
+         *
+         *     Security requirement:
+         *     - Must have authority access:manage
          */
         delete: operations["unassignPermissionFromRole"];
         options?: never;
@@ -294,6 +348,9 @@ export interface paths {
         /**
          * Get all users
          * @description Retrieves a paginated list of all users
+         *
+         *     Security requirement:
+         *     - Must have authority access:manage
          */
         get: operations["getAllUsers"];
         put?: never;
@@ -314,6 +371,9 @@ export interface paths {
         /**
          * Search users by username
          * @description Retrieves a paginated list of users filtered by username (fuzzy match)
+         *
+         *     Security requirement:
+         *     - Must have authority access:manage
          */
         get: operations["searchUsersByUsername"];
         put?: never;
@@ -336,11 +396,17 @@ export interface paths {
         /**
          * Assign role to user
          * @description Assigns a specific role to a user
+         *
+         *     Security requirement:
+         *     - Must have authority access:manage
          */
         post: operations["assignRoleToUser"];
         /**
          * Unassign role from user
          * @description Removes a specific role from a user
+         *
+         *     Security requirement:
+         *     - Must have authority access:manage
          */
         delete: operations["unassignRoleFromUser"];
         options?: never;
@@ -380,6 +446,9 @@ export interface paths {
         /**
          * Logout user
          * @description Invalidates the provided refresh token
+         *
+         *     Security requirement:
+         *     - Has security restrictions
          */
         post: operations["logoutUser"];
         delete?: never;
@@ -424,6 +493,9 @@ export interface paths {
         /**
          * Create calendar event
          * @description Creates a new calendar event
+         *
+         *     Security requirement:
+         *     - Must have authority event:write
          */
         post: operations["createEvent"];
         delete?: never;
@@ -463,14 +535,209 @@ export interface paths {
         /**
          * Update calendar event
          * @description Updates an existing calendar event by ID
+         *
+         *     Security requirement:
+         *     - Must have authority event:write
          */
         put: operations["updateEvent"];
         post?: never;
         /**
          * Delete calendar event
          * @description Deletes a calendar event by ID
+         *
+         *     Security requirement:
+         *     - Must have authority event:write
          */
         delete: operations["deleteEvent"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/cms/discord/{inviteCode}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Discord widget data
+         * @description Returns cached Discord server presence data. Refreshed every 5 minutes by a background job.
+         */
+        get: operations["getDiscordWidgetData"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/cms/pages/{slug}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get published page by slug
+         * @description Retrieves the published revision of a page by its slug
+         */
+        get: operations["getPublishedPage"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/cms/pages/{slug}/draft": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get draft page by slug
+         * @description Retrieves the draft revision of a page. If no draft exists, duplicates the published revision as a new draft.
+         *
+         *     Security requirement:
+         *     - Must have authority cms:write
+         */
+        get: operations["getDraftPage"];
+        /**
+         * Update draft page
+         * @description Updates the draft revision with new layout data. Validates version for optimistic locking and layout against slot restrictions.
+         *
+         *     Security requirement:
+         *     - Must have authority cms:write
+         */
+        put: operations["updateDraft"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/cms/pages/{slug}/publish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Publish draft page
+         * @description Publishes a draft revision, archiving the current published revision if it exists. Increments the page version number.
+         *
+         *     Security requirement:
+         *     - Must have authority cms:write
+         */
+        post: operations["publishDraft"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/cms/slot-restrictions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get slot restrictions
+         * @description Retrieves the current slot restriction configuration defining which widget types are allowed in each slot type.
+         *
+         *     Security requirement:
+         *     - Must have authority cms:write
+         */
+        get: operations["getSlotRestrictions"];
+        /**
+         * Update slot restrictions
+         * @description Updates the slot restriction configuration. Validates the JSON structure and evicts the cache.
+         *
+         *     Security requirement:
+         *     - Must have authority cms:write
+         */
+        put: operations["updateSlotRestrictions"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/cms/widget-schemas": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get all widget JSON schemas
+         * @description Returns a map of all known widget types to their respective JSON schemas.
+         *
+         *     Security requirement:
+         *     - Must have authority cms:write
+         */
+        get: operations["getAllWidgetSchemas"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/cms/widget-schemas/{type}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get widget JSON schema
+         * @description Returns the JSON Schema for a specific widget type, reflecting its fields, validation constraints, and localization structure.
+         *
+         *     Security requirement:
+         *     - Must have authority cms:write
+         */
+        get: operations["getWidgetSchema"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/cms/youtube/{channelId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get latest YouTube video
+         * @description Returns the cached latest video for a given YouTube channel ID. Data is refreshed every 20 minutes by a background job.
+         */
+        get: operations["getLatestYoutubeVideo"];
+        put?: never;
+        post?: never;
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -488,6 +755,9 @@ export interface paths {
         /**
          * Upload an attachment file
          * @description Uploads a file as an ATTACHMENT (subject to garbage collection if not linked within 24h). Allowed types: image/png, image/jpeg, image/webp. Max size: 5MB.
+         *
+         *     Security requirement:
+         *     - Must have authority file:upload:attachment
          */
         post: operations["uploadAttachment"];
         delete?: never;
@@ -506,12 +776,18 @@ export interface paths {
         /**
          * List library files
          * @description Returns a paginated list of LIBRARY files. Pass ?folderId to list files in a specific folder; omit it to list root-level files.
+         *
+         *     Security requirement:
+         *     - Must have authority file:upload:public
          */
         get: operations["listFiles"];
         put?: never;
         /**
          * Upload a library file
          * @description Uploads a file as a LIBRARY asset (immune to garbage collection). Pass folderId to place the file in a folder; omit it for root-level. Allowed types: image/png, image/jpeg, image/webp. Max size: 5MB.
+         *
+         *     Security requirement:
+         *     - Must have authority file:upload:public
          */
         post: operations["uploadFile"];
         delete?: never;
@@ -533,6 +809,9 @@ export interface paths {
         /**
          * Delete a library file
          * @description Drops the FileMetadata record (logical delete). The physical file on disk is left intact and will be cleaned up by the scheduled FileCleanupJob if no other metadata records reference the same hash.
+         *
+         *     Security requirement:
+         *     - Must have authority file:delete
          */
         delete: operations["deleteFile"];
         options?: never;
@@ -540,6 +819,9 @@ export interface paths {
         /**
          * Rename or move a library file
          * @description Updates the file's user-defined name (original_name) and/or moves it to a different folder. The physical file on disk is completely untouched.
+         *
+         *     Security requirement:
+         *     - Must have authority file:upload:public
          */
         patch: operations["updateFile"];
         trace?: never;
@@ -554,12 +836,18 @@ export interface paths {
         /**
          * List library folders
          * @description Returns a list of logical folders in the media library. Pass parentId to list sub-folders; omit it to list root-level folders.
+         *
+         *     Security requirement:
+         *     - Must have authority file:upload:public
          */
         get: operations["listFolders"];
         put?: never;
         /**
          * Create a folder
          * @description Creates a new logical directory in the media library. Specify parentId to nest inside an existing folder; omit it for a root-level folder.
+         *
+         *     Security requirement:
+         *     - Must have authority file:upload:public
          */
         post: operations["createFolder"];
         delete?: never;
@@ -581,6 +869,9 @@ export interface paths {
         /**
          * Delete a folder
          * @description Deletes a logical folder. Returns 409 Conflict if the folder contains files or sub-folders to prevent accidental mass-deletion of production assets.
+         *
+         *     Security requirement:
+         *     - Must have authority file:delete
          */
         delete: operations["deleteFolder"];
         options?: never;
@@ -588,6 +879,9 @@ export interface paths {
         /**
          * Rename or move a folder
          * @description Updates the folder's name and/or parent. Pass a new parentId to move it; omit parentId (or set to null) to move it to root level.
+         *
+         *     Security requirement:
+         *     - Must have authority file:upload:public
          */
         patch: operations["updateFolder"];
         trace?: never;
@@ -609,6 +903,9 @@ export interface paths {
         /**
          * Delete a file
          * @description Deletes a file's metadata by UUID. Physical file cleanup is handled by the scheduled garbage collector.
+         *
+         *     Security requirement:
+         *     - Must have authority file:delete
          */
         delete: operations["deleteFile_1"];
         options?: never;
@@ -652,6 +949,9 @@ export interface paths {
         /**
          * Create event type
          * @description Creates a new event type
+         *
+         *     Security requirement:
+         *     - Must have authority roster:write
          */
         post: operations["createEventType"];
         delete?: never;
@@ -675,12 +975,18 @@ export interface paths {
         /**
          * Update event type
          * @description Updates an existing event type
+         *
+         *     Security requirement:
+         *     - Must have authority roster:write
          */
         put: operations["updateEventType"];
         post?: never;
         /**
          * Delete event type
          * @description Deletes an event type by ID
+         *
+         *     Security requirement:
+         *     - Must have authority roster:write
          */
         delete: operations["deleteEventType"];
         options?: never;
@@ -704,6 +1010,9 @@ export interface paths {
         /**
          * Create unit type
          * @description Creates a new unit type
+         *
+         *     Security requirement:
+         *     - Must have authority roster:write
          */
         post: operations["createUnitType"];
         delete?: never;
@@ -727,12 +1036,18 @@ export interface paths {
         /**
          * Update unit type
          * @description Updates an existing unit type
+         *
+         *     Security requirement:
+         *     - Must have authority roster:write
          */
         put: operations["updateUnitType"];
         post?: never;
         /**
          * Delete unit type
          * @description Deletes a unit type by ID
+         *
+         *     Security requirement:
+         *     - Must have authority roster:write
          */
         delete: operations["deleteUnitType"];
         options?: never;
@@ -911,6 +1226,85 @@ export interface components {
              */
             status: string;
         };
+        /** @description A Discord member currently online */
+        DiscordMemberDto: {
+            /**
+             * @description Avatar URL
+             * @example https://cdn.discordapp.com/widget-avatars/...
+             */
+            avatarUrl?: string;
+            /**
+             * @description Name of the game currently being played
+             * @example Minecraft
+             */
+            gameName?: string;
+            /**
+             * @description Discord member ID
+             * @example 1234567890
+             */
+            id?: string;
+            /**
+             * @description Online status
+             * @example online
+             */
+            status?: string;
+            /**
+             * @description Username
+             * @example Pikachu
+             */
+            username?: string;
+        };
+        /** @description Cached Discord widget data for a server */
+        DiscordWidgetDataDto: {
+            /** @description List of members to display (max 15) */
+            displayMembers: components["schemas"]["DiscordMemberDto"][];
+            /**
+             * @description Direct invite link to the server
+             * @example https://discord.com/invite/uuc
+             */
+            inviteUrl?: string;
+            /**
+             * @description Server logo URL
+             * @example https://cdn.discordapp.com/icons/...
+             */
+            logoUrl?: string;
+            /**
+             * Format: int32
+             * @description Number of online members not included in displayMembers
+             * @example 4065
+             */
+            moreCount?: number;
+            /**
+             * Format: int32
+             * @description Total number of online members
+             * @example 4080
+             */
+            presenceCount?: number;
+            /**
+             * @description Discord server name
+             * @example Єдине Україномовне Ком'юніті
+             */
+            serverName?: string;
+            /**
+             * @description Top 3 games being played
+             * @example [
+             *       "World of Tanks",
+             *       "Counter-Strike 2",
+             *       "Code"
+             *     ]
+             */
+            topGames?: string[];
+        };
+        /** @description Discord widget that displays server presence and member activity */
+        DiscordWidgetDto: {
+            type: "DiscordWidgetDto";
+        } & (Omit<components["schemas"]["WidgetDto"], "type"> & {
+            /**
+             * @description Discord server invite code (e.g. 'uuc' from discord.com/invite/uuc)
+             * @example uuc
+             */
+            inviteCode: string;
+        });
         /** @description Generic error response */
         ErrorResponse: {
             /**
@@ -918,7 +1312,7 @@ export interface components {
              * @example INTERNAL_SERVER_ERROR
              * @enum {string}
              */
-            code: "UNAUTHORIZED" | "FORBIDDEN" | "INVALID_TOKEN" | "TOKEN_EXPIRED" | "BAD_CREDENTIALS" | "ACCOUNT_LOCKED" | "ACCOUNT_DISABLED" | "ELEMENT_NOT_FOUND" | "FILE_NOT_FOUND" | "FOLDER_NOT_FOUND" | "PARENT_FOLDER_NOT_FOUND" | "ROLE_NOT_FOUND" | "PERMISSION_NOT_FOUND" | "USER_NOT_FOUND" | "EVENT_NOT_FOUND" | "UNIT_TYPE_NOT_FOUND" | "EVENT_TYPE_NOT_FOUND" | "CONFIG_NOT_FOUND" | "ENDPOINT_NOT_FOUND" | "INVALID_FILE_TYPE" | "FILE_TOO_LARGE" | "EMPTY_FILE" | "QUOTA_EXCEEDED" | "STORAGE_ERROR" | "VALIDATION_ERROR" | "CONFLICT" | "FOLDER_NOT_EMPTY" | "FEATURE_DISABLED" | "INTERNAL_SERVER_ERROR";
+            code: "UNAUTHORIZED" | "FORBIDDEN" | "INVALID_TOKEN" | "TOKEN_EXPIRED" | "BAD_CREDENTIALS" | "ACCOUNT_LOCKED" | "ACCOUNT_DISABLED" | "ELEMENT_NOT_FOUND" | "FILE_NOT_FOUND" | "FOLDER_NOT_FOUND" | "PARENT_FOLDER_NOT_FOUND" | "ROLE_NOT_FOUND" | "PERMISSION_NOT_FOUND" | "USER_NOT_FOUND" | "EVENT_NOT_FOUND" | "UNIT_TYPE_NOT_FOUND" | "EVENT_TYPE_NOT_FOUND" | "CONFIG_NOT_FOUND" | "ENDPOINT_NOT_FOUND" | "INVALID_FILE_TYPE" | "FILE_TOO_LARGE" | "EMPTY_FILE" | "QUOTA_EXCEEDED" | "STORAGE_ERROR" | "VALIDATION_ERROR" | "CONFLICT" | "FOLDER_NOT_EMPTY" | "FEATURE_DISABLED" | "INVALID_WIDGET_TYPE" | "INTERNAL_SERVER_ERROR";
             /**
              * @description Error message
              * @example An unexpected error occurred
@@ -1089,6 +1483,95 @@ export interface components {
              */
             url: string;
         };
+        /** @description Hero widget for full-viewport introduction section */
+        HeroWidgetDto: {
+            type: "HeroWidgetDto";
+        } & (Omit<components["schemas"]["WidgetDto"], "type"> & {
+            /**
+             * Format: uuid
+             * @description UUID of the background image from Library API
+             * @example 550e8400-e29b-41d4-a716-446655440000
+             */
+            backgroundImageId: string;
+            /**
+             * @description Localized badge text above main title
+             * @example {
+             *       "en": "M&B Bannerlord Regiment",
+             *       "uk": "Полк M&B Bannerlord"
+             *     }
+             */
+            badgeText: {
+                [key: string]: string;
+            };
+            /**
+             * @description Anchor ID for scroll target
+             * @example how-to-join
+             */
+            ctaTargetId: string;
+            /**
+             * @description Localized call-to-action button text
+             * @example {
+             *       "en": "Join Now",
+             *       "uk": "Приєднатися зараз"
+             *     }
+             */
+            ctaText: {
+                [key: string]: string;
+            };
+            /**
+             * @description Localized descriptive paragraph
+             * @example {
+             *       "en": "Join the elite artillery regiment",
+             *       "uk": "Приєднуйтесь до елітного артилерійського полку"
+             *     }
+             */
+            description: {
+                [key: string]: string;
+            };
+            /**
+             * @description Primary brand text (not localized)
+             * @example Nr.31
+             */
+            titleMain: string;
+            /**
+             * @description Secondary brand text (not localized)
+             * @example Feldkanonenregiment
+             */
+            titleSub: string;
+        });
+        JsonNode: {
+            array?: boolean;
+            bigDecimal?: boolean;
+            bigInteger?: boolean;
+            binary?: boolean;
+            boolean?: boolean;
+            container?: boolean;
+            double?: boolean;
+            embeddedValue?: boolean;
+            empty?: boolean;
+            float?: boolean;
+            floatingPointNumber?: boolean;
+            int?: boolean;
+            integralNumber?: boolean;
+            long?: boolean;
+            missingNode?: boolean;
+            /** @enum {string} */
+            nodeType?: "ARRAY" | "BINARY" | "BOOLEAN" | "MISSING" | "NULL" | "NUMBER" | "OBJECT" | "POJO" | "STRING";
+            null?: boolean;
+            number?: boolean;
+            object?: boolean;
+            pojo?: boolean;
+            short?: boolean;
+            string?: boolean;
+            /** @deprecated */
+            textual?: boolean;
+            valueNode?: boolean;
+        };
+        /** @description Complete layout data for a page */
+        LayoutDataDto: {
+            /** @description List of slots in the page layout */
+            slots: components["schemas"]["SlotDto"][];
+        };
         /** @description Payload for patching a library file record (rename and/or move) */
         LibraryFileUpdateRequest: {
             /**
@@ -1149,6 +1632,47 @@ export interface components {
              */
             parentId?: string;
         };
+        /** @description News feed widget for displaying recent articles */
+        NewsFeedWidgetDto: {
+            type: "NewsFeedWidgetDto";
+        } & (Omit<components["schemas"]["WidgetDto"], "type"> & {
+            /**
+             * Format: int32
+             * @description Number of articles to fetch (max enforced by AppConfig key 'cms.newsfeed.max_items')
+             * @example 3
+             */
+            itemCount: number;
+            /**
+             * @description Localized section header
+             * @example {
+             *       "en": "Latest News",
+             *       "uk": "Останні новини"
+             *     }
+             */
+            sectionTitle: {
+                [key: string]: string;
+            };
+            /**
+             * @description Optional tag filter for news items
+             * @example announcements
+             */
+            tagFilter?: string;
+        });
+        /** @description Next event widget with countdown timer */
+        NextEventWidgetDto: {
+            type: "NextEventWidgetDto";
+        } & (Omit<components["schemas"]["WidgetDto"], "type"> & {
+            /**
+             * @description Optional localized title override
+             * @example {
+             *       "en": "Upcoming Official Match",
+             *       "uk": "Наступний офіційний матч"
+             *     }
+             */
+            titleOverride?: {
+                [key: string]: string;
+            };
+        });
         PageMetadata: {
             /** Format: int64 */
             number: number;
@@ -1158,6 +1682,50 @@ export interface components {
             totalElements: number;
             /** Format: int64 */
             totalPages: number;
+        };
+        /** @description Response DTO representing a page revision */
+        PageResponseDto: {
+            /**
+             * Format: date-time
+             * @description Timestamp when the revision was created
+             * @example 2024-01-15T10:30:00Z
+             */
+            createdAt: string;
+            /**
+             * Format: int64
+             * @description Unique identifier of the page
+             * @example 1
+             */
+            id: number;
+            /** @description Complete layout data containing slots and widgets */
+            layoutData: components["schemas"]["LayoutDataDto"];
+            /**
+             * @description URL-friendly page identifier
+             * @example home
+             */
+            slug: string;
+            /**
+             * @description Status of the page revision (DRAFT, PUBLISHED, ARCHIVED)
+             * @example PUBLISHED
+             * @enum {string}
+             */
+            status: "DRAFT" | "PUBLISHED" | "ARCHIVED";
+            /**
+             * @description Localized page title
+             * @example {
+             *       "en": "Home Page",
+             *       "uk": "Головна сторінка"
+             *     }
+             */
+            title: {
+                [key: string]: string;
+            };
+            /**
+             * Format: int32
+             * @description Current version number for optimistic locking
+             * @example 5
+             */
+            version: number;
         };
         Pageable: {
             /** Format: int32 */
@@ -1239,6 +1807,15 @@ export interface components {
                 [key: string]: string;
             };
         };
+        /** @description Request to publish a draft page revision */
+        PublishDraftRequest: {
+            /**
+             * Format: int32
+             * @description Current version number for optimistic locking
+             * @example 5
+             */
+            version: number;
+        };
         /** @description Recurrence rules for a calendar event */
         Recurrence: {
             /**
@@ -1281,6 +1858,65 @@ export interface components {
              */
             refreshToken: string;
         };
+        /** @description Rich text widget with TipTap JSON AST support */
+        RichTextWidgetDto: {
+            type: "RichTextWidgetDto";
+        } & (Omit<components["schemas"]["WidgetDto"], "type"> & {
+            /**
+             * @description Localized TipTap JSON AST content (max size per locale enforced by AppConfig key 'cms.richtext.max_size_bytes')
+             * @example {
+             *       "en": {
+             *         "type": "doc",
+             *         "content": [
+             *           {
+             *             "type": "paragraph",
+             *             "content": [
+             *               {
+             *                 "type": "text",
+             *                 "text": "Welcome to "
+             *               },
+             *               {
+             *                 "type": "text",
+             *                 "marks": [
+             *                   {
+             *                     "type": "bold"
+             *                   }
+             *                 ],
+             *                 "text": "Nr.31 FKR"
+             *               }
+             *             ]
+             *           }
+             *         ]
+             *       },
+             *       "uk": {
+             *         "type": "doc",
+             *         "content": [
+             *           {
+             *             "type": "paragraph",
+             *             "content": [
+             *               {
+             *                 "type": "text",
+             *                 "text": "Ласкаво просимо до "
+             *               },
+             *               {
+             *                 "type": "text",
+             *                 "marks": [
+             *                   {
+             *                     "type": "bold"
+             *                   }
+             *                 ],
+             *                 "text": "Nr.31 FKR"
+             *               }
+             *             ]
+             *           }
+             *         ]
+             *       }
+             *     }
+             */
+            bodyContent: {
+                [key: string]: components["schemas"]["JsonNode"];
+            };
+        });
         /** @description DTO representing an user role */
         RoleDTO: {
             /**
@@ -1336,6 +1972,41 @@ export interface components {
              * @example ROLE_NEW
              */
             name: string;
+        };
+        /** @description A slot that can contain widgets */
+        SlotDto: {
+            /**
+             * @description Type of the slot (e.g., hero, sidebar, content)
+             * @example hero
+             */
+            slotType: string;
+            /** @description List of widgets in this slot */
+            widgets: (components["schemas"]["DiscordWidgetDto"] | components["schemas"]["HeroWidgetDto"] | components["schemas"]["NewsFeedWidgetDto"] | components["schemas"]["NextEventWidgetDto"] | components["schemas"]["RichTextWidgetDto"] | components["schemas"]["YoutubeWidgetDto"])[];
+        };
+        /** @description Configuration defining which widget types are allowed in each slot type */
+        SlotRestrictionsDto: {
+            /**
+             * @description Map of slot types to their allowed widget types
+             * @example {
+             *       "hero": [
+             *         "text",
+             *         "image"
+             *       ],
+             *       "sidebar": [
+             *         "text",
+             *         "video"
+             *       ],
+             *       "content": [
+             *         "text",
+             *         "image",
+             *         "video",
+             *         "embed"
+             *       ]
+             *     }
+             */
+            restrictions: {
+                [key: string]: string[];
+            };
         };
         /** @description DTO representing a supported locale */
         SupportedLocaleDTO: {
@@ -1420,6 +2091,17 @@ export interface components {
                 [key: string]: string;
             };
         };
+        /** @description Request to update a draft page revision */
+        UpdateDraftRequest: {
+            /** @description Complete layout data containing slots and widgets */
+            layoutData: components["schemas"]["LayoutDataDto"];
+            /**
+             * Format: int32
+             * @description Current version number for optimistic locking
+             * @example 5
+             */
+            version: number;
+        };
         /** @description Request representation for updating an existing calendar event */
         UpdateEventRequest: {
             /**
@@ -1482,6 +2164,31 @@ export interface components {
              */
             type: number;
         };
+        /** @description Request to update slot restriction configuration */
+        UpdateSlotRestrictionsRequest: {
+            /**
+             * @description Map of slot types to their allowed widget types
+             * @example {
+             *       "hero": [
+             *         "text",
+             *         "image"
+             *       ],
+             *       "sidebar": [
+             *         "text",
+             *         "video"
+             *       ],
+             *       "content": [
+             *         "text",
+             *         "image",
+             *         "video",
+             *         "embed"
+             *       ]
+             *     }
+             */
+            restrictions: {
+                [key: string]: string[];
+            };
+        };
         /** @description DTO representing an application user */
         UserDTO: {
             /**
@@ -1505,7 +2212,7 @@ export interface components {
              * @example INTERNAL_SERVER_ERROR
              * @enum {string}
              */
-            code: "UNAUTHORIZED" | "FORBIDDEN" | "INVALID_TOKEN" | "TOKEN_EXPIRED" | "BAD_CREDENTIALS" | "ACCOUNT_LOCKED" | "ACCOUNT_DISABLED" | "ELEMENT_NOT_FOUND" | "FILE_NOT_FOUND" | "FOLDER_NOT_FOUND" | "PARENT_FOLDER_NOT_FOUND" | "ROLE_NOT_FOUND" | "PERMISSION_NOT_FOUND" | "USER_NOT_FOUND" | "EVENT_NOT_FOUND" | "UNIT_TYPE_NOT_FOUND" | "EVENT_TYPE_NOT_FOUND" | "CONFIG_NOT_FOUND" | "ENDPOINT_NOT_FOUND" | "INVALID_FILE_TYPE" | "FILE_TOO_LARGE" | "EMPTY_FILE" | "QUOTA_EXCEEDED" | "STORAGE_ERROR" | "VALIDATION_ERROR" | "CONFLICT" | "FOLDER_NOT_EMPTY" | "FEATURE_DISABLED" | "INTERNAL_SERVER_ERROR";
+            code: "UNAUTHORIZED" | "FORBIDDEN" | "INVALID_TOKEN" | "TOKEN_EXPIRED" | "BAD_CREDENTIALS" | "ACCOUNT_LOCKED" | "ACCOUNT_DISABLED" | "ELEMENT_NOT_FOUND" | "FILE_NOT_FOUND" | "FOLDER_NOT_FOUND" | "PARENT_FOLDER_NOT_FOUND" | "ROLE_NOT_FOUND" | "PERMISSION_NOT_FOUND" | "USER_NOT_FOUND" | "EVENT_NOT_FOUND" | "UNIT_TYPE_NOT_FOUND" | "EVENT_TYPE_NOT_FOUND" | "CONFIG_NOT_FOUND" | "ENDPOINT_NOT_FOUND" | "INVALID_FILE_TYPE" | "FILE_TOO_LARGE" | "EMPTY_FILE" | "QUOTA_EXCEEDED" | "STORAGE_ERROR" | "VALIDATION_ERROR" | "CONFLICT" | "FOLDER_NOT_EMPTY" | "FEATURE_DISABLED" | "INVALID_WIDGET_TYPE" | "INTERNAL_SERVER_ERROR";
             /** @description Map of field names to error messages */
             details?: {
                 [key: string]: string;
@@ -1566,6 +2273,54 @@ export interface components {
              */
             timestamp: string;
         };
+        /** @description Base class for all widgets */
+        WidgetDto: {
+            type: string;
+        };
+        /** @description Cached YouTube video data for a channel */
+        YoutubeVideoDto: {
+            /**
+             * @description Channel/author name
+             * @example Nr.31 Feldkanonenregiment
+             */
+            author?: string;
+            /**
+             * @description YouTube channel ID this video belongs to
+             * @example UCbU41G2hhiwdn-gFFRqZN4w
+             */
+            channelId?: string;
+            /**
+             * @description Direct link to the video
+             * @example https://www.youtube.com/watch?v=dQw4w9WgXcQ
+             */
+            link?: string;
+            /**
+             * Format: date-time
+             * @description Video publish date
+             */
+            published?: string;
+            short?: boolean;
+            /**
+             * @description Video title
+             * @example Regiment Training Session #42
+             */
+            title?: string;
+            /**
+             * @description YouTube video ID
+             * @example dQw4w9WgXcQ
+             */
+            videoId?: string;
+        };
+        /** @description YouTube widget that displays the latest video from a single channel */
+        YoutubeWidgetDto: {
+            type: "YoutubeWidgetDto";
+        } & (Omit<components["schemas"]["WidgetDto"], "type"> & {
+            /**
+             * @description YouTube channel ID to track (e.g. UCbU41G2hhiwdn-gFFRqZN4w)
+             * @example UCbU41G2hhiwdn-gFFRqZN4w
+             */
+            channelId: string;
+        });
     };
     responses: never;
     parameters: never;
@@ -1597,7 +2352,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -1682,7 +2437,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -1767,7 +2522,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -1937,7 +2692,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -2020,7 +2775,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -2101,7 +2856,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -2186,7 +2941,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -2274,7 +3029,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -2359,7 +3114,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -2533,7 +3288,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -2705,7 +3460,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -2794,7 +3549,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -2877,7 +3632,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -2961,7 +3716,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -3045,7 +3800,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -3130,7 +3885,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -3216,7 +3971,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -3300,7 +4055,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -3384,7 +4139,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -3903,7 +4658,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -4137,6 +4892,892 @@ export interface operations {
             };
         };
     };
+    getDiscordWidgetData: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /**
+                 * @description Discord invite code
+                 * @example uuc
+                 */
+                inviteCode: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successfully retrieved Discord widget data */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DiscordWidgetDataDto"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description No cached data for the given invite code */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Content Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    getPublishedPage: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /**
+                 * @description URL-friendly page identifier
+                 * @example home
+                 */
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successfully retrieved published page */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PageResponseDto"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Page not found or no published revision exists */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Content Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    getDraftPage: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /**
+                 * @description URL-friendly page identifier
+                 * @example home
+                 */
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successfully retrieved draft page */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PageResponseDto"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description User is not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description User lacks required cms:write permission */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Page not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Content Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    updateDraft: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /**
+                 * @description URL-friendly page identifier
+                 * @example home
+                 */
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateDraftRequest"];
+            };
+        };
+        responses: {
+            /** @description Successfully updated draft page */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PageResponseDto"];
+                };
+            };
+            /** @description Invalid request body or layout validation failed */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description User is not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description User lacks required cms:write permission */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Page not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Version conflict - page was modified by another user */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Content Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    publishDraft: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /**
+                 * @description URL-friendly page identifier
+                 * @example home
+                 */
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PublishDraftRequest"];
+            };
+        };
+        responses: {
+            /** @description Successfully published draft page */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PageResponseDto"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description User is not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description User lacks required cms:write permission */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Page or draft revision not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Version conflict - page was modified by another user */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Content Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    getSlotRestrictions: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successfully retrieved slot restrictions */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SlotRestrictionsDto"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description User is not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description User lacks required cms:write permission */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Content Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    updateSlotRestrictions: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateSlotRestrictionsRequest"];
+            };
+        };
+        responses: {
+            /** @description Successfully updated slot restrictions */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SlotRestrictionsDto"];
+                };
+            };
+            /** @description Invalid request body or slot restriction structure */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description User is not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description User lacks required cms:write permission */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Content Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    getAllWidgetSchemas: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successfully retrieved all widget schemas */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: components["schemas"]["JsonNode"];
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description User is not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description User lacks required cms:write permission */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Content Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    getWidgetSchema: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /**
+                 * @description Widget type identifier
+                 * @example hero
+                 */
+                type: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successfully retrieved widget schema */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JsonNode"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description User is not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description User lacks required cms:write permission */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unknown widget type */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Content Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    getLatestYoutubeVideo: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /**
+                 * @description YouTube channel ID
+                 * @example UCbU41G2hhiwdn-gFFRqZN4w
+                 */
+                channelId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successfully retrieved cached video */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["YoutubeVideoDto"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description No cached video found for the given channel ID */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Content Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
     uploadAttachment: {
         parameters: {
             query?: never;
@@ -4254,7 +5895,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Not authenticated */
@@ -4429,7 +6070,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Not authenticated */
@@ -4603,7 +6244,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Not authenticated */
@@ -4773,7 +6414,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Not authenticated */
@@ -4947,7 +6588,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -5030,7 +6671,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Not authenticated */
@@ -5115,7 +6756,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -5200,7 +6841,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -5372,7 +7013,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -5544,7 +7185,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -5629,7 +7270,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -5801,7 +7442,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -5973,7 +7614,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */

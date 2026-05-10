@@ -28,6 +28,7 @@ const LocaleTabBar: React.FC<LocaleTabBarProps> = ({ activeLocale, onLocaleChang
                 return (
                     <button
                         key={locale.id}
+                        type="button"
                         onClick={() => onLocaleChange(locale.code)}
                         className={`
                             px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider

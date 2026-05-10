@@ -359,13 +359,16 @@ const Home: React.FC = () => {
                         )}
 
                         {/* Discord Widget */}
-                        <div className="glass-card rounded-xl overflow-hidden h-[400px]">
-                            <DiscordWidget />
+                        <div className="lg:col-span-1 border border-nr-border/50 rounded-xl overflow-hidden min-h-[300px]">
+                            <DiscordWidget inviteCode="" />
                         </div>
 
                         {/* Media Widget */}
-                        <div className="glass-card rounded-xl overflow-hidden relative">
-                            <YoutubeWidget />
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                            {/* YouTube Widget */}
+                            <div className="border border-nr-border/50 rounded-xl overflow-hidden bg-nr-bg min-h-[300px]">
+                                <YoutubeWidget channelId="" />
+                            </div>
                         </div>
 
                     </div>

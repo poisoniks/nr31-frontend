@@ -41,7 +41,6 @@ const UnitTypesSection: React.FC<{ lang: string }> = ({ lang }) => {
     const [isExpanded, setIsExpanded] = useState(false);
     const [entities, setEntities] = useState<UnitTypeDTO[]>([]);
     const [loading, setLoading] = useState(false);
-    const [fetched, setFetched] = useState(false);
 
     const { page, size, totalPages, setTotalPages, handlePageChange } = usePagination(10);
 
@@ -65,7 +64,6 @@ const UnitTypesSection: React.FC<{ lang: string }> = ({ lang }) => {
             const res = await rosterApi.getUnitTypes({ page, size });
             setEntities(res.content);
             setTotalPages(res.page?.totalPages || 1);
-            setFetched(true);
         } catch (e) {
             setError(t('admin.entities.error_load'));
         } finally {
@@ -375,7 +373,6 @@ const EventTypesSection: React.FC<{ lang: string }> = ({ lang }) => {
     const [isExpanded, setIsExpanded] = useState(false);
     const [entities, setEntities] = useState<EventTypeDTO[]>([]);
     const [loading, setLoading] = useState(false);
-    const [fetched, setFetched] = useState(false);
 
     const { page, size, totalPages, setTotalPages, handlePageChange } = usePagination(10);
 
@@ -397,7 +394,6 @@ const EventTypesSection: React.FC<{ lang: string }> = ({ lang }) => {
             const res = await rosterApi.getEventTypes({ page, size });
             setEntities(res.content);
             setTotalPages(res.page?.totalPages || 1);
-            setFetched(true);
         } catch (e) {
             setError(t('admin.entities.error_load'));
         } finally {
