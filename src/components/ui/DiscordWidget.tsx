@@ -20,7 +20,7 @@ const DiscordWidget: React.FC<DiscordWidgetProps> = ({ inviteCode }) => {
 
     if (!discordData) {
         return (
-            <div className="flex items-center justify-center bg-transparent text-nr-text w-full h-full min-h-[300px] font-sans text-sm border border-nr-border/50 rounded-xl">
+            <div className="flex items-center justify-center glass-card text-nr-text w-full h-full min-h-[300px] font-sans text-sm border border-nr-border/50 rounded-xl">
                 <div className="w-8 h-8 border-4 border-nr-accent border-t-transparent rounded-full animate-spin"></div>
             </div>
         );
@@ -29,7 +29,7 @@ const DiscordWidget: React.FC<DiscordWidgetProps> = ({ inviteCode }) => {
     const { logoUrl, serverName, presenceCount, topGames = [], displayMembers = [], moreCount, inviteUrl } = discordData;
 
     return (
-        <div className="flex flex-col bg-transparent text-nr-text w-full h-full font-sans text-sm transition-colors duration-200 border border-nr-border/50 rounded-xl overflow-hidden pointer-events-auto">
+        <div className="flex flex-col glass-card text-nr-text w-full h-full min-h-[300px] font-sans text-sm transition-colors duration-200 border border-nr-border/50 rounded-xl overflow-hidden pointer-events-auto">
             {/* Header */}
             <div className="flex flex-col border-b border-nr-border/50 p-4 shrink-0 transition-colors duration-200">
                 <div className="flex items-center gap-3">

@@ -38,18 +38,14 @@ export const widgetRegistry: Record<string, WidgetRegistryEntry> = {
     },
     'discord': {
         component: ({ widget }) => (
-            <div className="border border-nr-border/50 rounded-xl overflow-hidden min-h-[300px]">
-                <DiscordWidget inviteCode={(widget as any).inviteCode} />
-            </div>
+            <DiscordWidget inviteCode={(widget as any).inviteCode} />
         ),
         icon: <MessageSquare size={18} />,
         labelKey: 'cms.widget.discord',
     },
     'youtube': {
         component: ({ widget }) => (
-            <div className="border border-nr-border/50 rounded-xl overflow-hidden bg-nr-bg min-h-[300px]">
-                <YoutubeWidget channelId={(widget as any).channelId} />
-            </div>
+            <YoutubeWidget channelId={(widget as any).channelId} />
         ),
         icon: <MonitorPlay size={18} />,
         labelKey: 'cms.widget.youtube',

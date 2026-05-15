@@ -11,7 +11,7 @@ export const NewsFeedWidget: React.FC<{ widget: any; isEditMode: boolean }> = ({
     const sectionTitle = data.sectionTitle?.[lang] || data.sectionTitle?.['en'] || 'Latest News';
 
     return (
-        <div className="bg-nr-bg border border-nr-border/50 rounded-xl p-6 pointer-events-auto">
+        <div className="glass-card border border-nr-border/50 rounded-xl p-6 pointer-events-auto">
             <h2 className="font-serif text-2xl font-bold mb-6 flex items-center gap-3 text-nr-text">
                 <Newspaper className="text-nr-accent" />
                 {sectionTitle}
