@@ -60,7 +60,7 @@ export const AddWidgetPanel: React.FC<AddWidgetPanelProps> = ({ slotType, onClos
                 })}
                 {allowedTypes.length === 0 && (
                     <div className="p-4 text-center text-sm text-nr-text/50">
-                        No widgets allowed
+                        {t('cms.no_widgets')}
                     </div>
                 )}
             </div>

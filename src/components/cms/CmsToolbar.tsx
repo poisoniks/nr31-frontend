@@ -38,7 +38,7 @@ export const CmsToolbar: React.FC<{ slug: string }> = ({ slug }) => {
     };
 
     const handleDiscardChanges = async () => {
-        if (window.confirm(t('cms.discard') + '?')) {
+        if (window.confirm(t('cms.confirm_discard'))) {
             try {
                 await loadDraftPage(slug);
             } catch (err) {
@@ -56,9 +56,9 @@ export const CmsToolbar: React.FC<{ slug: string }> = ({ slug }) => {
                         {t('cms.version', { version: pageVersion })}
                     </span>
                     <div className="flex items-center gap-1.5 mt-0.5">
-                        <div className={`w-2 h-2 rounded-full ${isDirty ? 'bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.6)] animate-pulse' : 'bg-green-500'}`} />
-                        <span className={`text-xs font-bold ${isDirty ? 'text-amber-500' : 'text-green-500'}`}>
-                            {isDirty ? t('cms.unsaved') : 'Saved'}
+                        <div className={`w-2 h-2 rounded-full ${(isDirty || isSaving) ? 'bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.6)] animate-pulse' : 'bg-green-500'}`} />
+                        <span className={`text-xs font-bold ${(isDirty || isSaving) ? 'text-amber-500' : 'text-green-500'}`}>
+                            {isSaving ? t('cms.saving') : (isDirty ? t('cms.unsaved') : t('cms.saved'))}
                         </span>
                     </div>
                 </div>
