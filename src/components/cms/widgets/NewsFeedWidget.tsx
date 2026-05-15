@@ -31,9 +31,7 @@ export const NewsFeedWidget: React.FC<{ widget: any; isEditMode: boolean }> = ({
                 ))}
             </div>
             
-            <p className="text-center text-nr-text/50 text-sm mt-6">
-                News API integration pending
-            </p>
+
         </div>
     );
 };
