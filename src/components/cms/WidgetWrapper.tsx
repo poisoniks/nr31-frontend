@@ -68,7 +68,7 @@ export const WidgetWrapper: React.FC<WidgetWrapperProps> = ({
             <div className="absolute -inset-1 border-2 border-transparent group-hover:border-nr-accent/30 rounded-2xl pointer-events-none z-40 transition-colors" />
 
             {/* Toolbar that appears on hover */}
-            <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 z-50 bg-black/80 backdrop-blur-md rounded-lg p-1 border border-nr-border/50 shadow-lg">
+            <div className={`absolute ${widget.type === 'hero' ? 'bottom-2' : 'top-2'} right-2 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 z-50 bg-black/80 backdrop-blur-md rounded-lg p-1 border border-nr-border/50 shadow-lg`}>
                 <div
                     {...attributes}
                     {...listeners}
