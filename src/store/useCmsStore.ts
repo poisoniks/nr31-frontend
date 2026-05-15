@@ -1,6 +1,9 @@
 import { create } from 'zustand';
 import { cmsApi } from '../api/cmsApi';
 import type { PageResponseDto, WidgetDto, JsonNode } from '../api/cmsApi';
+import { generateUiId } from '../utils/uuid';
+
+export type WidgetWithUiId = WidgetDto & { _uiId: string };
 
 interface CmsState {
     isEditMode: boolean;
@@ -43,7 +46,8 @@ export const useCmsStore = create<CmsState>((set, get) => ({
     loadPublishedPage: async (slug: string) => {
         try {
             const data = await cmsApi.getPublishedPage(slug);
-            set({ pageData: data, pageVersion: data.version, isDirty: false });
+            const enrichedData = injectUiIds(data);
+            set({ pageData: enrichedData, pageVersion: enrichedData.version, isDirty: false });
         } catch (e: any) {
             console.error('Failed to load published page', e);
             if (e.response?.status === 404) {
@@ -61,7 +65,8 @@ export const useCmsStore = create<CmsState>((set, get) => ({
     loadDraftPage: async (slug: string) => {
         try {
             const data = await cmsApi.getDraftPage(slug);
-            set({ pageData: data, pageVersion: data.version, isDirty: false });
+            const enrichedData = injectUiIds(data);
+            set({ pageData: enrichedData, pageVersion: enrichedData.version, isDirty: false });
         } catch (e: any) {
             console.error('Failed to load draft page', e);
             throw e;
@@ -92,11 +97,15 @@ export const useCmsStore = create<CmsState>((set, get) => ({
 
         set({ isSaving: true });
         try {
+            const cleanedLayoutData = stripUiIds(pageData.layoutData);
+
             const updated = await cmsApi.updateDraft(slug, {
                 version: pageVersion,
-                layoutData: pageData.layoutData
+                layoutData: cleanedLayoutData
             });
-            set({ pageData: updated, pageVersion: updated.version, isDirty: false, isSaving: false });
+
+            const enrichedData = injectUiIds(updated);
+            set({ pageData: enrichedData, pageVersion: enrichedData.version, isDirty: false, isSaving: false });
         } catch (e) {
             set({ isSaving: false });
             throw e;
@@ -108,7 +117,9 @@ export const useCmsStore = create<CmsState>((set, get) => ({
         set({ isSaving: true });
         try {
             const published = await cmsApi.publishDraft(slug, { version: pageVersion });
-            set({ pageData: published, pageVersion: published.version, isDirty: false, isSaving: false, isEditMode: false });
+
+            const enrichedData = injectUiIds(published);
+            set({ pageData: enrichedData, pageVersion: enrichedData.version, isDirty: false, isSaving: false, isEditMode: false });
         } catch (e) {
             set({ isSaving: false });
             throw e;
@@ -163,16 +174,18 @@ export const useCmsStore = create<CmsState>((set, get) => ({
         set((state) => {
             if (!state.pageData) return state;
 
+            const widgetWithId: WidgetWithUiId = { ...widget, _uiId: generateUiId() } as WidgetWithUiId;
+
             const newLayoutData = { ...state.pageData.layoutData };
             const newSlots = [...newLayoutData.slots];
             const slotIndex = newSlots.findIndex((s) => s.slotType === slotType);
 
             if (slotIndex !== -1) {
                 const newSlot = { ...newSlots[slotIndex], widgets: [...newSlots[slotIndex].widgets] };
-                newSlot.widgets.push(widget as any);
+                newSlot.widgets.push(widgetWithId as any);
                 newSlots[slotIndex] = newSlot;
             } else {
-                newSlots.push({ slotType, widgets: [widget as any] });
+                newSlots.push({ slotType, widgets: [widgetWithId as any] });
             }
             newLayoutData.slots = newSlots;
 
@@ -234,3 +247,42 @@ export const useCmsStore = create<CmsState>((set, get) => ({
         });
     }
 }));
+
+/**
+ * Inject stable _uiId into all widgets for drag & drop operations
+ * This prevents React from losing component state when widgets are reordered
+ */
+function injectUiIds(pageData: PageResponseDto): PageResponseDto {
+    return {
+        ...pageData,
+        layoutData: {
+            ...pageData.layoutData,
+            slots: pageData.layoutData.slots.map(slot => ({
+                ...slot,
+                widgets: slot.widgets.map(widget => {
+                    // Add _uiId as a non-enumerable property to avoid type conflicts
+                    const widgetWithId = { ...widget } as any;
+                    widgetWithId._uiId = generateUiId();
+                    return widgetWithId;
+                })
+            }))
+        }
+    };
+}
+
+/**
+ * Strip _uiId from all widgets before sending to backend
+ * The _uiId is only for UI drag & drop stability and should not be persisted
+ */
+function stripUiIds(layoutData: any): any {
+    return {
+        ...layoutData,
+        slots: layoutData.slots.map((slot: any) => ({
+            ...slot,
+            widgets: slot.widgets.map((widget: any) => {
+                const { _uiId, ...cleanWidget } = widget;
+                return cleanWidget;
+            })
+        }))
+    };
+}

@@ -2,6 +2,8 @@ import React from 'react';
 import { Save, UploadCloud, RotateCcw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useCmsStore } from '../../store/useCmsStore';
+import { useUIStore } from '../../store/useUIStore';
+import { getErrorMessage } from '../../utils/errorUtils';
 import Button from '../ui/Button';
 
 export const CmsToolbar: React.FC<{ slug: string }> = ({ slug }) => {
@@ -13,8 +15,37 @@ export const CmsToolbar: React.FC<{ slug: string }> = ({ slug }) => {
     const saveDraft = useCmsStore(state => state.saveDraft);
     const publishDraft = useCmsStore(state => state.publishDraft);
     const loadDraftPage = useCmsStore(state => state.loadDraftPage);
+    const { setError } = useUIStore();
 
     if (!isEditMode) return null;
+
+    const handleSaveDraft = async () => {
+        try {
+            await saveDraft(slug);
+        } catch (err) {
+            setError(getErrorMessage(err, t));
+        }
+    };
+
+    const handlePublishDraft = async () => {
+        if (window.confirm(t('cms.confirm_publish'))) {
+            try {
+                await publishDraft(slug);
+            } catch (err) {
+                setError(getErrorMessage(err, t));
+            }
+        }
+    };
+
+    const handleDiscardChanges = async () => {
+        if (window.confirm(t('cms.discard') + '?')) {
+            try {
+                await loadDraftPage(slug);
+            } catch (err) {
+                setError(getErrorMessage(err, t));
+            }
+        }
+    };
 
     return (
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 animate-fade-in-up">
@@ -39,11 +70,7 @@ export const CmsToolbar: React.FC<{ slug: string }> = ({ slug }) => {
                         variant="ghost"
                         size="sm"
                         disabled={!isDirty || isSaving}
-                        onClick={() => {
-                            if (window.confirm(t('cms.discard') + '?')) {
-                                loadDraftPage(slug);
-                            }
-                        }}
+                        onClick={handleDiscardChanges}
                         className="text-nr-text/60 hover:text-nr-text"
                     >
                         <RotateCcw size={16} className="mr-1.5" />
@@ -54,7 +81,7 @@ export const CmsToolbar: React.FC<{ slug: string }> = ({ slug }) => {
                         variant="secondary"
                         size="sm"
                         disabled={!isDirty || isSaving}
-                        onClick={() => saveDraft(slug)}
+                        onClick={handleSaveDraft}
                         className="border-nr-border/50"
                     >
                         <Save size={16} className="mr-1.5" />
@@ -65,11 +92,7 @@ export const CmsToolbar: React.FC<{ slug: string }> = ({ slug }) => {
                         variant="primary"
                         size="sm"
                         disabled={isSaving}
-                        onClick={() => {
-                            if (window.confirm(t('cms.confirm_publish'))) {
-                                publishDraft(slug);
-                            }
-                        }}
+                        onClick={handlePublishDraft}
                         className="shadow-lg shadow-amber-900/20"
                     >
                         <UploadCloud size={16} className="mr-1.5" />

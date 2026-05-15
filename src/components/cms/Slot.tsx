@@ -8,6 +8,7 @@ import { WidgetWrapper } from './WidgetWrapper';
 import { AddWidgetPanel } from './AddWidgetPanel';
 import { useCmsStore } from '../../store/useCmsStore';
 import type { SlotDto, WidgetDto } from '../../api/cmsApi';
+import type { WidgetWithUiId } from '../../store/useCmsStore';
 
 interface SlotProps {
     slot: SlotDto;
@@ -29,19 +30,19 @@ export const Slot: React.FC<SlotProps> = ({ slot, isEditMode, onEditSettings }) 
         }
     });
 
-    const widgetIds = slot.widgets.map((_, index) => `${slot.slotType}-${index}`);
+    const widgetIds = (slot.widgets as WidgetWithUiId[]).map(w => w._uiId);
 
     const handleDuplicate = (widget: WidgetDto) => {
         const clone = JSON.parse(JSON.stringify(widget));
+        delete (clone as any)._uiId;
         addWidget(slot.slotType, clone);
     };
 
     return (
         <div
             ref={isEditMode ? setNodeRef : undefined}
-            className={`flex flex-col gap-4 relative min-h-[50px] transition-all ${
-                isEditMode && isOver ? 'bg-nr-accent/5 rounded-xl border border-nr-accent/30' : ''
-            }`}
+            className={`flex flex-col gap-4 relative min-h-[50px] transition-all ${isEditMode && isOver ? 'bg-nr-accent/5 rounded-xl border border-nr-accent/30' : ''
+                }`}
         >
             {isEditMode ? (
                 <SortableContext items={widgetIds} strategy={verticalListSortingStrategy}>
@@ -49,10 +50,13 @@ export const Slot: React.FC<SlotProps> = ({ slot, isEditMode, onEditSettings }) 
                         const Entry = widgetRegistry[widget.type];
                         if (!Entry) return null;
 
+                        const widgetWithId = widget as WidgetWithUiId;
+
                         return (
                             <WidgetWrapper
-                                key={`${slot.slotType}-${index}`}
+                                key={widgetWithId._uiId}
                                 widget={widget}
+                                widgetId={widgetWithId._uiId}
                                 index={index}
                                 slotType={slot.slotType}
                                 isEditMode={isEditMode}
@@ -73,7 +77,8 @@ export const Slot: React.FC<SlotProps> = ({ slot, isEditMode, onEditSettings }) 
                 slot.widgets.map((widget, index) => {
                     const Entry = widgetRegistry[widget.type];
                     if (!Entry) return null;
-                    return <Entry.component key={`${slot.slotType}-${index}`} widget={widget} isEditMode={false} />;
+                    const widgetWithId = widget as WidgetWithUiId;
+                    return <Entry.component key={widgetWithId._uiId || `${slot.slotType}-${index}`} widget={widget} isEditMode={false} />;
                 })
             )}
 
@@ -88,11 +93,11 @@ export const Slot: React.FC<SlotProps> = ({ slot, isEditMode, onEditSettings }) 
                         </div>
                         <span className="font-medium text-sm">{t('cms.add_widget')}</span>
                     </button>
-                    
+
                     {isAddPanelOpen && (
-                        <AddWidgetPanel 
-                            slotType={slot.slotType} 
-                            onClose={() => setIsAddPanelOpen(false)} 
+                        <AddWidgetPanel
+                            slotType={slot.slotType}
+                            onClose={() => setIsAddPanelOpen(false)}
                         />
                     )}
                 </div>

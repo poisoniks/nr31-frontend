@@ -6,6 +6,7 @@ import type { WidgetDto } from '../../api/cmsApi';
 
 interface WidgetWrapperProps {
     widget: WidgetDto;
+    widgetId: string;
     index: number;
     slotType: string;
     isEditMode: boolean;
@@ -17,6 +18,7 @@ interface WidgetWrapperProps {
 
 export const WidgetWrapper: React.FC<WidgetWrapperProps> = ({
     widget,
+    widgetId,
     index,
     slotType,
     isEditMode,
@@ -25,10 +27,7 @@ export const WidgetWrapper: React.FC<WidgetWrapperProps> = ({
     onDelete,
     onDuplicate
 }) => {
-    // We use a unique ID for each widget instance across slots
-    // Using slotType + index works if we are careful, but let's assume we want a unique id for dnd-kit
-    // A more robust way is to use a unique generated id, but for now we'll combine slotType and index
-    const id = `${slotType}-${index}`;
+    const id = widgetId;
 
     const {
         attributes,
@@ -76,7 +75,7 @@ export const WidgetWrapper: React.FC<WidgetWrapperProps> = ({
                 >
                     <GripVertical size={16} />
                 </div>
-                
+
                 <button
                     onClick={(e) => { e.preventDefault(); onEditSettings?.(); }}
                     className="p-1.5 text-nr-text/60 hover:text-nr-text hover:bg-white/10 rounded"
@@ -84,7 +83,7 @@ export const WidgetWrapper: React.FC<WidgetWrapperProps> = ({
                 >
                     <Settings size={16} />
                 </button>
-                
+
                 <button
                     onClick={(e) => { e.preventDefault(); onDuplicate?.(); }}
                     className="p-1.5 text-nr-text/60 hover:text-nr-text hover:bg-white/10 rounded"
