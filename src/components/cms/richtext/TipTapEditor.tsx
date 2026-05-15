@@ -1,7 +1,6 @@
 import React from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
-import Link from '@tiptap/extension-link';
 import Image from '@tiptap/extension-image';
 import Placeholder from '@tiptap/extension-placeholder';
 import { SmallLinkButton } from './extensions/SmallLinkButton';
@@ -14,21 +13,24 @@ interface TipTapEditorProps {
   onChange: (content: any) => void;
 }
 
+const extensions = [
+  StarterKit.configure({
+    link: {
+      openOnClick: false,
+    },
+  }),
+  Image,
+  Placeholder.configure({
+    placeholder: 'Write content here...',
+  }),
+  SmallLinkButton,
+  SupportButton,
+  CtaButton,
+];
+
 export const TipTapEditor: React.FC<TipTapEditorProps> = ({ content, onChange }) => {
   const editor = useEditor({
-    extensions: [
-      StarterKit,
-      Link.configure({
-        openOnClick: false,
-      }),
-      Image,
-      Placeholder.configure({
-        placeholder: 'Write content here...',
-      }),
-      SmallLinkButton,
-      SupportButton,
-      CtaButton,
-    ],
+    extensions,
     content: content || '',
     onUpdate: ({ editor }) => {
       onChange(editor.getJSON());
@@ -162,7 +164,7 @@ export const TipTapEditor: React.FC<TipTapEditorProps> = ({ content, onChange })
           title="CTA Button"
         />
       </div>
-      
+
 
 
       <div className="flex-1 overflow-y-auto">
@@ -177,9 +179,8 @@ const MenuButton = ({ onClick, isActive, icon, title }: any) => (
     type="button"
     onClick={onClick}
     title={title}
-    className={`p-1.5 rounded hover:bg-black/10 dark:hover:bg-white/10 transition-colors ${
-      isActive ? 'bg-nr-accent/20 text-nr-accent' : 'text-nr-text/70'
-    }`}
+    className={`p-1.5 rounded hover:bg-black/10 dark:hover:bg-white/10 transition-colors ${isActive ? 'bg-nr-accent/20 text-nr-accent' : 'text-nr-text/70'
+      }`}
   >
     {icon}
   </button>

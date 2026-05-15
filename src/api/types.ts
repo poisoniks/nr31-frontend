@@ -1298,7 +1298,7 @@ export interface components {
         /** @description Discord widget that displays server presence and member activity */
         DiscordWidgetDto: {
             type: "DiscordWidgetDto";
-        } & (Omit<components["schemas"]["WidgetDto"], "type"> & {
+        } & (Omit<WithRequired<components["schemas"]["WidgetDto"], "id">, "type"> & {
             /**
              * @description Discord server invite code (e.g. 'uuc' from discord.com/invite/uuc)
              * @example uuc
@@ -1486,7 +1486,7 @@ export interface components {
         /** @description Hero widget for full-viewport introduction section */
         HeroWidgetDto: {
             type: "HeroWidgetDto";
-        } & (Omit<components["schemas"]["WidgetDto"], "type"> & {
+        } & (Omit<WithRequired<components["schemas"]["WidgetDto"], "id">, "type"> & {
             /**
              * Format: uuid
              * @description UUID of the background image from Library API
@@ -1635,7 +1635,7 @@ export interface components {
         /** @description News feed widget for displaying recent articles */
         NewsFeedWidgetDto: {
             type: "NewsFeedWidgetDto";
-        } & (Omit<components["schemas"]["WidgetDto"], "type"> & {
+        } & (Omit<WithRequired<components["schemas"]["WidgetDto"], "id">, "type"> & {
             /**
              * Format: int32
              * @description Number of articles to fetch (max enforced by AppConfig key 'cms.newsfeed.max_items')
@@ -1661,7 +1661,7 @@ export interface components {
         /** @description Next event widget with countdown timer */
         NextEventWidgetDto: {
             type: "NextEventWidgetDto";
-        } & (Omit<components["schemas"]["WidgetDto"], "type"> & {
+        } & (Omit<WithRequired<components["schemas"]["WidgetDto"], "id">, "type"> & {
             /**
              * @description Optional localized title override
              * @example {
@@ -1861,7 +1861,7 @@ export interface components {
         /** @description Rich text widget with TipTap JSON AST support */
         RichTextWidgetDto: {
             type: "RichTextWidgetDto";
-        } & (Omit<components["schemas"]["WidgetDto"], "type"> & {
+        } & (Omit<WithRequired<components["schemas"]["WidgetDto"], "id">, "type"> & {
             /**
              * @description Localized TipTap JSON AST content (max size per locale enforced by AppConfig key 'cms.richtext.max_size_bytes')
              * @example {
@@ -2275,6 +2275,11 @@ export interface components {
         };
         /** @description Base class for all widgets */
         WidgetDto: {
+            /**
+             * Format: uuid
+             * @description Unique identifier for the widget
+             */
+            id: string;
             type: string;
         };
         /** @description Cached YouTube video data for a channel */
@@ -2314,7 +2319,7 @@ export interface components {
         /** @description YouTube widget that displays the latest video from a single channel */
         YoutubeWidgetDto: {
             type: "YoutubeWidgetDto";
-        } & (Omit<components["schemas"]["WidgetDto"], "type"> & {
+        } & (Omit<WithRequired<components["schemas"]["WidgetDto"], "id">, "type"> & {
             /**
              * @description YouTube channel ID to track (e.g. UCbU41G2hhiwdn-gFFRqZN4w)
              * @example UCbU41G2hhiwdn-gFFRqZN4w
@@ -2352,7 +2357,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -2437,7 +2442,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -2522,7 +2527,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -2692,7 +2697,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -2775,7 +2780,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -2856,7 +2861,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -2941,7 +2946,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -3029,7 +3034,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -3114,7 +3119,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -3288,7 +3293,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -3460,7 +3465,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -3549,7 +3554,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -3632,7 +3637,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -3716,7 +3721,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -3800,7 +3805,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -3885,7 +3890,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -3971,7 +3976,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -4055,7 +4060,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -4139,7 +4144,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -4658,7 +4663,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -4922,7 +4927,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -5011,7 +5016,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -5100,7 +5105,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description User is not authenticated */
@@ -5193,7 +5198,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description User is not authenticated */
@@ -5286,7 +5291,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description User is not authenticated */
@@ -5369,7 +5374,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description User is not authenticated */
@@ -5456,7 +5461,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description User is not authenticated */
@@ -5541,7 +5546,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description User is not authenticated */
@@ -5630,7 +5635,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description User is not authenticated */
@@ -5719,7 +5724,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -5895,7 +5900,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Not authenticated */
@@ -6070,7 +6075,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Not authenticated */
@@ -6244,7 +6249,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Not authenticated */
@@ -6414,7 +6419,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Not authenticated */
@@ -6588,7 +6593,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -6671,7 +6676,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Not authenticated */
@@ -6756,7 +6761,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -6841,7 +6846,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -7013,7 +7018,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -7185,7 +7190,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -7270,7 +7275,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -7442,7 +7447,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -7614,7 +7619,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -7674,3 +7679,6 @@ export interface operations {
         };
     };
 }
+type WithRequired<T, K extends keyof T> = T & {
+    [P in K]-?: T[P];
+};

@@ -131,7 +131,10 @@ export const WidgetSettingsModal: React.FC<WidgetSettingsModalProps> = ({
     }, [widgetSchemas, widget.type]);
 
     const uiSchema = React.useMemo(() => {
-        const ui: any = {};
+        const ui: any = {
+            id: { 'ui:widget': 'hidden' },
+            type: { 'ui:widget': 'hidden' }
+        };
         if (schema.properties) {
             Object.entries(schema.properties).forEach(([key, value]: [string, any]) => {
                 if (value['x-localized']) {

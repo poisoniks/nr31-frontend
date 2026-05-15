@@ -8,7 +8,6 @@ import { WidgetWrapper } from './WidgetWrapper';
 import { AddWidgetPanel } from './AddWidgetPanel';
 import { useCmsStore } from '../../store/useCmsStore';
 import type { SlotDto, WidgetDto } from '../../api/cmsApi';
-import type { WidgetWithUiId } from '../../store/useCmsStore';
 
 interface SlotProps {
     slot: SlotDto;
@@ -30,11 +29,11 @@ export const Slot: React.FC<SlotProps> = ({ slot, isEditMode, onEditSettings }) 
         }
     });
 
-    const widgetIds = (slot.widgets as WidgetWithUiId[]).map(w => w._uiId);
+    const widgetIds = slot.widgets.map(w => w.id);
 
     const handleDuplicate = (widget: WidgetDto) => {
         const clone = JSON.parse(JSON.stringify(widget));
-        delete (clone as any)._uiId;
+        delete (clone as any).id;
         addWidget(slot.slotType, clone);
     };
 
@@ -50,13 +49,13 @@ export const Slot: React.FC<SlotProps> = ({ slot, isEditMode, onEditSettings }) 
                         const Entry = widgetRegistry[widget.type];
                         if (!Entry) return null;
 
-                        const widgetWithId = widget as WidgetWithUiId;
+                        const widgetWithId = widget;
 
                         return (
                             <WidgetWrapper
-                                key={widgetWithId._uiId}
+                                key={widgetWithId.id}
                                 widget={widget}
-                                widgetId={widgetWithId._uiId}
+                                widgetId={widgetWithId.id}
                                 index={index}
                                 slotType={slot.slotType}
                                 isEditMode={isEditMode}
@@ -77,8 +76,8 @@ export const Slot: React.FC<SlotProps> = ({ slot, isEditMode, onEditSettings }) 
                 slot.widgets.map((widget, index) => {
                     const Entry = widgetRegistry[widget.type];
                     if (!Entry) return null;
-                    const widgetWithId = widget as WidgetWithUiId;
-                    return <Entry.component key={widgetWithId._uiId || `${slot.slotType}-${index}`} widget={widget} isEditMode={false} />;
+                    const widgetWithId = widget;
+                    return <Entry.component key={widgetWithId.id || `${slot.slotType}-${index}`} widget={widget} isEditMode={false} />;
                 })
             )}
 

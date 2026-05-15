@@ -426,6 +426,7 @@
     "cms.widget.discord": "Discord",
     "cms.widget.youtube": "YouTube",
     "cms.conflict": "The page was modified by another user. Please refresh.",
+    "cms.error.duplicate_ids": "Critical error: Layout contains duplicate widget IDs. This shouldn't happen normally. Please reload the page and try again.",
     "cms.discard": "Discard",
     "cms.version": "Version",
     "cms.unsaved": "Unsaved",

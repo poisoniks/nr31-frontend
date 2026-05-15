@@ -31,6 +31,8 @@ export const cmsApi = {
         } catch (error: any) {
             if (error.response?.status === 409) {
                 useUIStore.getState().setError('cms.conflict');
+            } else if (error.response?.status === 400 && error.response.data?.details?.id === "Layout contains duplicate widget IDs") {
+                useUIStore.getState().setError('cms.error.duplicate_ids');
             }
             throw error;
         }
@@ -43,6 +45,8 @@ export const cmsApi = {
         } catch (error: any) {
             if (error.response?.status === 409) {
                 useUIStore.getState().setError('cms.conflict');
+            } else if (error.response?.status === 400 && error.response.data?.details?.id === "Layout contains duplicate widget IDs") {
+                useUIStore.getState().setError('cms.error.duplicate_ids');
             }
             throw error;
         }
