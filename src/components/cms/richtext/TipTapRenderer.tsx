@@ -47,7 +47,7 @@ function renderNode(node: any): React.ReactNode {
     case 'listItem':
       return <li className="mb-1">{children}</li>;
     case 'blockquote':
-      return <blockquote>{children}</blockquote>;
+      return <blockquote className="border-l-4 border-nr-accent pl-4 italic my-4">{children}</blockquote>;
     case 'codeBlock':
       return <pre><code>{children}</code></pre>;
     case 'horizontalRule':
@@ -113,16 +113,16 @@ function applyMarks(text: string, marks?: any[]): React.ReactNode {
   marks.forEach((mark) => {
     switch (mark.type) {
       case 'bold':
-        result = <strong>{result}</strong>;
+        result = <strong className="font-bold">{result}</strong>;
         break;
       case 'italic':
-        result = <em>{result}</em>;
+        result = <em className="italic">{result}</em>;
         break;
       case 'strike':
-        result = <s>{result}</s>;
+        result = <s className="line-through">{result}</s>;
         break;
       case 'code':
-        result = <code>{result}</code>;
+        result = <code className="bg-black/10 dark:bg-white/10 px-1 rounded font-mono text-sm">{result}</code>;
         break;
       case 'link':
         result = (
