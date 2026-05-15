@@ -108,7 +108,7 @@ const CmsPage: React.FC<{ slug?: string }> = ({ slug: defaultSlug }) => {
             onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
         >
-            <div className={`flex-1 flex flex-col pt-16 ${isEditMode ? 'pb-24' : ''}`}>
+            <div className={`flex-1 flex flex-col ${isEditMode ? 'pb-24' : ''}`}>
                 {/* Hero Slot */}
                 <div className="w-full relative">
                     {isEditMode && (

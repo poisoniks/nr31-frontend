@@ -27,7 +27,7 @@ export const HeroWidget: React.FC<{ widget: WidgetDto; isEditMode: boolean }> = 
     };
 
     return (
-        <section className={`relative h-[90vh] min-h-[700px] flex items-center bg-nr-bg border-b border-nr-border overflow-hidden pointer-events-auto ${isEditMode ? 'rounded-lg' : ''}`}>
+        <section className={`relative h-[80vh] min-h-[600px] flex items-center bg-nr-bg border-b border-nr-border overflow-hidden pointer-events-auto ${isEditMode ? 'rounded-lg' : ''}`}>
             {/* Background image overlay */}
             <div className="absolute inset-0 hero-overlay z-10" />
             <img
