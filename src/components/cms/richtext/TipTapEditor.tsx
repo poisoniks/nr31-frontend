@@ -44,7 +44,8 @@ export const TipTapEditor: React.FC<TipTapEditorProps> = ({ content, onChange })
           '[&_p]:mb-4 [&_p:last-child]:mb-0 ' +
           '[&_ul]:space-y-2 [&_ul]:list-disc [&_ul]:list-inside [&_ul]:marker:text-nr-accent [&_ul]:my-4 ' +
           '[&_ol]:space-y-2 [&_ol]:list-decimal [&_ol]:list-inside [&_ol]:marker:text-nr-accent [&_ol]:my-4 ' +
-          '[&_li]:mb-1',
+          '[&_li]:mb-1 ' +
+          '[&_a]:text-blue-500 [&_a]:underline',
       },
     },
   });

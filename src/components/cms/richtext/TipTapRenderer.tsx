@@ -126,7 +126,12 @@ function applyMarks(text: string, marks?: any[]): React.ReactNode {
         break;
       case 'link':
         result = (
-          <a href={mark.attrs?.href} target={mark.attrs?.target} rel="noopener noreferrer">
+          <a 
+            href={mark.attrs?.href} 
+            target={mark.attrs?.target} 
+            rel="noopener noreferrer"
+            className="text-blue-500 hover:text-blue-600 hover:underline transition-colors"
+          >
             {result}
           </a>
         );
