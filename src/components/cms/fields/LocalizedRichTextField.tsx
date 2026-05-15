@@ -14,7 +14,7 @@ export const LocalizedRichTextField: React.FC<FieldProps> = (props) => {
         onChange({
             ...data,
             [activeLocale]: content,
-        });
+        }, []);
     };
 
     return (

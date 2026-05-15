@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { TipTapEditor } from '../richtext/TipTapEditor';
 import { TipTapRenderer } from '../richtext/TipTapRenderer';
@@ -14,32 +14,63 @@ export const RichTextWidget: React.FC<{ widget: WidgetDto; isEditMode: boolean }
     const pageData = useCmsStore(state => state.pageData);
 
     const bodyContent = (widget as any).bodyContent || {};
+    
+    // Local state to hold the current content being edited
+    const [localContent, setLocalContent] = useState<Record<string, any>>(bodyContent);
+    const debounceTimerRef = useRef<number | null>(null);
 
-    const handleContentChange = (content: any) => {
-        if (!pageData) return;
+    // Sync local content when widget changes (e.g., locale switch or external update)
+    useEffect(() => {
+        setLocalContent(bodyContent);
+    }, [widget]);
 
-        let slotType = '';
-        let widgetIndex = -1;
-        
-        for (const slot of pageData.layoutData.slots) {
-            const index = slot.widgets.findIndex(w => w === widget);
-            if (index !== -1) {
-                slotType = slot.slotType;
-                widgetIndex = index;
-                break;
-            }
+    const handleContentChange = useCallback((content: any) => {
+        // Update local state immediately for responsive editing
+        setLocalContent(prev => ({
+            ...prev,
+            [activeLocale]: content
+        }));
+
+        // Debounce the global store update
+        if (debounceTimerRef.current) {
+            clearTimeout(debounceTimerRef.current);
         }
-        
-        if (slotType && widgetIndex !== -1) {
-            updateWidget(slotType, widgetIndex, {
-                ...widget,
-                bodyContent: {
-                    ...bodyContent,
-                    [activeLocale]: content
+
+        debounceTimerRef.current = setTimeout(() => {
+            if (!pageData) return;
+
+            let slotType = '';
+            let widgetIndex = -1;
+            
+            for (const slot of pageData.layoutData.slots) {
+                const index = slot.widgets.findIndex(w => w === widget);
+                if (index !== -1) {
+                    slotType = slot.slotType;
+                    widgetIndex = index;
+                    break;
                 }
-            } as any);
-        }
-    };
+            }
+            
+            if (slotType && widgetIndex !== -1) {
+                updateWidget(slotType, widgetIndex, {
+                    ...widget,
+                    bodyContent: {
+                        ...bodyContent,
+                        [activeLocale]: content
+                    }
+                } as any);
+            }
+        }, 500); // 500ms debounce delay
+    }, [activeLocale, widget, pageData, updateWidget, bodyContent]);
+
+    // Cleanup debounce timer on unmount
+    useEffect(() => {
+        return () => {
+            if (debounceTimerRef.current) {
+                clearTimeout(debounceTimerRef.current);
+            }
+        };
+    }, []);
 
     if (isEditMode) {
         return (
@@ -47,7 +78,8 @@ export const RichTextWidget: React.FC<{ widget: WidgetDto; isEditMode: boolean }
                 <LocaleTabBar activeLocale={activeLocale} onLocaleChange={setActiveLocale} />
                 <div className="flex-1">
                     <TipTapEditor
-                        content={bodyContent[activeLocale]}
+                        key={activeLocale}
+                        content={localContent[activeLocale]}
                         onChange={handleContentChange}
                     />
                 </div>

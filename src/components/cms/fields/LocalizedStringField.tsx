@@ -13,7 +13,7 @@ export const LocalizedStringField: React.FC<FieldProps> = (props) => {
         onChange({
             ...data,
             [activeLocale]: e.target.value,
-        });
+        }, []);
     };
 
     return (

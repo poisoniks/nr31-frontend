@@ -1,5 +1,5 @@
 import api from './axiosConfig';
-import type { components, paths } from './types';
+import type { paths } from './types';
 
 type GetEventsPath = paths['/api/v1/calendar/events']['get'];
 type GetEventsResponse = GetEventsPath['responses']['200']['content']['application/json'];
@@ -14,6 +14,8 @@ type UpdateEventResponse = UpdateEventPath['responses']['200']['content']['appli
 
 type GetNearestEventPath = paths['/api/v1/calendar/events/nearest']['get'];
 type GetNearestEventResponse = GetNearestEventPath['responses']['200']['content']['application/json'];
+
+export type EventDTO = GetNearestEventResponse;
 
 export const calendarApi = {
     getEvents: async (from: string, to: string, timezone?: string): Promise<GetEventsResponse> => {

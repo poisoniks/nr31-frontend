@@ -6,7 +6,7 @@ import { libraryApi } from '../../../api/libraryApi';
 import Button from '../../ui/Button';
 
 export const ImagePickerWidget: React.FC<WidgetProps> = (props) => {
-    const { value, onChange, schema, required, label } = props;
+    const { value, onChange, schema } = props;
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const handleSelect = (file: any) => {
