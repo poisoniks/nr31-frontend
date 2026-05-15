@@ -60,7 +60,7 @@ export const NextEventWidget: React.FC<{ widget: WidgetDto; isEditMode: boolean 
             <div className="glass-card rounded-xl p-5 border border-dashed border-nr-border/50 text-center pointer-events-auto">
                 <Swords size={32} className="mx-auto mb-3 text-nr-accent" />
                 <h3 className="font-serif text-lg font-bold text-nr-text">{titleOverride || t('home.widgets.next_event')}</h3>
-                <p className="text-sm text-nr-text/50">Next Event data will be loaded automatically.</p>
+                <p className="text-sm text-nr-text/50">{t('cms.widget.next_event.auto_load_hint')}</p>
             </div>
         );
     }
@@ -80,7 +80,7 @@ export const NextEventWidget: React.FC<{ widget: WidgetDto; isEditMode: boolean 
         return (
             <div className="glass-card rounded-xl p-5 flex flex-col items-center justify-center min-h-[250px] text-nr-text/50 border border-nr-border/50 pointer-events-auto">
                 <Swords size={32} className="mb-3 opacity-20" />
-                <span className="font-medium">{lang === 'uk' ? 'Немає майбутніх подій' : 'No upcoming events'}</span>
+                <span className="font-medium">{t('cms.widget.next_event.no_events')}</span>
             </div>
         );
     }
@@ -92,7 +92,7 @@ export const NextEventWidget: React.FC<{ widget: WidgetDto; isEditMode: boolean 
         >
             {timeRemaining.inProgress && (
                 <div className="absolute top-0 right-0 px-3 py-1 bg-emerald-500/20 text-emerald-400 text-[10px] font-bold tracking-wider rounded-bl-lg border-b border-l border-emerald-500/30 uppercase z-10 animate-pulse">
-                    {lang === 'uk' ? 'В ГРІ' : 'In Progress'}
+                    {t('cms.widget.next_event.in_progress')}
                 </div>
             )}
             <h4 className="font-serif text-lg font-bold mb-4 flex items-center justify-between text-nr-text relative z-10">
@@ -110,7 +110,7 @@ export const NextEventWidget: React.FC<{ widget: WidgetDto; isEditMode: boolean 
             <div className="bg-black/10 dark:bg-black/40 border border-nr-border rounded-lg p-4 mb-4 text-center relative z-10 shadow-inner">
                 {timeRemaining.inProgress ? (
                     <div className="font-serif text-2xl font-bold tracking-wider text-emerald-500 uppercase py-2 drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]">
-                        {lang === 'uk' ? 'В ГРІ' : 'IN PROGRESS'}
+                        {t('cms.widget.next_event.in_progress').toUpperCase()}
                     </div>
                 ) : (
                     <div className="grid grid-cols-3 gap-2 font-mono text-2xl md:text-3xl font-bold tracking-wider text-nr-accent mb-1 drop-shadow-[0_0_5px_rgba(251,191,36,0.3)]">
@@ -125,7 +125,7 @@ export const NextEventWidget: React.FC<{ widget: WidgetDto; isEditMode: boolean 
             
             {nearestEvent.participatingUnits && nearestEvent.participatingUnits.length > 0 && (
                 <div className="flex flex-wrap justify-center gap-2.5 mb-6 relative z-10 p-3 bg-black/5 dark:bg-white/5 rounded-lg border border-nr-border/30">
-                    <div className="w-full text-center text-[10px] uppercase tracking-wider text-nr-text/50 font-bold mb-1 w-full">{lang === 'uk' ? 'Підрозділи' : 'Units'}</div>
+                    <div className="w-full text-center text-[10px] uppercase tracking-wider text-nr-text/50 font-bold mb-1 w-full">{t('cms.widget.next_event.units')}</div>
                     {nearestEvent.participatingUnits.map((unit: any) => (
                         <div key={unit.id} className="relative group cursor-help transition-transform hover:scale-110">
                             {unit.customIcon ? (
@@ -145,7 +145,7 @@ export const NextEventWidget: React.FC<{ widget: WidgetDto; isEditMode: boolean 
 
             <div className="flex flex-col gap-3 relative z-10 w-full">
                 <Button variant="primary" className="flex-1 shrink-0 py-2.5 justify-center w-full font-bold shadow-md hover:shadow-lg transition-all" onClick={(e) => { e.stopPropagation(); navigate('/events'); }}>
-                    {lang === 'uk' ? 'Перейти в календар' : 'View in Calendar'}
+                    {t('cms.widget.next_event.view_calendar')}
                 </Button>
                 {timeRemaining.inProgress && (
                     <a 
@@ -156,7 +156,7 @@ export const NextEventWidget: React.FC<{ widget: WidgetDto; isEditMode: boolean 
                         onClick={(e) => e.stopPropagation()}
                     >
                         <Button variant="secondary" className="justify-center w-full py-2.5 bg-[#5865F2] hover:bg-[#4752C4] shadow-[0_0_15px_rgba(88,101,242,0.4)] text-white border-none shrink-0 flex items-center gap-2 font-bold">
-                            <span>{lang === 'uk' ? 'Приєднатись до Discord' : 'Join Discord Voice'}</span>
+                            <span>{t('cms.widget.next_event.join_discord')}</span>
                         </Button>
                     </a>
                 )}
