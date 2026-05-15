@@ -83,7 +83,7 @@ const YoutubeWidget: React.FC<YoutubeWidgetProps> = ({ channelId }) => {
                         src={`https://www.youtube-nocookie.com/embed/${latestVideo.videoId}`}
                         title={latestVideo.title}
                         frameBorder="0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; compute-pressure"
                         allowFullScreen
                     ></iframe>
                 </div>
