@@ -48,7 +48,7 @@ export const CmsToolbar: React.FC<{ slug: string }> = ({ slug }) => {
     };
 
     return (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 animate-fade-in-up">
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-60 animate-fade-in-up">
             <div className="glass bg-nr-bg/95 border border-nr-border/50 shadow-2xl rounded-2xl px-4 py-3 flex items-center gap-4">
                 
                 <div className="flex flex-col items-start min-w-[80px]">
