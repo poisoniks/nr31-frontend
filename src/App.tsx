@@ -12,6 +12,7 @@ import Home from './pages/Home';
 import AccessDenied from './pages/AccessDenied';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { RequirePermission } from './components/auth/RequirePermission';
+import StaticErrorPage from './pages/StaticErrorPage';
 import { useTranslation } from 'react-i18next';
 import { useUIStore } from './store/useUIStore';
 import GlobalErrorPopup from './components/ui/GlobalErrorPopup';
@@ -62,6 +63,8 @@ function App() {
                 </RequirePermission>
               </ProtectedRoute>
             } />
+            <Route path="/error" element={<StaticErrorPage />} />
+            <Route path="*" element={<StaticErrorPage />} />
           </Routes>
         </main>
         <Footer />

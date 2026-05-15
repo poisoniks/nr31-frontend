@@ -429,5 +429,8 @@
     "cms.discard": "Відхилити",
     "cms.version": "Версія",
     "cms.unsaved": "Не збережено",
-    "cms.confirm_publish": "Ви впевнені, що хочете опублікувати зміни?"
+    "cms.confirm_publish": "Ви впевнені, що хочете опублікувати зміни?",
+    "error.page_not_found": "Сторінку не знайдено",
+    "error.page_not_found_desc": "Сторінка, яку ви шукаєте, не існує або була переміщена.",
+    "error.return_home": "На головну"
 }

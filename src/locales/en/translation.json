@@ -429,5 +429,8 @@
     "cms.discard": "Discard",
     "cms.version": "Version",
     "cms.unsaved": "Unsaved",
-    "cms.confirm_publish": "Are you sure you want to publish the changes?"
+    "cms.confirm_publish": "Are you sure you want to publish the changes?",
+    "error.page_not_found": "Page Not Found",
+    "error.page_not_found_desc": "The page you are looking for does not exist or has been moved.",
+    "error.return_home": "Return Home"
 }

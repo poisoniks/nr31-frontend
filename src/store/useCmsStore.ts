@@ -47,7 +47,12 @@ export const useCmsStore = create<CmsState>((set, get) => ({
         } catch (e: any) {
             console.error('Failed to load published page', e);
             if (e.response?.status === 404) {
-                 // handle not found, maybe ignore or specific error
+                if (slug === 'home') {
+                    window.location.href = '/error';
+                } else {
+                    window.location.href = '/';
+                }
+                return;
             }
             throw e;
         }
