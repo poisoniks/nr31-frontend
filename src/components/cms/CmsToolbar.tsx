@@ -28,7 +28,8 @@ export const CmsToolbar: React.FC<{ slug: string }> = ({ slug }) => {
     };
 
     const handlePublishDraft = async () => {
-        if (window.confirm(t('cms.confirm_publish'))) {
+        const confirmMessage = isDirty ? t('cms.confirm_publish_unsaved') : t('cms.confirm_publish');
+        if (window.confirm(confirmMessage)) {
             try {
                 await publishDraft(slug);
             } catch (err) {
