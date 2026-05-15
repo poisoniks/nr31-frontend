@@ -413,6 +413,7 @@
     "cms.edit_mode": "CMS Edit Mode",
     "cms.save_draft": "Save Draft",
     "cms.publish": "Publish",
+    "cms.publishing": "Publishing...",
     "cms.exit": "Exit",
     "cms.dirty": "Unsaved changes",
     "cms.saving": "Saving...",

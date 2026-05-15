@@ -413,6 +413,7 @@
     "cms.edit_mode": "Режим редагування CMS",
     "cms.save_draft": "Зберегти чернетку",
     "cms.publish": "Опублікувати",
+    "cms.publishing": "Публікація...",
     "cms.exit": "Вийти",
     "cms.dirty": "Є незбережені зміни",
     "cms.saving": "Збереження...",
