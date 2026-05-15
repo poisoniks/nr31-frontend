@@ -37,7 +37,14 @@ export const TipTapEditor: React.FC<TipTapEditorProps> = ({ content, onChange })
     },
     editorProps: {
       attributes: {
-        className: 'prose prose-sm sm:prose lg:prose-lg xl:prose-xl focus:outline-none dark:prose-invert max-w-none min-h-[150px] p-4',
+        className: 'focus:outline-none max-w-none min-h-[150px] p-4 text-nr-text/80 leading-relaxed ' + 
+          '[&_h1]:font-serif [&_h1]:text-3xl [&_h1]:font-bold [&_h1]:text-nr-text [&_h1]:mb-6 [&_h1]:mt-10 [&_h1:first-child]:mt-0 ' +
+          '[&_h2]:font-serif [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:text-nr-text [&_h2]:mb-4 [&_h2]:mt-8 [&_h2:first-child]:mt-0 ' +
+          '[&_h3]:font-serif [&_h3]:text-xl [&_h3]:font-bold [&_h3]:text-nr-text [&_h3]:mb-3 [&_h3]:mt-6 [&_h3:first-child]:mt-0 ' +
+          '[&_p]:mb-4 [&_p:last-child]:mb-0 ' +
+          '[&_ul]:space-y-2 [&_ul]:list-disc [&_ul]:list-inside [&_ul]:marker:text-nr-accent [&_ul]:my-4 ' +
+          '[&_ol]:space-y-2 [&_ol]:list-decimal [&_ol]:list-inside [&_ol]:marker:text-nr-accent [&_ol]:my-4 ' +
+          '[&_li]:mb-1',
       },
     },
   });

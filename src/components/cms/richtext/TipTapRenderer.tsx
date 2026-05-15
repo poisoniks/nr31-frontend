@@ -9,7 +9,7 @@ interface TipTapRendererProps {
 export const TipTapRenderer: React.FC<TipTapRendererProps> = ({ content }) => {
   if (!content) return null;
   return (
-    <div className="prose prose-sm sm:prose lg:prose-lg xl:prose-xl dark:prose-invert max-w-none">
+    <div className="w-full">
       {content.content?.map((node: any, index: number) => (
         <React.Fragment key={index}>{renderNode(node)}</React.Fragment>
       ))}
@@ -30,16 +30,22 @@ function renderNode(node: any): React.ReactNode {
 
   switch (node.type) {
     case 'paragraph':
-      return <p>{children}</p>;
+      return <p className="text-nr-text/80 leading-relaxed mb-4 last:mb-0">{children}</p>;
     case 'heading':
-      const Tag = `h${node.attrs?.level || 2}` as any;
-      return <Tag className="font-serif">{children}</Tag>;
+      const level = node.attrs?.level || 2;
+      const Tag = `h${level}` as any;
+      const headingClasses = level === 1 
+        ? "font-serif text-3xl font-bold text-nr-text mb-6 mt-10 first:mt-0" 
+        : level === 2
+        ? "font-serif text-2xl font-bold text-nr-text mb-4 mt-8 first:mt-0"
+        : "font-serif text-xl font-bold text-nr-text mb-3 mt-6 first:mt-0";
+      return <Tag className={headingClasses}>{children}</Tag>;
     case 'bulletList':
-      return <ul>{children}</ul>;
+      return <ul className="space-y-2 text-nr-text/80 list-disc list-inside marker:text-nr-accent my-4">{children}</ul>;
     case 'orderedList':
-      return <ol>{children}</ol>;
+      return <ol className="space-y-2 text-nr-text/80 list-decimal list-inside marker:text-nr-accent my-4">{children}</ol>;
     case 'listItem':
-      return <li>{children}</li>;
+      return <li className="mb-1">{children}</li>;
     case 'blockquote':
       return <blockquote>{children}</blockquote>;
     case 'codeBlock':

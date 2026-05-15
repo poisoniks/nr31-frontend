@@ -88,7 +88,7 @@ export const RichTextWidget: React.FC<{ widget: WidgetDto; isEditMode: boolean }
     }
 
     return (
-        <div className="glass-card p-6 rounded-xl relative overflow-hidden group pointer-events-auto">
+        <div className="glass-card p-6 rounded-xl relative overflow-hidden group space-y-8 pointer-events-auto">
             <div className="relative z-10">
                 <TipTapRenderer content={bodyContent[currentLang] || bodyContent['en']} />
             </div>
