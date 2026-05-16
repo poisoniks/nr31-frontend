@@ -4,10 +4,9 @@ import StarterKit from '@tiptap/starter-kit';
 import Image from '@tiptap/extension-image';
 import Placeholder from '@tiptap/extension-placeholder';
 import { SmallLinkButton } from './extensions/SmallLinkButton';
-import { SupportButton } from './extensions/SupportButton';
-import { CtaButton } from './extensions/CtaButton';
+import { ImageLinkButton } from './extensions/ImageLinkButton';
 import { useTranslation } from 'react-i18next';
-import { Bold, Italic, Strikethrough, Heading1, Heading2, List, ListOrdered, Quote, Code, Link as LinkIcon, Image as ImageIcon, Minus } from 'lucide-react';
+import { Bold, Italic, Strikethrough, Heading1, Heading2, List, ListOrdered, Quote, Code, Link as LinkIcon, Image as ImageIcon, Minus, Plus, Search } from 'lucide-react';
 
 interface TipTapEditorProps {
   content?: any; // JSON AST
@@ -33,6 +32,38 @@ export const TipTapEditor: React.FC<TipTapEditorProps> = ({ content, onChange })
   const { t } = useTranslation();
   // Force re-render when selection changes to update toolbar button states
   const [, setSelectionUpdate] = useState(0);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const dropdownRef = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const customElements = [
+    {
+      id: 'linkButton',
+      label: t('cms.richtext.btn_small'),
+      icon: <LinkIcon size={16} />,
+      onClick: () => editor.chain().focus().insertContent(`<a data-type="smallLinkButton">${t('cms.richtext.default_link_text')}</a>`).run()
+    },
+    {
+      id: 'imageLinkButton',
+      label: t('cms.richtext.btn_support'),
+      icon: <ImageIcon size={16} />,
+      onClick: () => editor.chain().focus().insertContent(`<a data-type="imageLinkButton">${t('cms.richtext.default_support_text')}</a>`).run()
+    }
+  ];
+
+  const filteredElements = customElements.filter(el =>
+    el.label.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const extensions = React.useMemo(() => [
     StarterKit.configure({
@@ -45,8 +76,7 @@ export const TipTapEditor: React.FC<TipTapEditorProps> = ({ content, onChange })
       placeholder: t('cms.richtext.placeholder'),
     }),
     SmallLinkButton,
-    SupportButton,
-    CtaButton,
+    ImageLinkButton,
   ], [t]);
 
   const editor = useEditor({
@@ -172,21 +202,53 @@ export const TipTapEditor: React.FC<TipTapEditorProps> = ({ content, onChange })
           title={t('cms.richtext.image')}
         />
         <div className="w-px h-4 bg-nr-border mx-1" />
-        <MenuButton
-          onClick={() => editor.chain().focus().insertContent(`<a data-type="smallLinkButton">${t('cms.richtext.default_link_text')}</a>`).run()}
-          icon={<span className="text-[10px] font-bold px-1 border border-current rounded">BTN 1</span>}
-          title={t('cms.richtext.btn_small')}
-        />
-        <MenuButton
-          onClick={() => editor.chain().focus().insertContent(`<a data-type="supportButton">${t('cms.richtext.default_support_text')}</a>`).run()}
-          icon={<span className="text-[10px] font-bold px-1 border border-current rounded">BTN 2</span>}
-          title={t('cms.richtext.btn_support')}
-        />
-        <MenuButton
-          onClick={() => editor.chain().focus().insertContent('<div data-type="ctaButton"></div>').run()}
-          icon={<span className="text-[10px] font-bold px-1 border border-current rounded text-amber-500">CTA</span>}
-          title={t('cms.richtext.btn_cta')}
-        />
+        <div className="relative" ref={dropdownRef}>
+          <MenuButton
+            onClick={() => setDropdownOpen(!dropdownOpen)}
+            isActive={dropdownOpen}
+            icon={<Plus size={16} />}
+            title={t('cms.richtext.add_element')}
+          />
+          
+          {dropdownOpen && (
+            <div className="absolute left-0 top-full mt-2 w-64 bg-nr-bg/95 backdrop-blur-xl border border-nr-border/60 shadow-xl rounded-xl z-50 overflow-hidden animate-fade-in-up">
+              <div className="p-2 border-b border-nr-border/50 flex items-center gap-2 bg-black/5">
+                <Search size={14} className="text-nr-text/40" />
+                <input
+                  type="text"
+                  autoFocus
+                  placeholder={t('cms.richtext.search')}
+                  value={searchQuery}
+                  onChange={e => setSearchQuery(e.target.value)}
+                  className="bg-transparent border-none outline-none text-xs text-nr-text w-full"
+                />
+              </div>
+              <div className="p-1 max-h-48 overflow-y-auto">
+                {filteredElements.map(el => (
+                  <button
+                    key={el.id}
+                    onClick={() => {
+                      el.onClick();
+                      setDropdownOpen(false);
+                      setSearchQuery('');
+                    }}
+                    className="flex items-center gap-3 w-full p-2 hover:bg-nr-accent/10 hover:text-nr-accent rounded-lg text-left text-xs transition-colors text-nr-text/80 group cursor-pointer"
+                  >
+                    <div className="text-nr-text/40 group-hover:text-nr-accent transition-colors">
+                      {el.icon}
+                    </div>
+                    <span className="font-medium">{el.label}</span>
+                  </button>
+                ))}
+                {filteredElements.length === 0 && (
+                  <div className="p-4 text-center text-xs text-nr-text/40 italic">
+                    {t('roster.search.placeholder')}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
 
@@ -203,7 +265,7 @@ const MenuButton = ({ onClick, isActive, icon, title }: any) => (
     type="button"
     onClick={onClick}
     title={title}
-    className={`p-1.5 rounded hover:bg-black/10 dark:hover:bg-white/10 transition-colors ${isActive ? 'bg-nr-accent/20 text-nr-accent' : 'text-nr-text/70'
+    className={`p-1.5 rounded hover:bg-black/10 dark:hover:bg-white/10 transition-colors cursor-pointer ${isActive ? 'bg-nr-accent/20 text-nr-accent' : 'text-nr-text/70'
       }`}
   >
     {icon}

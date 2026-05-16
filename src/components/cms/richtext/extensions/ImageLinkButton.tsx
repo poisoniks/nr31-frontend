@@ -1,8 +1,8 @@
 import { mergeAttributes, Node } from '@tiptap/core';
 import { ReactNodeViewRenderer, NodeViewWrapper } from '@tiptap/react';
 
-export const SupportButton = Node.create({
-  name: 'supportButton',
+export const ImageLinkButton = Node.create({
+  name: 'imageLinkButton',
 
   group: 'block',
   atom: true,
@@ -13,7 +13,7 @@ export const SupportButton = Node.create({
         default: '#',
       },
       label: {
-        default: 'Support Us',
+        default: 'Link',
       },
       imageUrl: {
         default: '',
@@ -30,21 +30,21 @@ export const SupportButton = Node.create({
   parseHTML() {
     return [
       {
-        tag: 'a[data-type="supportButton"]',
+        tag: 'a[data-type="imageLinkButton"]',
       },
     ];
   },
 
   renderHTML({ HTMLAttributes }) {
-    return ['a', mergeAttributes(HTMLAttributes, { 'data-type': 'supportButton' }), 0];
+    return ['a', mergeAttributes(HTMLAttributes, { 'data-type': 'imageLinkButton' }), 0];
   },
 
   addNodeView() {
-    return ReactNodeViewRenderer(SupportButtonView);
+    return ReactNodeViewRenderer(ImageLinkButtonView);
   },
 });
 
-const SupportButtonView = ({ node, updateAttributes, editor }: any) => {
+const ImageLinkButtonView = ({ node, updateAttributes, editor }: any) => {
   const { href, label, imageUrl } = node.attrs;
   const isEditable = editor.isEditable;
 

@@ -1,6 +1,6 @@
 import React from 'react';
 
-import Button from '../../ui/Button';
+
 
 interface TipTapRendererProps {
   content?: any; // JSON AST
@@ -67,7 +67,7 @@ function renderNode(node: any): React.ReactNode {
           {node.attrs?.label || 'Link'}
         </a>
       );
-    case 'supportButton':
+    case 'imageLinkButton':
       return (
         <a
           href={node.attrs?.href || '#'}
@@ -78,27 +78,10 @@ function renderNode(node: any): React.ReactNode {
           {node.attrs?.imageUrl && (
             <img src={node.attrs.imageUrl} alt={node.attrs.imageAlt || ''} className="w-8 h-8 shrink-0 rounded-lg shadow-sm object-cover bg-black/10" />
           )}
-          <span className="font-bold text-nr-text group-hover:text-nr-accent transition-colors">{node.attrs?.label || 'Support Us'}</span>
+          <span className="font-bold text-nr-text group-hover:text-nr-accent transition-colors">{node.attrs?.label || 'Link'}</span>
         </a>
       );
-    case 'ctaButton':
-      return (
-        <div className="my-4">
-            <Button 
-                variant="primary" 
-                className="shadow-lg shadow-amber-900/40 transform hover:scale-105 font-bold"
-                onClick={() => {
-                    if (node.attrs?.scrollTarget) {
-                        document.getElementById(node.attrs.scrollTarget)?.scrollIntoView({ behavior: 'smooth' });
-                    } else if (node.attrs?.href) {
-                        window.location.href = node.attrs.href;
-                    }
-                }}
-            >
-                {node.attrs?.label || 'Call to Action'}
-            </Button>
-        </div>
-      );
+
       
     default:
       return children ? <div>{children}</div> : null;

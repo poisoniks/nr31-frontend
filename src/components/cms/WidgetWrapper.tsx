@@ -80,7 +80,7 @@ export const WidgetWrapper: React.FC<WidgetWrapperProps> = ({
 
                 <button
                     onClick={(e) => { e.preventDefault(); onEditSettings?.(); }}
-                    className="p-1.5 text-nr-text/60 hover:text-nr-text hover:bg-white/10 rounded"
+                    className="p-1.5 text-nr-text/60 hover:text-nr-text hover:bg-white/10 rounded cursor-pointer"
                     title={t('cms.settings')}
                 >
                     <Settings size={16} />
@@ -88,7 +88,7 @@ export const WidgetWrapper: React.FC<WidgetWrapperProps> = ({
 
                 <button
                     onClick={(e) => { e.preventDefault(); onDuplicate?.(); }}
-                    className="p-1.5 text-nr-text/60 hover:text-nr-text hover:bg-white/10 rounded"
+                    className="p-1.5 text-nr-text/60 hover:text-nr-text hover:bg-white/10 rounded cursor-pointer"
                     title={t('cms.duplicate')}
                 >
                     <Copy size={16} />
@@ -98,7 +98,7 @@ export const WidgetWrapper: React.FC<WidgetWrapperProps> = ({
 
                 <button
                     onClick={(e) => { e.preventDefault(); onDelete?.(); }}
-                    className="p-1.5 text-red-400 hover:text-red-300 hover:bg-red-500/20 rounded"
+                    className="p-1.5 text-red-400 hover:text-red-300 hover:bg-red-500/20 rounded cursor-pointer"
                     title={t('cms.delete')}
                 >
                     <Trash2 size={16} />

@@ -49,7 +49,7 @@ export const AddWidgetPanel: React.FC<AddWidgetPanelProps> = ({ slotType, onClos
                         <button
                             key={type}
                             onClick={() => handleAdd(type)}
-                            className="flex items-center gap-3 w-full p-2.5 hover:bg-nr-accent/10 hover:text-nr-accent rounded-lg text-left text-sm transition-colors text-nr-text/80 group"
+                            className="flex items-center gap-3 w-full p-2.5 hover:bg-nr-accent/10 hover:text-nr-accent rounded-lg text-left text-sm transition-colors text-nr-text/80 group cursor-pointer"
                         >
                             <div className="text-nr-text/50 group-hover:text-nr-accent transition-colors">
                                 {entry.icon}
