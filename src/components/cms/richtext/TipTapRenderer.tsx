@@ -49,7 +49,7 @@ function renderNode(node: any): React.ReactNode {
     case 'blockquote':
       return <blockquote className="border-l-4 border-nr-accent pl-4 italic my-4">{children}</blockquote>;
     case 'codeBlock':
-      return <pre><code>{children}</code></pre>;
+      return <pre className="overflow-x-auto"><code className="break-all">{children}</code></pre>;
     case 'horizontalRule':
       return <hr />;
     case 'image':
