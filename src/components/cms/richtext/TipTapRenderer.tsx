@@ -45,7 +45,7 @@ function renderNode(node: any): React.ReactNode {
     case 'orderedList':
       return <ol className="space-y-2 text-nr-text/80 list-decimal list-inside marker:text-nr-accent my-4">{children}</ol>;
     case 'listItem':
-      return <li className="mb-1">{children}</li>;
+      return <li className="mb-1 [&>p]:inline [&>p]:mb-0">{children}</li>;
     case 'blockquote':
       return <blockquote className="border-l-4 border-nr-accent pl-4 italic my-4">{children}</blockquote>;
     case 'codeBlock':

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Image from '@tiptap/extension-image';
@@ -36,16 +36,24 @@ const EDITOR_STYLES = 'focus:outline-none max-w-none text-nr-text/80 leading-rel
   '[&_ul]:space-y-2 [&_ul]:list-disc [&_ul]:list-inside [&_ul]:marker:text-nr-accent [&_ul]:my-4 ' +
   '[&_ol]:space-y-2 [&_ol]:list-decimal [&_ol]:list-inside [&_ol]:marker:text-nr-accent [&_ol]:my-4 ' +
   '[&_li]:mb-1 ' +
+  '[&_li>p]:inline [&_li>p]:mb-0 ' +
   '[&_a]:text-blue-500 [&_a]:underline ' +
   '[&_strong]:font-bold [&_em]:italic [&_s]:line-through [&_code]:bg-black/10 [&_code]:dark:bg-white/10 [&_code]:px-1 [&_code]:rounded [&_code]:font-mono [&_code]:text-sm ' +
   '[&_blockquote]:border-l-4 [&_blockquote]:border-nr-accent [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:my-4';
 
 export const TipTapEditor: React.FC<TipTapEditorProps> = ({ content, onChange }) => {
+  // Force re-render when selection changes to update toolbar button states
+  const [, setSelectionUpdate] = useState(0);
+
   const editor = useEditor({
     extensions,
     content: content || '',
     onUpdate: ({ editor }) => {
       onChange(editor.getJSON());
+    },
+    onSelectionUpdate: () => {
+      // Trigger re-render to update toolbar button active states
+      setSelectionUpdate(prev => prev + 1);
     },
     editorProps: {
       attributes: {
