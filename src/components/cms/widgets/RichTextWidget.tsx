@@ -74,7 +74,7 @@ export const RichTextWidget: React.FC<{ widget: WidgetDto; isEditMode: boolean }
 
     if (isEditMode) {
         return (
-            <div className="bg-nr-bg border border-nr-border/50 rounded-lg overflow-hidden flex flex-col pointer-events-auto">
+            <div className="bg-nr-bg border border-nr-border/50 rounded-lg flex flex-col pointer-events-auto">
                 <LocaleTabBar activeLocale={activeLocale} onLocaleChange={setActiveLocale} />
                 <div className="flex-1">
                     <TipTapEditor

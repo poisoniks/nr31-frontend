@@ -253,7 +253,7 @@ export const TipTapEditor: React.FC<TipTapEditorProps> = ({ content, onChange })
 
 
 
-      <div className={`flex-1 overflow-y-auto p-4 ${EDITOR_STYLES}`}>
+      <div className={`flex-1 p-4 ${EDITOR_STYLES}`}>
         <EditorContent editor={editor} />
       </div>
     </div>

@@ -62,9 +62,9 @@ function renderNode(node: any): React.ReactNode {
           href={node.attrs?.href || '#'}
           target={node.attrs?.target || '_blank'}
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 bg-black/5 dark:bg-black/20 hover:bg-nr-accent/10 px-4 py-2 rounded-lg border border-nr-border/50 transition-colors text-nr-text font-medium text-sm"
+          className="inline-flex items-center gap-2 bg-black/5 dark:bg-black/20 hover:bg-nr-accent/10 px-4 py-2 rounded-lg border border-nr-border/50 transition-colors text-nr-text font-medium text-sm group/linkbtn"
         >
-          {node.attrs?.label || 'Link'}
+          <span className="group-hover/linkbtn:text-nr-accent transition-colors">{node.attrs?.label || 'Link'}</span>
         </a>
       );
     case 'imageLinkButton':
@@ -73,12 +73,12 @@ function renderNode(node: any): React.ReactNode {
           href={node.attrs?.href || '#'}
           target={node.attrs?.target || '_blank'}
           rel="noopener noreferrer"
-          className="flex items-center gap-4 bg-black/5 dark:bg-white/5 px-4 py-3 rounded-lg border border-nr-border/50 transition-all hover:border-nr-accent/50 hover:bg-black/10 dark:hover:bg-white/10 group my-2"
+          className="flex items-center gap-4 bg-black/5 dark:bg-white/5 px-4 py-3 rounded-lg border border-nr-border/50 transition-all hover:border-nr-accent/50 hover:bg-black/10 dark:hover:bg-white/10 group/imglink my-2"
         >
           {node.attrs?.imageUrl && (
             <img src={node.attrs.imageUrl} alt={node.attrs.imageAlt || ''} className="w-8 h-8 shrink-0 rounded-lg shadow-sm object-cover bg-black/10" />
           )}
-          <span className="font-bold text-nr-text group-hover:text-nr-accent transition-colors">{node.attrs?.label || 'Link'}</span>
+          <span className="font-bold text-nr-text group-hover/imglink:text-nr-accent transition-colors">{node.attrs?.label || 'Link'}</span>
         </a>
       );
 

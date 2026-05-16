@@ -45,21 +45,21 @@ const SmallLinkButtonView = ({ node, updateAttributes, editor }: any) => {
   return (
     <NodeViewWrapper className="inline-block relative group/button">
       {isEditable ? (
-        <div className="inline-flex items-center gap-2 bg-black/5 dark:bg-black/20 hover:bg-nr-accent/10 px-4 py-2 rounded-lg border border-nr-border/50 transition-colors text-nr-text font-medium text-sm">
-          <span>{label}</span>
-          <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-black/90 p-2 rounded-lg shadow-lg flex items-center gap-2 opacity-0 group-hover/button:opacity-100 transition-opacity z-50 pointer-events-auto">
+        <div className="inline-flex items-center gap-2 bg-black/5 dark:bg-black/20 hover:bg-nr-accent/10 px-4 py-2 rounded-lg border border-nr-border/50 transition-colors text-nr-text font-medium text-sm group/linkbtn">
+          <span className="group-hover/linkbtn:text-nr-accent transition-colors">{label}</span>
+          <div className="absolute -top-14 left-0 bg-nr-bg/95 backdrop-blur-xl border border-nr-border/60 p-3 rounded-xl shadow-2xl flex items-center gap-3 opacity-0 invisible pointer-events-none group-hover/button:opacity-100 group-hover/button:visible group-hover/button:pointer-events-auto transition-all z-[100]">
             <input
               type="text"
               value={label}
               onChange={e => updateAttributes({ label: e.target.value })}
-              className="w-24 text-xs bg-transparent border-b border-white/20 text-white outline-none"
+              className="w-28 text-xs bg-white/5 hover:bg-white/10 border border-white/10 rounded-md px-2 py-1.5 text-white placeholder:text-white/30 outline-none focus:border-nr-accent/50 transition-all"
               placeholder="Label"
             />
             <input
               type="text"
               value={href}
               onChange={e => updateAttributes({ href: e.target.value })}
-              className="w-32 text-xs bg-transparent border-b border-white/20 text-white outline-none"
+              className="w-40 text-xs bg-white/5 hover:bg-white/10 border border-white/10 rounded-md px-2 py-1.5 text-white placeholder:text-white/30 outline-none focus:border-nr-accent/50 transition-all"
               placeholder="URL"
             />
           </div>
@@ -69,9 +69,9 @@ const SmallLinkButtonView = ({ node, updateAttributes, editor }: any) => {
           href={href}
           target={node.attrs.target}
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 bg-black/5 dark:bg-black/20 hover:bg-nr-accent/10 px-4 py-2 rounded-lg border border-nr-border/50 transition-colors text-nr-text font-medium text-sm"
+          className="inline-flex items-center gap-2 bg-black/5 dark:bg-black/20 hover:bg-nr-accent/10 px-4 py-2 rounded-lg border border-nr-border/50 transition-colors text-nr-text font-medium text-sm group/linkbtn"
         >
-          {label}
+          <span className="group-hover/linkbtn:text-nr-accent transition-colors">{label}</span>
         </a>
       )}
     </NodeViewWrapper>
