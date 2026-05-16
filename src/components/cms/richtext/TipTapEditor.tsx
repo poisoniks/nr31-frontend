@@ -6,6 +6,7 @@ import Placeholder from '@tiptap/extension-placeholder';
 import { SmallLinkButton } from './extensions/SmallLinkButton';
 import { SupportButton } from './extensions/SupportButton';
 import { CtaButton } from './extensions/CtaButton';
+import { useTranslation } from 'react-i18next';
 import { Bold, Italic, Strikethrough, Heading1, Heading2, List, ListOrdered, Quote, Code, Link as LinkIcon, Image as ImageIcon, Minus } from 'lucide-react';
 
 interface TipTapEditorProps {
@@ -13,20 +14,7 @@ interface TipTapEditorProps {
   onChange: (content: any) => void;
 }
 
-const extensions = [
-  StarterKit.configure({
-    link: {
-      openOnClick: false,
-    },
-  }),
-  Image,
-  Placeholder.configure({
-    placeholder: 'Write content here...',
-  }),
-  SmallLinkButton,
-  SupportButton,
-  CtaButton,
-];
+
 
 const EDITOR_STYLES = 'focus:outline-none max-w-none text-nr-text/80 leading-relaxed ' +
   '[&_h1]:font-serif [&_h1]:text-3xl [&_h1]:font-bold [&_h1]:text-nr-text [&_h1]:mb-6 [&_h1]:mt-10 [&_h1:first-child]:mt-0 ' +
@@ -42,8 +30,24 @@ const EDITOR_STYLES = 'focus:outline-none max-w-none text-nr-text/80 leading-rel
   '[&_blockquote]:border-l-4 [&_blockquote]:border-nr-accent [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:my-4';
 
 export const TipTapEditor: React.FC<TipTapEditorProps> = ({ content, onChange }) => {
+  const { t } = useTranslation();
   // Force re-render when selection changes to update toolbar button states
   const [, setSelectionUpdate] = useState(0);
+
+  const extensions = React.useMemo(() => [
+    StarterKit.configure({
+      link: {
+        openOnClick: false,
+      },
+    }),
+    Image,
+    Placeholder.configure({
+      placeholder: t('cms.richtext.placeholder'),
+    }),
+    SmallLinkButton,
+    SupportButton,
+    CtaButton,
+  ], [t]);
 
   const editor = useEditor({
     extensions,
@@ -68,7 +72,7 @@ export const TipTapEditor: React.FC<TipTapEditorProps> = ({ content, onChange })
 
   const toggleLink = () => {
     const previousUrl = editor.getAttributes('link').href;
-    const url = window.prompt('URL', previousUrl);
+    const url = window.prompt(t('cms.richtext.prompt_url'), previousUrl);
 
     if (url === null) {
       return;
@@ -83,7 +87,7 @@ export const TipTapEditor: React.FC<TipTapEditorProps> = ({ content, onChange })
   };
 
   const addImage = () => {
-    const url = window.prompt('URL');
+    const url = window.prompt(t('cms.richtext.prompt_url'));
 
     if (url) {
       editor.chain().focus().setImage({ src: url }).run();
@@ -97,91 +101,91 @@ export const TipTapEditor: React.FC<TipTapEditorProps> = ({ content, onChange })
           onClick={() => editor.chain().focus().toggleBold().run()}
           isActive={editor.isActive('bold')}
           icon={<Bold size={16} />}
-          title="Bold"
+          title={t('cms.richtext.bold')}
         />
         <MenuButton
           onClick={() => editor.chain().focus().toggleItalic().run()}
           isActive={editor.isActive('italic')}
           icon={<Italic size={16} />}
-          title="Italic"
+          title={t('cms.richtext.italic')}
         />
         <MenuButton
           onClick={() => editor.chain().focus().toggleStrike().run()}
           isActive={editor.isActive('strike')}
           icon={<Strikethrough size={16} />}
-          title="Strike"
+          title={t('cms.richtext.strike')}
         />
         <div className="w-px h-4 bg-nr-border mx-1" />
         <MenuButton
           onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
           isActive={editor.isActive('heading', { level: 1 })}
           icon={<Heading1 size={16} />}
-          title="Heading 1"
+          title={t('cms.richtext.h1')}
         />
         <MenuButton
           onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
           isActive={editor.isActive('heading', { level: 2 })}
           icon={<Heading2 size={16} />}
-          title="Heading 2"
+          title={t('cms.richtext.h2')}
         />
         <div className="w-px h-4 bg-nr-border mx-1" />
         <MenuButton
           onClick={() => editor.chain().focus().toggleBulletList().run()}
           isActive={editor.isActive('bulletList')}
           icon={<List size={16} />}
-          title="Bullet List"
+          title={t('cms.richtext.ul')}
         />
         <MenuButton
           onClick={() => editor.chain().focus().toggleOrderedList().run()}
           isActive={editor.isActive('orderedList')}
           icon={<ListOrdered size={16} />}
-          title="Ordered List"
+          title={t('cms.richtext.ol')}
         />
         <div className="w-px h-4 bg-nr-border mx-1" />
         <MenuButton
           onClick={() => editor.chain().focus().toggleBlockquote().run()}
           isActive={editor.isActive('blockquote')}
           icon={<Quote size={16} />}
-          title="Blockquote"
+          title={t('cms.richtext.quote')}
         />
         <MenuButton
           onClick={() => editor.chain().focus().toggleCodeBlock().run()}
           isActive={editor.isActive('codeBlock')}
           icon={<Code size={16} />}
-          title="Code Block"
+          title={t('cms.richtext.code')}
         />
         <MenuButton
           onClick={() => editor.chain().focus().setHorizontalRule().run()}
           icon={<Minus size={16} />}
-          title="Horizontal Rule"
+          title={t('cms.richtext.hr')}
         />
         <div className="w-px h-4 bg-nr-border mx-1" />
         <MenuButton
           onClick={toggleLink}
           isActive={editor.isActive('link')}
           icon={<LinkIcon size={16} />}
-          title="Link"
+          title={t('cms.richtext.link')}
         />
         <MenuButton
           onClick={addImage}
           icon={<ImageIcon size={16} />}
-          title="Image"
+          title={t('cms.richtext.image')}
         />
         <div className="w-px h-4 bg-nr-border mx-1" />
         <MenuButton
-          onClick={() => editor.chain().focus().insertContent('<a data-type="smallLinkButton">Link</a>').run()}
+          onClick={() => editor.chain().focus().insertContent(`<a data-type="smallLinkButton">${t('cms.richtext.default_link_text')}</a>`).run()}
           icon={<span className="text-[10px] font-bold px-1 border border-current rounded">BTN 1</span>}
-          title="Small Link Button"
+          title={t('cms.richtext.btn_small')}
         />
         <MenuButton
-          onClick={() => editor.chain().focus().insertContent('<a data-type="supportButton">Support Us</a>').run()}
+          onClick={() => editor.chain().focus().insertContent(`<a data-type="supportButton">${t('cms.richtext.default_support_text')}</a>`).run()}
           icon={<span className="text-[10px] font-bold px-1 border border-current rounded">BTN 2</span>}
-          title="Support Button"
+          title={t('cms.richtext.btn_support')}
         />
         <MenuButton
           onClick={() => editor.chain().focus().insertContent('<div data-type="ctaButton"></div>').run()}
           icon={<span className="text-[10px] font-bold px-1 border border-current rounded text-amber-500">CTA</span>}
-          title="CTA Button"
+          title={t('cms.richtext.btn_cta')}
         />
       </div>
 
