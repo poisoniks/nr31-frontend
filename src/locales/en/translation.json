@@ -468,5 +468,19 @@
     "cms.richtext.search": "Search...",
     "cms.richtext.prompt_url": "URL",
     "cms.richtext.default_link_text": "Link",
-    "cms.richtext.default_support_text": "Support Us"
+    "cms.richtext.default_support_text": "Support Us",
+    "cms.richtext.text_color": "Text Color",
+    "cms.richtext.color_default": "Default",
+    "cms.richtext.color_golden": "Golden",
+    "cms.richtext.color_emerald": "Emerald",
+    "cms.richtext.color_sapphire": "Sapphire",
+    "cms.richtext.color_ruby": "Ruby",
+    "cms.richtext.color_amethyst": "Amethyst",
+    "cms.richtext.image_modal_title": "Insert Image",
+    "cms.richtext.drag_drop_image": "Drag and drop an image here",
+    "cms.richtext.or_click_to_browse": "or click to browse",
+    "cms.richtext.or": "or",
+    "cms.richtext.image_url": "Image URL",
+    "cms.richtext.insert": "Insert",
+    "cms.richtext.drop_image_here": "Drop image here"
 }

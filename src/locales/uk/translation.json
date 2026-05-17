@@ -468,5 +468,19 @@
     "cms.richtext.search": "Пошук...",
     "cms.richtext.prompt_url": "URL-адреса",
     "cms.richtext.default_link_text": "Посилання",
-    "cms.richtext.default_support_text": "Підтримати нас"
+    "cms.richtext.default_support_text": "Підтримати нас",
+    "cms.richtext.text_color": "Колір тексту",
+    "cms.richtext.color_default": "Стандартний",
+    "cms.richtext.color_golden": "Золотий",
+    "cms.richtext.color_emerald": "Смарагдовий",
+    "cms.richtext.color_sapphire": "Сапфіровий",
+    "cms.richtext.color_ruby": "Рубіновий",
+    "cms.richtext.color_amethyst": "Аметистовий",
+    "cms.richtext.image_modal_title": "Вставити зображення",
+    "cms.richtext.drag_drop_image": "Перетягніть зображення сюди",
+    "cms.richtext.or_click_to_browse": "або натисніть для вибору",
+    "cms.richtext.or": "або",
+    "cms.richtext.image_url": "URL зображення",
+    "cms.richtext.insert": "Вставити",
+    "cms.richtext.drop_image_here": "Відпустіть зображення тут"
 }

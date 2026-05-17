@@ -3,10 +3,14 @@ import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Image from '@tiptap/extension-image';
 import Placeholder from '@tiptap/extension-placeholder';
+import { TextStyle } from '@tiptap/extension-text-style';
+import { Color } from '@tiptap/extension-color';
 import { SmallLinkButton } from './extensions/SmallLinkButton';
 import { ImageLinkButton } from './extensions/ImageLinkButton';
+import { GoldenText } from './extensions/GoldenText';
+import { ImageUploadModal } from './ImageUploadModal';
 import { useTranslation } from 'react-i18next';
-import { Bold, Italic, Strikethrough, Heading1, Heading2, List, ListOrdered, Quote, Code, Link as LinkIcon, Image as ImageIcon, Minus, Plus, Search } from 'lucide-react';
+import { Bold, Italic, Strikethrough, Heading1, Heading2, List, ListOrdered, Quote, Code, Link as LinkIcon, Image as ImageIcon, Minus, Plus, Search, Palette } from 'lucide-react';
 
 interface TipTapEditorProps {
   content?: any; // JSON AST
@@ -33,18 +37,34 @@ export const TipTapEditor: React.FC<TipTapEditorProps> = ({ content, onChange })
   // Force re-render when selection changes to update toolbar button states
   const [, setSelectionUpdate] = useState(0);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [colorPickerOpen, setColorPickerOpen] = useState(false);
+  const [imageModalOpen, setImageModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [isDraggingFile, setIsDraggingFile] = useState(false);
   const dropdownRef = React.useRef<HTMLDivElement>(null);
+  const colorPickerRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
         setDropdownOpen(false);
       }
+      if (colorPickerRef.current && !colorPickerRef.current.contains(e.target as Node)) {
+        setColorPickerOpen(false);
+      }
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  const colors = [
+    { id: 'default', label: t('cms.richtext.color_default'), value: null, gradient: false },
+    { id: 'golden', label: t('cms.richtext.color_golden'), value: null, gradient: true },
+    { id: 'emerald', label: t('cms.richtext.color_emerald'), value: '#10b981', gradient: false },
+    { id: 'sapphire', label: t('cms.richtext.color_sapphire'), value: '#3b82f6', gradient: false },
+    { id: 'ruby', label: t('cms.richtext.color_ruby'), value: '#ef4444', gradient: false },
+    { id: 'amethyst', label: t('cms.richtext.color_amethyst'), value: '#a855f7', gradient: false },
+  ];
 
   const customElements = [
     {
@@ -72,6 +92,9 @@ export const TipTapEditor: React.FC<TipTapEditorProps> = ({ content, onChange })
       },
     }),
     Image,
+    TextStyle,
+    Color,
+    GoldenText,
     Placeholder.configure({
       placeholder: t('cms.richtext.placeholder'),
     }),
@@ -92,6 +115,45 @@ export const TipTapEditor: React.FC<TipTapEditorProps> = ({ content, onChange })
     editorProps: {
       attributes: {
         class: `${EDITOR_STYLES} min-h-[150px] p-4`,
+      },
+      handlePaste: (_view, event) => {
+        handleEditorPaste(event);
+        return false;
+      },
+      handleDrop: (view, event, _slice, moved) => {
+        if (moved) {
+          return false;
+        }
+
+        const files = Array.from(event.dataTransfer?.files || []);
+        const imageFile = files.find(file => file.type.startsWith('image/'));
+
+        if (imageFile) {
+          event.preventDefault();
+          setIsDraggingFile(false);
+
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            const dataUrl = e.target?.result as string;
+            
+            // Get the drop position
+            const coordinates = view.posAtCoords({
+              left: event.clientX,
+              top: event.clientY,
+            });
+
+            if (coordinates) {
+              // Insert image at the drop position
+              const node = view.state.schema.nodes.image.create({ src: dataUrl });
+              const transaction = view.state.tr.insert(coordinates.pos, node);
+              view.dispatch(transaction);
+            }
+          };
+          reader.readAsDataURL(imageFile);
+          return true;
+        }
+
+        return false;
       },
     },
   });
@@ -117,11 +179,64 @@ export const TipTapEditor: React.FC<TipTapEditorProps> = ({ content, onChange })
   };
 
   const addImage = () => {
-    const url = window.prompt(t('cms.richtext.prompt_url'));
+    setImageModalOpen(true);
+  };
 
-    if (url) {
-      editor.chain().focus().setImage({ src: url }).run();
+  const handleImageInsert = (url: string) => {
+    editor.chain().focus().setImage({ src: url }).run();
+  };
+
+  const handleEditorDragOver = (e: React.DragEvent) => {
+    const hasFiles = Array.from(e.dataTransfer.items).some(item => item.kind === 'file');
+    if (hasFiles) {
+      e.preventDefault();
+      e.stopPropagation();
+      setIsDraggingFile(true);
     }
+  };
+
+  const handleEditorDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDraggingFile(false);
+  };
+
+  const handleEditorDrop = (_e: React.DragEvent) => {
+    // This is now handled by TipTap's handleDrop in editorProps
+    // Just clean up the visual state
+    setIsDraggingFile(false);
+  };
+
+  const handleEditorPaste = (e: ClipboardEvent) => {
+    const items = Array.from(e.clipboardData?.items || []);
+    const imageItem = items.find(item => item.type.startsWith('image/'));
+
+    if (imageItem) {
+      e.preventDefault();
+      const file = imageItem.getAsFile();
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const dataUrl = event.target?.result as string;
+          editor.chain().focus().setImage({ src: dataUrl }).run();
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+  };
+
+  const applyColor = (colorValue: string | null, isGradient: boolean) => {
+    if (colorValue === null && !isGradient) {
+      // Remove all color formatting
+      editor.chain().focus().unsetColor().unsetGoldenText().run();
+    } else if (isGradient) {
+      // Apply golden gradient
+      editor.chain().focus().unsetColor().setGoldenText().run();
+    } else {
+      // Apply solid color
+      editor.chain().focus().unsetGoldenText().setColor(colorValue!).run();
+    }
+    setColorPickerOpen(false);
   };
 
   return (
@@ -202,6 +317,47 @@ export const TipTapEditor: React.FC<TipTapEditorProps> = ({ content, onChange })
           title={t('cms.richtext.image')}
         />
         <div className="w-px h-4 bg-nr-border mx-1" />
+        <div className="relative" ref={colorPickerRef}>
+          <MenuButton
+            onClick={() => setColorPickerOpen(!colorPickerOpen)}
+            isActive={colorPickerOpen || editor.isActive('textStyle')}
+            icon={<Palette size={16} />}
+            title={t('cms.richtext.text_color')}
+          />
+          
+          {colorPickerOpen && (
+            <div className="absolute left-0 top-full mt-2 w-56 bg-nr-bg/95 backdrop-blur-xl border border-nr-border/60 shadow-xl rounded-xl z-50 overflow-hidden animate-fade-in-up">
+              <div className="p-2">
+                <div className="text-[10px] uppercase tracking-wider text-nr-text/50 font-bold mb-2 px-2">
+                  {t('cms.richtext.text_color')}
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  {colors.map(color => (
+                    <button
+                      key={color.id}
+                      onClick={() => applyColor(color.value, color.gradient)}
+                      className="flex items-center gap-2 p-2 hover:bg-nr-accent/10 rounded-lg text-left text-xs transition-colors text-nr-text/80 group cursor-pointer"
+                    >
+                      <div 
+                        className={`w-6 h-6 rounded border border-nr-border/50 shadow-sm flex-shrink-0 ${color.gradient ? '' : ''}`}
+                        style={{
+                          background: color.gradient 
+                            ? 'linear-gradient(135deg, #D4AF37 0%, #E5B81B 50%, #F4D03F 100%)' 
+                            : color.value 
+                            ? color.value 
+                            : 'linear-gradient(135deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.1) 49%, transparent 49%, transparent 51%, rgba(0,0,0,0.1) 51%, rgba(0,0,0,0.1) 100%)',
+                          backgroundSize: color.value === null && !color.gradient ? '8px 8px' : undefined
+                        }}
+                      />
+                      <span className="font-medium">{color.label}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+        <div className="w-px h-4 bg-nr-border mx-1" />
         <div className="relative" ref={dropdownRef}>
           <MenuButton
             onClick={() => setDropdownOpen(!dropdownOpen)}
@@ -254,8 +410,31 @@ export const TipTapEditor: React.FC<TipTapEditorProps> = ({ content, onChange })
 
 
       <div className={`flex-1 p-4 ${EDITOR_STYLES}`}>
-        <EditorContent editor={editor} />
+        <div
+          onDragOver={handleEditorDragOver}
+          onDragLeave={handleEditorDragLeave}
+          onDrop={handleEditorDrop}
+          className="relative h-full"
+        >
+          <EditorContent editor={editor} />
+          {isDraggingFile && (
+            <div className="absolute inset-0 bg-nr-accent/10 border-2 border-dashed border-nr-accent rounded-lg flex items-center justify-center pointer-events-none">
+              <div className="text-center">
+                <ImageIcon size={48} className="mx-auto mb-2 text-nr-accent" />
+                <p className="text-sm font-medium text-nr-accent">
+                  {t('cms.richtext.drop_image_here')}
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
+
+      <ImageUploadModal
+        isOpen={imageModalOpen}
+        onClose={() => setImageModalOpen(false)}
+        onInsert={handleImageInsert}
+      />
     </div>
   );
 };

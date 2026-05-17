@@ -57,28 +57,38 @@ function renderNode(node: any): React.ReactNode {
     
     // Custom extensions
     case 'smallLinkButton':
+      const smallBtnStyle: React.CSSProperties = {
+        background: node.attrs?.bgColor || undefined,
+        color: node.attrs?.textColor || undefined,
+      };
       return (
         <a
           href={node.attrs?.href || '#'}
           target={node.attrs?.target || '_blank'}
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 bg-black/5 dark:bg-black/20 hover:bg-nr-accent/10 px-4 py-2 rounded-lg border border-nr-border/50 transition-colors text-nr-text font-medium text-sm group/linkbtn"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-nr-border/50 transition-colors font-medium text-sm group/linkbtn hover:opacity-90"
+          style={smallBtnStyle}
         >
-          <span className="group-hover/linkbtn:text-nr-accent transition-colors">{node.attrs?.label || 'Link'}</span>
+          <span className="transition-colors">{node.attrs?.label || 'Link'}</span>
         </a>
       );
     case 'imageLinkButton':
+      const imgBtnStyle: React.CSSProperties = {
+        background: node.attrs?.bgColor || undefined,
+        color: node.attrs?.textColor || undefined,
+      };
       return (
         <a
           href={node.attrs?.href || '#'}
           target={node.attrs?.target || '_blank'}
           rel="noopener noreferrer"
-          className="flex items-center gap-4 bg-black/5 dark:bg-white/5 px-4 py-3 rounded-lg border border-nr-border/50 transition-all hover:border-nr-accent/50 hover:bg-black/10 dark:hover:bg-white/10 group/imglink my-2"
+          className="inline-flex items-center gap-4 px-4 py-3 rounded-lg border border-nr-border/50 transition-all hover:border-nr-accent/50 group/imglink my-2 hover:opacity-90"
+          style={imgBtnStyle}
         >
           {node.attrs?.imageUrl && (
-            <img src={node.attrs.imageUrl} alt={node.attrs.imageAlt || ''} className="w-8 h-8 shrink-0 rounded-lg shadow-sm object-cover bg-black/10" />
+            <img src={node.attrs.imageUrl} alt={node.attrs.imageAlt || ''} className="w-8 h-8 shrink-0 rounded-lg shadow-sm object-cover" />
           )}
-          <span className="font-bold text-nr-text group-hover/imglink:text-nr-accent transition-colors">{node.attrs?.label || 'Link'}</span>
+          <span className="font-bold transition-colors">{node.attrs?.label || 'Link'}</span>
         </a>
       );
 
@@ -92,6 +102,8 @@ function applyMarks(text: string, marks?: any[]): React.ReactNode {
   if (!marks || marks.length === 0) return text;
 
   let result: React.ReactNode = text;
+  let hasColor = false;
+  let colorValue = '';
 
   marks.forEach((mark) => {
     switch (mark.type) {
@@ -119,8 +131,22 @@ function applyMarks(text: string, marks?: any[]): React.ReactNode {
           </a>
         );
         break;
+      case 'goldenText':
+        result = <span className="text-gold-gradient">{result}</span>;
+        break;
+      case 'textStyle':
+        if (mark.attrs?.color) {
+          hasColor = true;
+          colorValue = mark.attrs.color;
+        }
+        break;
     }
   });
+
+  // Apply color as the outermost wrapper if present
+  if (hasColor) {
+    result = <span style={{ color: colorValue }}>{result}</span>;
+  }
 
   return result;
 }

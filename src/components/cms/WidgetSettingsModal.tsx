@@ -127,17 +127,31 @@ export const WidgetSettingsModal: React.FC<WidgetSettingsModalProps> = ({
         delete resolved.definitions;
         delete resolved.$defs;
         
+        // Remove id, type, and bodyContent from schema
+        // - id and type are displayed separately as read-only metadata
+        // - bodyContent is edited directly via TipTap editor in RichTextWidget
+        if (resolved.properties) {
+            delete resolved.properties.id;
+            delete resolved.properties.type;
+            delete resolved.properties.bodyContent;
+        }
+        if (resolved.required && Array.isArray(resolved.required)) {
+            resolved.required = resolved.required.filter((r: string) => 
+                r !== 'id' && r !== 'type' && r !== 'bodyContent'
+            );
+        }
+        
         return resolved;
     }, [widgetSchemas, widget.type]);
 
     const uiSchema = React.useMemo(() => {
-        const ui: any = {
-            id: { 'ui:widget': 'hidden' },
-            type: { 'ui:widget': 'hidden' }
-        };
+        const ui: any = {};
         if (schema.properties) {
             Object.entries(schema.properties).forEach(([key, value]: [string, any]) => {
-                if (value['x-localized']) {
+                // Hide id, type, and bodyContent fields
+                if (key === 'id' || key === 'type' || key === 'bodyContent') {
+                    ui[key] = { 'ui:widget': 'hidden' };
+                } else if (value['x-localized']) {
                     ui[key] = { 
                         'ui:ObjectFieldTemplate': LocalizedObjectTemplate,
                     };
@@ -161,9 +175,21 @@ export const WidgetSettingsModal: React.FC<WidgetSettingsModalProps> = ({
     }, []);
 
     const handleSubmit = (e: any) => {
-        updateWidget(slotType, index, { ...e.formData, type: widget.type });
+        // Preserve bodyContent from the original widget since it's edited via TipTap
+        updateWidget(slotType, index, { 
+            ...e.formData, 
+            id: widget.id, 
+            type: widget.type,
+            bodyContent: widget.bodyContent 
+        });
         onClose();
     };
+
+    // Remove id, type, and bodyContent from formData for the form display
+    const formDataForDisplay = React.useMemo(() => {
+        const { id, type, bodyContent, ...rest } = formData;
+        return rest;
+    }, [formData]);
 
     return (
         <Modal
@@ -174,34 +200,48 @@ export const WidgetSettingsModal: React.FC<WidgetSettingsModalProps> = ({
             <div className="p-4 pt-0">
                 <LocaleContext.Provider value={localeValue}>
                     {Object.keys(schema).length > 0 ? (
-                        <Form
-                            schema={schema}
-                            validator={validator}
-                            formData={formData}
-                            uiSchema={uiSchema}
-                            onChange={handleChange}
-                            onSubmit={handleSubmit}
-                            fields={customFields}
-                            templates={templates as any}
-                            widgets={widgets as any}
-                            className="rjsf-custom"
-                        >
-                            <div className="flex justify-end gap-3 mt-4">
-                                <button
-                                    type="button"
-                                    onClick={onClose}
-                                    className="px-4 py-2 text-sm font-medium text-white/70 hover:text-white hover:bg-white/5 rounded-lg transition-colors cursor-pointer"
-                                >
-                                    {t('events.edit.cancel')}
-                                </button>
-                                <button
-                                    type="submit"
-                                    className="px-4 py-2 text-sm font-bold bg-nr-accent hover:bg-amber-400 text-black rounded-lg shadow-lg shadow-amber-900/20 transition-colors cursor-pointer"
-                                >
-                                    {t('events.edit.save')}
-                                </button>
+                        <>
+                            {/* Read-only widget metadata */}
+                            <div className="mb-4 p-3 bg-white/5 rounded-lg border border-white/10 space-y-2">
+                                <div className="flex items-center gap-2">
+                                    <span className="text-sm font-medium text-white/50">ID:</span>
+                                    <span className="text-sm text-white/90 font-mono">{widget.id}</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <span className="text-sm font-medium text-white/50">Type:</span>
+                                    <span className="text-sm text-white/90 font-mono">{widget.type}</span>
+                                </div>
                             </div>
-                        </Form>
+
+                            <Form
+                                schema={schema}
+                                validator={validator}
+                                formData={formDataForDisplay}
+                                uiSchema={uiSchema}
+                                onChange={handleChange}
+                                onSubmit={handleSubmit}
+                                fields={customFields}
+                                templates={templates as any}
+                                widgets={widgets as any}
+                                className="rjsf-custom"
+                            >
+                                <div className="flex justify-end gap-3 mt-4">
+                                    <button
+                                        type="button"
+                                        onClick={onClose}
+                                        className="px-4 py-2 text-sm font-medium text-white/70 hover:text-white hover:bg-white/5 rounded-lg transition-colors cursor-pointer"
+                                    >
+                                        {t('events.edit.cancel')}
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        className="px-4 py-2 text-sm font-bold bg-nr-accent hover:bg-amber-400 text-black rounded-lg shadow-lg shadow-amber-900/20 transition-colors cursor-pointer"
+                                    >
+                                        {t('events.edit.save')}
+                                    </button>
+                                </div>
+                            </Form>
+                        </>
                     ) : (
                         <div className="text-center py-8 text-nr-text/50">
                             Loading schema...
