@@ -8,6 +8,8 @@ export const SmallLinkButton = Node.create({
 
   group: 'inline',
   inline: true,
+  atom: true,
+  draggable: true,
 
   addAttributes() {
     return {
@@ -38,7 +40,7 @@ export const SmallLinkButton = Node.create({
   },
 
   renderHTML({ HTMLAttributes }) {
-    return ['a', mergeAttributes(HTMLAttributes, { 'data-type': 'smallLinkButton' }), 0];
+    return ['a', mergeAttributes(HTMLAttributes, { 'data-type': 'smallLinkButton' })];
   },
 
   addNodeView() {
@@ -73,7 +75,7 @@ const SmallLinkButtonView = ({ node, updateAttributes, editor }: any) => {
   };
 
   return (
-    <NodeViewWrapper className="inline-block relative group/button">
+    <NodeViewWrapper data-drag-handle className="inline-block relative group/button select-none cursor-grab active:cursor-grabbing">
       {isEditable ? (
         <div 
           className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-nr-border/50 transition-colors font-medium text-sm group/linkbtn"

@@ -913,6 +913,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/public/allowed-mime-types": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get allowed MIME types
+         * @description Retrieves a list of all allowed MIME types for file uploads
+         */
+        get: operations["getAllowedMimeTypes"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/public/locales": {
         parameters: {
             query?: never;
@@ -2351,13 +2371,13 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description Bad Request */
+            /** @description Validation error */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -2436,13 +2456,13 @@ export interface operations {
                     "*/*": components["schemas"]["PagedModelAppConfigDto"];
                 };
             };
-            /** @description Bad Request */
+            /** @description Validation error */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -2521,13 +2541,13 @@ export interface operations {
                     "*/*": components["schemas"]["AppConfigDto"];
                 };
             };
-            /** @description Bad Request */
+            /** @description Validation error */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -2691,13 +2711,13 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description Bad Request */
+            /** @description Validation error */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -2774,13 +2794,13 @@ export interface operations {
                     "*/*": components["schemas"]["DiscordBotStatusResponse"];
                 };
             };
-            /** @description Bad Request */
+            /** @description Validation error */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -2855,13 +2875,13 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description Bad Request */
+            /** @description Validation error */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -2940,13 +2960,13 @@ export interface operations {
                     "application/json": components["schemas"]["PagedModelString"];
                 };
             };
-            /** @description Bad Request */
+            /** @description Validation error */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -3028,13 +3048,13 @@ export interface operations {
                     "*/*": string;
                 };
             };
-            /** @description Bad Request */
+            /** @description Validation error */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -3113,13 +3133,13 @@ export interface operations {
                     "*/*": components["schemas"]["PagedModelPermissionDTO"];
                 };
             };
-            /** @description Bad Request */
+            /** @description Validation error */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -3287,13 +3307,13 @@ export interface operations {
                     "*/*": components["schemas"]["PagedModelRoleDTO"];
                 };
             };
-            /** @description Bad Request */
+            /** @description Validation error */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -3459,13 +3479,13 @@ export interface operations {
                     "*/*": components["schemas"]["RoleDTO"];
                 };
             };
-            /** @description Bad Request */
+            /** @description Validation error */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -3548,13 +3568,13 @@ export interface operations {
                     "*/*": components["schemas"]["RoleDTO"];
                 };
             };
-            /** @description Bad Request */
+            /** @description Validation error */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -3631,13 +3651,13 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description Bad Request */
+            /** @description Validation error */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -3715,13 +3735,13 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description Bad Request */
+            /** @description Validation error */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -3799,13 +3819,13 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description Bad Request */
+            /** @description Validation error */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -3884,13 +3904,13 @@ export interface operations {
                     "*/*": components["schemas"]["PagedModelUserDTO"];
                 };
             };
-            /** @description Bad Request */
+            /** @description Validation error */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -3970,13 +3990,13 @@ export interface operations {
                     "*/*": components["schemas"]["PagedModelUserDTO"];
                 };
             };
-            /** @description Bad Request */
+            /** @description Validation error */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -4054,13 +4074,13 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description Bad Request */
+            /** @description Validation error */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -4138,13 +4158,13 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description Bad Request */
+            /** @description Validation error */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -4657,13 +4677,13 @@ export interface operations {
                     "application/json": components["schemas"]["CalendarEventDTO"];
                 };
             };
-            /** @description Bad Request */
+            /** @description Validation error */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -4921,13 +4941,13 @@ export interface operations {
                     "application/json": components["schemas"]["DiscordWidgetDataDto"];
                 };
             };
-            /** @description Bad Request */
+            /** @description Validation error */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -5010,13 +5030,13 @@ export interface operations {
                     "application/json": components["schemas"]["PageResponseDto"];
                 };
             };
-            /** @description Bad Request */
+            /** @description Validation error */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -5099,13 +5119,13 @@ export interface operations {
                     "application/json": components["schemas"]["PageResponseDto"];
                 };
             };
-            /** @description Bad Request */
+            /** @description Validation error */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description User is not authenticated */
@@ -5198,7 +5218,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description User is not authenticated */
@@ -5285,13 +5305,13 @@ export interface operations {
                     "application/json": components["schemas"]["PageResponseDto"];
                 };
             };
-            /** @description Bad Request */
+            /** @description Validation error */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description User is not authenticated */
@@ -5368,13 +5388,13 @@ export interface operations {
                     "application/json": components["schemas"]["SlotRestrictionsDto"];
                 };
             };
-            /** @description Bad Request */
+            /** @description Validation error */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description User is not authenticated */
@@ -5461,7 +5481,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description User is not authenticated */
@@ -5540,13 +5560,13 @@ export interface operations {
                     };
                 };
             };
-            /** @description Bad Request */
+            /** @description Validation error */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description User is not authenticated */
@@ -5629,13 +5649,13 @@ export interface operations {
                     "application/json": components["schemas"]["JsonNode"];
                 };
             };
-            /** @description Bad Request */
+            /** @description Validation error */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description User is not authenticated */
@@ -5718,13 +5738,13 @@ export interface operations {
                     "application/json": components["schemas"]["YoutubeVideoDto"];
                 };
             };
-            /** @description Bad Request */
+            /** @description Validation error */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -5894,13 +5914,13 @@ export interface operations {
                     "application/json": components["schemas"]["PagedModelFileMetadataDTO"];
                 };
             };
-            /** @description Bad Request */
+            /** @description Validation error */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Not authenticated */
@@ -6069,13 +6089,13 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description Bad Request */
+            /** @description Validation error */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Not authenticated */
@@ -6243,13 +6263,13 @@ export interface operations {
                     "application/json": components["schemas"]["MediaFolderDTO"][];
                 };
             };
-            /** @description Bad Request */
+            /** @description Validation error */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Not authenticated */
@@ -6413,13 +6433,13 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description Bad Request */
+            /** @description Validation error */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Not authenticated */
@@ -6587,13 +6607,13 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description Bad Request */
+            /** @description Validation error */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -6670,13 +6690,13 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description Bad Request */
+            /** @description Validation error */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Not authenticated */
@@ -6735,6 +6755,89 @@ export interface operations {
             };
         };
     };
+    getAllowedMimeTypes: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successfully retrieved allowed MIME types */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string[];
+                };
+            };
+            /** @description Validation error */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Content Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
     getSupportedLocales: {
         parameters: {
             query: {
@@ -6755,13 +6858,13 @@ export interface operations {
                     "application/json": components["schemas"]["PagedModelSupportedLocaleDTO"];
                 };
             };
-            /** @description Bad Request */
+            /** @description Validation error */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -6840,13 +6943,13 @@ export interface operations {
                     "application/json": components["schemas"]["PagedModelEventTypeDTO"];
                 };
             };
-            /** @description Bad Request */
+            /** @description Validation error */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -7012,13 +7115,13 @@ export interface operations {
                     "application/json": components["schemas"]["EventTypeDTO"];
                 };
             };
-            /** @description Bad Request */
+            /** @description Validation error */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -7184,13 +7287,13 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description Bad Request */
+            /** @description Validation error */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -7269,13 +7372,13 @@ export interface operations {
                     "application/json": components["schemas"]["PagedModelUnitTypeDTO"];
                 };
             };
-            /** @description Bad Request */
+            /** @description Validation error */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -7441,13 +7544,13 @@ export interface operations {
                     "application/json": components["schemas"]["UnitTypeDTO"];
                 };
             };
-            /** @description Bad Request */
+            /** @description Validation error */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -7613,13 +7716,13 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description Bad Request */
+            /** @description Validation error */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
                 };
             };
             /** @description Unauthorized */

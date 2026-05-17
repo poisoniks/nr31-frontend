@@ -1,4 +1,23 @@
 import React from 'react';
+import { File, FileVideo, FileAudio, FileArchive, FileCode } from 'lucide-react';
+
+const getFileIcon = (contentType: string) => {
+  if (!contentType) return File;
+  const type = contentType.toLowerCase();
+  if (type.startsWith('video/')) return FileVideo;
+  if (type.startsWith('audio/')) return FileAudio;
+  if (type.includes('zip') || type.includes('tar') || type.includes('rar') || type.includes('7z') || type.includes('gzip')) return FileArchive;
+  if (type.includes('html') || type.includes('javascript') || type.includes('json') || type.includes('css') || type.includes('xml')) return FileCode;
+  return File;
+};
+
+const formatFileSize = (bytes: number) => {
+  if (bytes === 0) return '0 B';
+  const k = 1024;
+  const sizes = ['B', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+};
 
 
 
@@ -30,7 +49,9 @@ function renderNode(node: any): React.ReactNode {
 
   switch (node.type) {
     case 'paragraph':
-      return <p className="text-nr-text/80 leading-relaxed mb-4 last:mb-0">{children}</p>;
+      // Render empty paragraphs with a non-breaking space to preserve newlines
+      const isEmpty = !children || (Array.isArray(children) && children.length === 0);
+      return <p className="text-nr-text/80 leading-relaxed mb-4 last:mb-0">{isEmpty ? '\u00A0' : children}</p>;
     case 'heading':
       const level = node.attrs?.level || 2;
       const Tag = `h${level}` as any;
@@ -91,6 +112,66 @@ function renderNode(node: any): React.ReactNode {
           <span className="font-bold transition-colors">{node.attrs?.label || 'Link'}</span>
         </a>
       );
+    
+    case 'fileAttachment': {
+      const { url, originalName, contentType, size, displayStyle } = node.attrs || {};
+      const isImage = contentType?.startsWith('image/');
+
+      if (isImage) {
+        return (
+          <div className="relative inline-block overflow-hidden rounded-lg border border-nr-border/40 bg-nr-bg/20 shadow-md my-4 max-w-full">
+            <img 
+              src={url} 
+              alt={originalName || ''} 
+              className="max-h-[350px] max-w-full object-contain block animate-fade-in"
+            />
+          </div>
+        );
+      }
+
+      const Icon = getFileIcon(contentType);
+      const sizeStr = formatFileSize(size);
+      const extension = originalName?.split('.').pop()?.toUpperCase() || 'FILE';
+
+      if (displayStyle === 'compact') {
+        return (
+          <div className="my-2">
+            <a
+              href={url}
+              download={originalName}
+              className="inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-nr-border/40 bg-black/10 dark:bg-white/5 text-nr-text hover:border-nr-accent/40 transition-colors text-sm font-medium hover:opacity-90"
+            >
+              <Icon className="w-4 h-4 text-nr-accent" />
+              <span className="truncate max-w-[200px]">{originalName}</span>
+              <span className="text-xs text-nr-text/40 font-mono">{sizeStr}</span>
+            </a>
+          </div>
+        );
+      }
+
+      return (
+        <div className="my-3">
+          <a
+            href={url}
+            download={originalName}
+            className="flex items-center gap-4 p-4 rounded-xl border border-nr-border/40 bg-black/20 dark:bg-white/5 backdrop-blur-md shadow-md max-w-md hover:border-nr-accent/40 transition-colors hover:opacity-90"
+          >
+            <div className="w-12 h-12 rounded-lg bg-nr-accent/10 flex flex-col items-center justify-center border border-nr-accent/20 shrink-0">
+              <Icon className="w-6 h-6 text-nr-accent" />
+              <span className="text-[9px] font-bold text-nr-accent/80 font-sans tracking-wide mt-0.5">{extension}</span>
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="font-semibold text-sm text-nr-text truncate" title={originalName}>
+                {originalName}
+              </div>
+              <div className="text-xs text-nr-text/50 font-mono mt-0.5">
+                {sizeStr}
+              </div>
+            </div>
+          </a>
+        </div>
+      );
+    }
 
       
     default:

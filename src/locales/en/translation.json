@@ -482,5 +482,12 @@
     "cms.richtext.or": "or",
     "cms.richtext.image_url": "Image URL",
     "cms.richtext.insert": "Insert",
-    "cms.richtext.drop_image_here": "Drop image here"
+    "cms.richtext.drop_image_here": "Drop image here",
+    "cms.richtext.attach_file": "Attach File",
+    "cms.richtext.drop_file_here": "Drop file here to upload",
+    "cms.richtext.uploading": "Uploading...",
+    "cms.richtext.upload_error": "Failed to upload file",
+    "cms.richtext.file_display_compact": "Compact",
+    "cms.richtext.file_display_box": "Box",
+    "cms.richtext.download": "Download"
 }

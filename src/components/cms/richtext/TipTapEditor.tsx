@@ -8,9 +8,10 @@ import { Color } from '@tiptap/extension-color';
 import { SmallLinkButton } from './extensions/SmallLinkButton';
 import { ImageLinkButton } from './extensions/ImageLinkButton';
 import { GoldenText } from './extensions/GoldenText';
-import { ImageUploadModal } from './ImageUploadModal';
+import { FileAttachment } from './extensions/FileAttachment';
+import { useFileAttachmentUpload } from '../../../hooks/useFileAttachmentUpload';
 import { useTranslation } from 'react-i18next';
-import { Bold, Italic, Strikethrough, Heading1, Heading2, List, ListOrdered, Quote, Code, Link as LinkIcon, Image as ImageIcon, Minus, Plus, Search, Palette } from 'lucide-react';
+import { Bold, Italic, Strikethrough, Heading1, Heading2, List, ListOrdered, Quote, Code, Link as LinkIcon, Image as ImageIcon, Minus, Plus, Search, Palette, Paperclip, Loader2 } from 'lucide-react';
 
 interface TipTapEditorProps {
   content?: any; // JSON AST
@@ -38,11 +39,14 @@ export const TipTapEditor: React.FC<TipTapEditorProps> = ({ content, onChange })
   const [, setSelectionUpdate] = useState(0);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [colorPickerOpen, setColorPickerOpen] = useState(false);
-  const [imageModalOpen, setImageModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [isDraggingFile, setIsDraggingFile] = useState(false);
   const dropdownRef = React.useRef<HTMLDivElement>(null);
   const colorPickerRef = React.useRef<HTMLDivElement>(null);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
+  const isInternalDragRef = React.useRef(false);
+  const dragStartPosRef = React.useRef<number | null>(null);
+  const dragStartNodeRef = React.useRef<any | null>(null);
 
   React.useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -100,6 +104,7 @@ export const TipTapEditor: React.FC<TipTapEditorProps> = ({ content, onChange })
     }),
     SmallLinkButton,
     ImageLinkButton,
+    FileAttachment,
   ], [t]);
 
   const editor = useEditor({
@@ -120,43 +125,98 @@ export const TipTapEditor: React.FC<TipTapEditorProps> = ({ content, onChange })
         handleEditorPaste(event);
         return false;
       },
-      handleDrop: (view, event, _slice, moved) => {
-        if (moved) {
+      handleDOMEvents: {
+        dragstart: (view, event) => {
+          const { selection } = view.state;
+          // Check if we're dragging a node (image, file attachment, etc.)
+          if ('node' in selection && selection.node) {
+            isInternalDragRef.current = true;
+            dragStartPosRef.current = selection.from;
+            dragStartNodeRef.current = selection.node;
+            // Set drag effect to indicate move operation
+            if (event.dataTransfer) {
+              event.dataTransfer.effectAllowed = 'move';
+            }
+          }
           return false;
+        },
+        dragend: () => {
+          // Don't clear refs immediately - let drop handler use them first
+          setTimeout(() => {
+            isInternalDragRef.current = false;
+            dragStartPosRef.current = null;
+            dragStartNodeRef.current = null;
+          }, 0);
+          return false;
+        },
+      },
+      handleDrop: (view, event, _slice, moved) => {
+        // Custom drag & drop block node move handler
+        if (isInternalDragRef.current && dragStartNodeRef.current && dragStartPosRef.current !== null) {
+          event.preventDefault();
+          event.stopPropagation();
+
+          const coordinates = view.posAtCoords({
+            left: event.clientX,
+            top: event.clientY,
+          });
+
+          if (coordinates) {
+            const dropPos = coordinates.pos;
+            const node = dragStartNodeRef.current;
+            const startPos = dragStartPosRef.current;
+
+            // Calculate the adjusted drop position
+            let adjustedDropPos = dropPos;
+            if (dropPos > startPos) {
+              // If dropping after the original position, account for the node being removed
+              adjustedDropPos = dropPos - node.nodeSize;
+            }
+
+            const tr = view.state.tr;
+            // Delete original node
+            tr.delete(startPos, startPos + node.nodeSize);
+            // Insert at the adjusted position
+            tr.insert(adjustedDropPos, node);
+            view.dispatch(tr);
+
+            // Clear refs
+            isInternalDragRef.current = false;
+            dragStartPosRef.current = null;
+            dragStartNodeRef.current = null;
+            return true;
+          }
         }
 
+        // Handle external file drops
         const files = Array.from(event.dataTransfer?.files || []);
-        const imageFile = files.find(file => file.type.startsWith('image/'));
-
-        if (imageFile) {
+        if (files.length > 0 && !isInternalDragRef.current) {
           event.preventDefault();
+          event.stopPropagation();
           setIsDraggingFile(false);
 
-          const reader = new FileReader();
-          reader.onload = (e) => {
-            const dataUrl = e.target?.result as string;
-            
-            // Get the drop position
-            const coordinates = view.posAtCoords({
-              left: event.clientX,
-              top: event.clientY,
-            });
+          const coordinates = view.posAtCoords({
+            left: event.clientX,
+            top: event.clientY,
+          });
 
-            if (coordinates) {
-              // Insert image at the drop position
-              const node = view.state.schema.nodes.image.create({ src: dataUrl });
-              const transaction = view.state.tr.insert(coordinates.pos, node);
-              view.dispatch(transaction);
-            }
-          };
-          reader.readAsDataURL(imageFile);
-          return true;
+          if (coordinates) {
+            uploadAndInsert(files[0], coordinates.pos);
+            return true;
+          }
+        }
+
+        // Let ProseMirror handle text/content moves
+        if (moved) {
+          return false;
         }
 
         return false;
       },
     },
   });
+
+  const { uploadAndInsert, isUploading, allowedMimeTypes } = useFileAttachmentUpload(editor);
 
   if (!editor) {
     return null;
@@ -178,15 +238,20 @@ export const TipTapEditor: React.FC<TipTapEditorProps> = ({ content, onChange })
     editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run();
   };
 
-  const addImage = () => {
-    setImageModalOpen(true);
+  const handleAttachFileClick = () => {
+    fileInputRef.current?.click();
   };
 
-  const handleImageInsert = (url: string) => {
-    editor.chain().focus().setImage({ src: url }).run();
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      uploadAndInsert(file);
+      e.target.value = '';
+    }
   };
 
   const handleEditorDragOver = (e: React.DragEvent) => {
+    if (isInternalDragRef.current) return;
     const hasFiles = Array.from(e.dataTransfer.items).some(item => item.kind === 'file');
     if (hasFiles) {
       e.preventDefault();
@@ -202,25 +267,19 @@ export const TipTapEditor: React.FC<TipTapEditorProps> = ({ content, onChange })
   };
 
   const handleEditorDrop = (_e: React.DragEvent) => {
-    // This is now handled by TipTap's handleDrop in editorProps
-    // Just clean up the visual state
     setIsDraggingFile(false);
+    isInternalDragRef.current = false;
   };
 
   const handleEditorPaste = (e: ClipboardEvent) => {
     const items = Array.from(e.clipboardData?.items || []);
-    const imageItem = items.find(item => item.type.startsWith('image/'));
+    const fileItem = items.find(item => item.kind === 'file');
 
-    if (imageItem) {
+    if (fileItem) {
       e.preventDefault();
-      const file = imageItem.getAsFile();
+      const file = fileItem.getAsFile();
       if (file) {
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          const dataUrl = event.target?.result as string;
-          editor.chain().focus().setImage({ src: dataUrl }).run();
-        };
-        reader.readAsDataURL(file);
+        uploadAndInsert(file);
       }
     }
   };
@@ -312,9 +371,9 @@ export const TipTapEditor: React.FC<TipTapEditorProps> = ({ content, onChange })
           title={t('cms.richtext.link')}
         />
         <MenuButton
-          onClick={addImage}
-          icon={<ImageIcon size={16} />}
-          title={t('cms.richtext.image')}
+          onClick={handleAttachFileClick}
+          icon={<Paperclip size={16} />}
+          title={t('cms.richtext.attach_file')}
         />
         <div className="w-px h-4 bg-nr-border mx-1" />
         <div className="relative" ref={colorPickerRef}>
@@ -411,6 +470,8 @@ export const TipTapEditor: React.FC<TipTapEditorProps> = ({ content, onChange })
 
       <div className={`flex-1 p-4 ${EDITOR_STYLES}`}>
         <div
+          onDragStart={() => { isInternalDragRef.current = true; }}
+          onDragEnd={() => { isInternalDragRef.current = false; }}
           onDragOver={handleEditorDragOver}
           onDragLeave={handleEditorDragLeave}
           onDrop={handleEditorDrop}
@@ -418,22 +479,32 @@ export const TipTapEditor: React.FC<TipTapEditorProps> = ({ content, onChange })
         >
           <EditorContent editor={editor} />
           {isDraggingFile && (
-            <div className="absolute inset-0 bg-nr-accent/10 border-2 border-dashed border-nr-accent rounded-lg flex items-center justify-center pointer-events-none">
+            <div className="absolute inset-0 bg-nr-accent/10 border-2 border-dashed border-nr-accent rounded-lg flex items-center justify-center pointer-events-none z-20 animate-pulse">
               <div className="text-center">
-                <ImageIcon size={48} className="mx-auto mb-2 text-nr-accent" />
+                <Paperclip size={48} className="mx-auto mb-2 text-nr-accent animate-bounce" />
                 <p className="text-sm font-medium text-nr-accent">
-                  {t('cms.richtext.drop_image_here')}
+                  {t('cms.richtext.drop_file_here')}
                 </p>
+              </div>
+            </div>
+          )}
+          {isUploading && (
+            <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px] rounded-lg flex items-center justify-center pointer-events-none z-20">
+              <div className="text-center bg-nr-bg/90 border border-nr-border/60 p-4 rounded-xl shadow-xl flex items-center gap-3">
+                <Loader2 className="w-5 h-5 text-nr-accent animate-spin" />
+                <span className="text-sm font-medium text-nr-text">{t('cms.richtext.uploading')}</span>
               </div>
             </div>
           )}
         </div>
       </div>
 
-      <ImageUploadModal
-        isOpen={imageModalOpen}
-        onClose={() => setImageModalOpen(false)}
-        onInsert={handleImageInsert}
+      <input
+        type="file"
+        ref={fileInputRef}
+        onChange={handleFileChange}
+        accept={allowedMimeTypes.join(',')}
+        className="hidden"
       />
     </div>
   );

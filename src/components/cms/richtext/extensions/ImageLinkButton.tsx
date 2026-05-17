@@ -44,7 +44,7 @@ export const ImageLinkButton = Node.create({
   },
 
   renderHTML({ HTMLAttributes }) {
-    return ['a', mergeAttributes(HTMLAttributes, { 'data-type': 'imageLinkButton' }), 0];
+    return ['a', mergeAttributes(HTMLAttributes, { 'data-type': 'imageLinkButton' })];
   },
 
   addNodeView() {
@@ -79,7 +79,7 @@ const ImageLinkButtonView = ({ node, updateAttributes, editor }: any) => {
   };
 
   return (
-    <NodeViewWrapper className="inline-block relative group/button my-2">
+    <NodeViewWrapper data-drag-handle className="inline-block relative group/button my-2 select-none cursor-grab active:cursor-grabbing">
       {isEditable ? (
         <div 
           className="inline-flex items-center gap-4 px-4 py-3 rounded-lg border border-nr-border/50 transition-all hover:border-nr-accent/50 group"

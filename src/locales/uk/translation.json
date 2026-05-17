@@ -482,5 +482,12 @@
     "cms.richtext.or": "або",
     "cms.richtext.image_url": "URL зображення",
     "cms.richtext.insert": "Вставити",
-    "cms.richtext.drop_image_here": "Відпустіть зображення тут"
+    "cms.richtext.drop_image_here": "Відпустіть зображення тут",
+    "cms.richtext.attach_file": "Прикріпити файл",
+    "cms.richtext.drop_file_here": "Перетягніть файл сюди для завантаження",
+    "cms.richtext.uploading": "Завантаження...",
+    "cms.richtext.upload_error": "Не вдалося завантажити файл",
+    "cms.richtext.file_display_compact": "Компактний",
+    "cms.richtext.file_display_box": "Блок",
+    "cms.richtext.download": "Завантажити"
 }

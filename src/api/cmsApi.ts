@@ -12,6 +12,7 @@ export type YoutubeVideoDto = components['schemas']['YoutubeVideoDto'];
 export type WidgetDto = components['schemas']['WidgetDto'];
 export type JsonNode = components['schemas']['JsonNode'];
 export type SlotDto = components['schemas']['SlotDto'];
+export type FileUploadResponse = components['schemas']['FileUploadResponse'];
 
 export const cmsApi = {
     getPublishedPage: async (slug: string): Promise<PageResponseDto> => {
@@ -79,6 +80,20 @@ export const cmsApi = {
 
     getYoutubeVideo: async (channelId: string): Promise<YoutubeVideoDto> => {
         const response = await api.get<YoutubeVideoDto>(`/v1/cms/youtube/${channelId}`);
+        return response.data;
+    },
+
+    uploadAttachment: async (file: File): Promise<FileUploadResponse> => {
+        const formData = new FormData();
+        formData.append('file', file);
+        const response = await api.post<FileUploadResponse>('/v1/files/attachment', formData, {
+            headers: { 'Content-Type': 'multipart/form-data' },
+        });
+        return response.data;
+    },
+
+    getAllowedMimeTypes: async (): Promise<string[]> => {
+        const response = await api.get<string[]>('/v1/public/allowed-mime-types');
         return response.data;
     },
 };
