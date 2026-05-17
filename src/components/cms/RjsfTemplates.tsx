@@ -164,7 +164,7 @@ export const LocalizedObjectTemplate = (props: ObjectFieldTemplateProps) => {
         <div className="mb-5">
             {/* Label with locale tabs */}
             <div className="flex items-center justify-between mb-2">
-                <label className="text-sm font-bold text-white tracking-wide uppercase text-[10px] opacity-70">
+                <label className="text-sm font-bold text-white flex items-center gap-1.5 tracking-wide">
                     {props.title}
                     {props.required && <span className="text-red-500 font-black ml-1" title="Required">*</span>}
                 </label>

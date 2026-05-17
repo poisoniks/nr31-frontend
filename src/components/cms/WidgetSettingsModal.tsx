@@ -186,9 +186,23 @@ export const WidgetSettingsModal: React.FC<WidgetSettingsModalProps> = ({
     };
 
     // Remove id, type, and bodyContent from formData for the form display
+    // Also recursively convert null values to undefined to prevent AJV/RJSF validation errors for optional fields
     const formDataForDisplay = React.useMemo(() => {
         const { id, type, bodyContent, ...rest } = formData;
-        return rest;
+        
+        const sanitizeNulls = (val: any): any => {
+            if (val === null) return undefined;
+            if (typeof val !== 'object') return val;
+            if (Array.isArray(val)) return val.map(sanitizeNulls);
+            
+            const newObj: any = {};
+            for (const [k, v] of Object.entries(val)) {
+                newObj[k] = sanitizeNulls(v);
+            }
+            return newObj;
+        };
+
+        return sanitizeNulls(rest);
     }, [formData]);
 
     return (
@@ -224,6 +238,7 @@ export const WidgetSettingsModal: React.FC<WidgetSettingsModalProps> = ({
                                 templates={templates as any}
                                 widgets={widgets as any}
                                 className="rjsf-custom"
+                                showErrorList={false}
                             >
                                 <div className="flex justify-end gap-3 mt-4">
                                     <button
