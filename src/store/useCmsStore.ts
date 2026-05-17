@@ -3,6 +3,14 @@ import { cmsApi } from '../api/cmsApi';
 import type { PageResponseDto, WidgetDto, JsonNode } from '../api/cmsApi';
 import { generateUiId } from '../utils/uuid';
 
+export interface CmsWidgetValidationError {
+    widgetId?: string;
+    widgetType?: string;
+    slotType?: string;
+    field?: string;
+    translatedMessage: string;
+}
+
 interface CmsState {
     isEditMode: boolean;
     toggleEditMode: () => void;
@@ -14,6 +22,10 @@ interface CmsState {
 
     slotRestrictions: Record<string, string[]>;
     widgetSchemas: Record<string, JsonNode>;
+
+    validationErrors: CmsWidgetValidationError[];
+    setValidationErrors: (errors: CmsWidgetValidationError[]) => void;
+    clearValidationErrors: () => void;
 
     loadPublishedPage: (slug: string) => Promise<void>;
     loadDraftPage: (slug: string) => Promise<void>;
@@ -40,6 +52,10 @@ export const useCmsStore = create<CmsState>((set, get) => ({
 
     slotRestrictions: {},
     widgetSchemas: {},
+
+    validationErrors: [],
+    setValidationErrors: (errors) => set({ validationErrors: errors }),
+    clearValidationErrors: () => set({ validationErrors: [] }),
 
     loadPublishedPage: async (slug: string) => {
         try {
@@ -98,7 +114,7 @@ export const useCmsStore = create<CmsState>((set, get) => ({
                 layoutData: pageData.layoutData
             });
 
-            set({ pageData: updated, pageVersion: updated.version, isDirty: false, isSaving: false });
+            set({ pageData: updated, pageVersion: updated.version, isDirty: false, isSaving: false, validationErrors: [] });
         } catch (e) {
             set({ isSaving: false });
             throw e;
@@ -111,7 +127,7 @@ export const useCmsStore = create<CmsState>((set, get) => ({
         try {
             const published = await cmsApi.publishDraft(slug, { version: pageVersion });
 
-            set({ pageData: published, pageVersion: published.version, isDirty: false, isSaving: false, isEditMode: false });
+            set({ pageData: published, pageVersion: published.version, isDirty: false, isSaving: false, isEditMode: false, validationErrors: [] });
         } catch (e) {
             set({ isSaving: false });
             throw e;
@@ -135,7 +151,8 @@ export const useCmsStore = create<CmsState>((set, get) => ({
 
             return {
                 pageData: { ...state.pageData, layoutData: newLayoutData },
-                isDirty: true
+                isDirty: true,
+                validationErrors: []
             };
         });
     },
@@ -157,7 +174,8 @@ export const useCmsStore = create<CmsState>((set, get) => ({
 
             return {
                 pageData: { ...state.pageData, layoutData: newLayoutData },
-                isDirty: true
+                isDirty: true,
+                validationErrors: []
             };
         });
     },
@@ -183,7 +201,8 @@ export const useCmsStore = create<CmsState>((set, get) => ({
 
             return {
                 pageData: { ...state.pageData, layoutData: newLayoutData },
-                isDirty: true
+                isDirty: true,
+                validationErrors: []
             };
         });
     },
@@ -206,7 +225,8 @@ export const useCmsStore = create<CmsState>((set, get) => ({
 
             return {
                 pageData: { ...state.pageData, layoutData: newLayoutData },
-                isDirty: true
+                isDirty: true,
+                validationErrors: []
             };
         });
     },
@@ -234,7 +254,8 @@ export const useCmsStore = create<CmsState>((set, get) => ({
 
             return {
                 pageData: { ...state.pageData, layoutData: newLayoutData },
-                isDirty: true
+                isDirty: true,
+                validationErrors: []
             };
         });
     }

@@ -7,6 +7,7 @@ import { useCmsStore } from '../store/useCmsStore';
 import { Slot } from '../components/cms/Slot';
 import { CmsToolbar } from '../components/cms/CmsToolbar';
 import { WidgetSettingsModal } from '../components/cms/WidgetSettingsModal';
+import { CmsValidationErrorPanel } from '../components/cms/CmsValidationErrorPanel';
 import { widgetRegistry } from '../components/cms/registry';
 import type { WidgetDto } from '../api/cmsApi';
 import { Loader2 } from 'lucide-react';
@@ -160,6 +161,7 @@ const CmsPage: React.FC<{ slug?: string }> = ({ slug: defaultSlug }) => {
                 </section>
             </div>
 
+            {isEditMode && <CmsValidationErrorPanel />}
             <CmsToolbar slug={slug} />
 
             <DragOverlay>

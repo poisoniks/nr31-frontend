@@ -3,7 +3,7 @@ import { Save, UploadCloud, RotateCcw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useCmsStore } from '../../store/useCmsStore';
 import { useUIStore } from '../../store/useUIStore';
-import { getErrorMessage } from '../../utils/errorUtils';
+import { getErrorMessage, parseCmsValidationErrors } from '../../utils/errorUtils';
 import Button from '../ui/Button';
 
 export const CmsToolbar: React.FC<{ slug: string }> = ({ slug }) => {
@@ -15,6 +15,7 @@ export const CmsToolbar: React.FC<{ slug: string }> = ({ slug }) => {
     const saveDraft = useCmsStore(state => state.saveDraft);
     const publishDraft = useCmsStore(state => state.publishDraft);
     const loadDraftPage = useCmsStore(state => state.loadDraftPage);
+    const setValidationErrors = useCmsStore(state => state.setValidationErrors);
     const { setError } = useUIStore();
 
     if (!isEditMode) return null;
@@ -23,7 +24,13 @@ export const CmsToolbar: React.FC<{ slug: string }> = ({ slug }) => {
         try {
             await saveDraft(slug);
         } catch (err) {
-            setError(getErrorMessage(err, t));
+            const validationErrors = parseCmsValidationErrors(err, t);
+            if (validationErrors.length > 0) {
+                setValidationErrors(validationErrors);
+                setError(t('error.CMS_VALIDATION_ERROR'));
+            } else {
+                setError(getErrorMessage(err, t));
+            }
         }
     };
 
@@ -33,7 +40,13 @@ export const CmsToolbar: React.FC<{ slug: string }> = ({ slug }) => {
             try {
                 await publishDraft(slug);
             } catch (err) {
-                setError(getErrorMessage(err, t));
+                const validationErrors = parseCmsValidationErrors(err, t);
+                if (validationErrors.length > 0) {
+                    setValidationErrors(validationErrors);
+                    setError(t('error.CMS_VALIDATION_ERROR'));
+                } else {
+                    setError(getErrorMessage(err, t));
+                }
             }
         }
     };

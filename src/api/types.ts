@@ -1188,6 +1188,80 @@ export interface components {
             /** @description Type of the event */
             type: components["schemas"]["EventTypeDTO"];
         };
+        /** @description Response containing CMS layout validation error details */
+        CmsValidationErrorResponse: {
+            /**
+             * @description Standardized error code
+             * @example INTERNAL_SERVER_ERROR
+             * @enum {string}
+             */
+            code: "UNAUTHORIZED" | "FORBIDDEN" | "INVALID_TOKEN" | "TOKEN_EXPIRED" | "BAD_CREDENTIALS" | "ACCOUNT_LOCKED" | "ACCOUNT_DISABLED" | "ELEMENT_NOT_FOUND" | "FILE_NOT_FOUND" | "FOLDER_NOT_FOUND" | "PARENT_FOLDER_NOT_FOUND" | "ROLE_NOT_FOUND" | "PERMISSION_NOT_FOUND" | "USER_NOT_FOUND" | "EVENT_NOT_FOUND" | "UNIT_TYPE_NOT_FOUND" | "EVENT_TYPE_NOT_FOUND" | "CONFIG_NOT_FOUND" | "ENDPOINT_NOT_FOUND" | "INVALID_FILE_TYPE" | "FILE_TOO_LARGE" | "EMPTY_FILE" | "QUOTA_EXCEEDED" | "STORAGE_ERROR" | "VALIDATION_ERROR" | "CONFLICT" | "FOLDER_NOT_EMPTY" | "FEATURE_DISABLED" | "INVALID_WIDGET_TYPE" | "CMS_VALIDATION_ERROR" | "DUPLICATE_WIDGET_IDS" | "INTERNAL_SERVER_ERROR";
+            /** @description Map of field/widget identifiers to their translation interpolation context parameters */
+            context?: {
+                [key: string]: {
+                    [key: string]: unknown;
+                };
+            };
+            /** @description Map of field/widget identifiers to translation keys */
+            details?: {
+                [key: string]: string;
+            };
+            /**
+             * @description Error message
+             * @example An unexpected error occurred
+             */
+            message: string;
+            /**
+             * @description Standardized error codes for the application.
+             *
+             *     ### Authentication & Authorization
+             *     * `UNAUTHORIZED`: User is not authenticated
+             *     * `FORBIDDEN`: User does not have required permissions
+             *     * `INVALID_TOKEN`: Provided token is invalid
+             *     * `TOKEN_EXPIRED`: Provided token has expired
+             *     * `BAD_CREDENTIALS`: Invalid username or password
+             *     * `ACCOUNT_LOCKED`: Account is locked due to too many failed attempts
+             *     * `ACCOUNT_DISABLED`: Account is disabled by administrator
+             *
+             *     ### Resource Errors
+             *     * `ELEMENT_NOT_FOUND`: Requested element not found. Metadata: 'id' (UUID or Long) or other identifier
+             *     * `FILE_NOT_FOUND`: Requested file not found. Metadata: 'id' (UUID)
+             *     * `FOLDER_NOT_FOUND`: Requested folder not found. Metadata: 'id' (UUID)
+             *     * `PARENT_FOLDER_NOT_FOUND`: Parent folder for the operation not found. Metadata: 'id' (UUID)
+             *     * `ROLE_NOT_FOUND`: Role not found. Metadata: 'id' (Long)
+             *     * `PERMISSION_NOT_FOUND`: Permission not found. Metadata: 'id' (Long)
+             *     * `USER_NOT_FOUND`: User not found. Metadata: 'id' (Long) or 'username' (String)
+             *     * `EVENT_NOT_FOUND`: Calendar event not found. Metadata: 'id' (String/UUID)
+             *     * `UNIT_TYPE_NOT_FOUND`: Unit type not found. Metadata: 'id' (Long)
+             *     * `EVENT_TYPE_NOT_FOUND`: Event type not found. Metadata: 'id' (Long)
+             *     * `CONFIG_NOT_FOUND`: System configuration not found. Metadata: 'name' (String)
+             *     * `ENDPOINT_NOT_FOUND`: Requested endpoint not found
+             *
+             *     ### File Handling
+             *     * `INVALID_FILE_TYPE`: File type is not allowed for this operation
+             *     * `FILE_TOO_LARGE`: File size exceeds the maximum limit
+             *     * `EMPTY_FILE`: Cannot process an empty file
+             *     * `QUOTA_EXCEEDED`: User has exceeded their storage quota. Metadata: 'currentSize' (Long), 'maxQuota' (Long), 'fileSize' (Long)
+             *     * `STORAGE_ERROR`: Generic storage error. Metadata: 'path' (String) or 'id' (UUID)
+             *
+             *     ### Logic & Validation
+             *     * `VALIDATION_ERROR`: Request validation failed. Detailed errors in 'details' field for ValidationErrorResponse
+             *     * `CONFLICT`: Operation conflicts with the current state of the resource
+             *     * `FOLDER_NOT_EMPTY`: Cannot delete a folder that is not empty. Metadata: 'id' (UUID)
+             *     * `FEATURE_DISABLED`: The requested feature is currently disabled
+             *
+             *     ### Server Errors
+             *     * `INTERNAL_SERVER_ERROR`: An unexpected error occurred on the server
+             */
+            metadata?: {
+                [key: string]: unknown;
+            };
+            /**
+             * Format: date-time
+             * @description Timestamp when the error occurred
+             */
+            timestamp: string;
+        };
         /** @description Request representation for creating a new calendar event */
         CreateEventRequest: {
             /**
@@ -1332,7 +1406,7 @@ export interface components {
              * @example INTERNAL_SERVER_ERROR
              * @enum {string}
              */
-            code: "UNAUTHORIZED" | "FORBIDDEN" | "INVALID_TOKEN" | "TOKEN_EXPIRED" | "BAD_CREDENTIALS" | "ACCOUNT_LOCKED" | "ACCOUNT_DISABLED" | "ELEMENT_NOT_FOUND" | "FILE_NOT_FOUND" | "FOLDER_NOT_FOUND" | "PARENT_FOLDER_NOT_FOUND" | "ROLE_NOT_FOUND" | "PERMISSION_NOT_FOUND" | "USER_NOT_FOUND" | "EVENT_NOT_FOUND" | "UNIT_TYPE_NOT_FOUND" | "EVENT_TYPE_NOT_FOUND" | "CONFIG_NOT_FOUND" | "ENDPOINT_NOT_FOUND" | "INVALID_FILE_TYPE" | "FILE_TOO_LARGE" | "EMPTY_FILE" | "QUOTA_EXCEEDED" | "STORAGE_ERROR" | "VALIDATION_ERROR" | "CONFLICT" | "FOLDER_NOT_EMPTY" | "FEATURE_DISABLED" | "INVALID_WIDGET_TYPE" | "INTERNAL_SERVER_ERROR";
+            code: "UNAUTHORIZED" | "FORBIDDEN" | "INVALID_TOKEN" | "TOKEN_EXPIRED" | "BAD_CREDENTIALS" | "ACCOUNT_LOCKED" | "ACCOUNT_DISABLED" | "ELEMENT_NOT_FOUND" | "FILE_NOT_FOUND" | "FOLDER_NOT_FOUND" | "PARENT_FOLDER_NOT_FOUND" | "ROLE_NOT_FOUND" | "PERMISSION_NOT_FOUND" | "USER_NOT_FOUND" | "EVENT_NOT_FOUND" | "UNIT_TYPE_NOT_FOUND" | "EVENT_TYPE_NOT_FOUND" | "CONFIG_NOT_FOUND" | "ENDPOINT_NOT_FOUND" | "INVALID_FILE_TYPE" | "FILE_TOO_LARGE" | "EMPTY_FILE" | "QUOTA_EXCEEDED" | "STORAGE_ERROR" | "VALIDATION_ERROR" | "CONFLICT" | "FOLDER_NOT_EMPTY" | "FEATURE_DISABLED" | "INVALID_WIDGET_TYPE" | "CMS_VALIDATION_ERROR" | "DUPLICATE_WIDGET_IDS" | "INTERNAL_SERVER_ERROR";
             /**
              * @description Error message
              * @example An unexpected error occurred
@@ -2232,7 +2306,7 @@ export interface components {
              * @example INTERNAL_SERVER_ERROR
              * @enum {string}
              */
-            code: "UNAUTHORIZED" | "FORBIDDEN" | "INVALID_TOKEN" | "TOKEN_EXPIRED" | "BAD_CREDENTIALS" | "ACCOUNT_LOCKED" | "ACCOUNT_DISABLED" | "ELEMENT_NOT_FOUND" | "FILE_NOT_FOUND" | "FOLDER_NOT_FOUND" | "PARENT_FOLDER_NOT_FOUND" | "ROLE_NOT_FOUND" | "PERMISSION_NOT_FOUND" | "USER_NOT_FOUND" | "EVENT_NOT_FOUND" | "UNIT_TYPE_NOT_FOUND" | "EVENT_TYPE_NOT_FOUND" | "CONFIG_NOT_FOUND" | "ENDPOINT_NOT_FOUND" | "INVALID_FILE_TYPE" | "FILE_TOO_LARGE" | "EMPTY_FILE" | "QUOTA_EXCEEDED" | "STORAGE_ERROR" | "VALIDATION_ERROR" | "CONFLICT" | "FOLDER_NOT_EMPTY" | "FEATURE_DISABLED" | "INVALID_WIDGET_TYPE" | "INTERNAL_SERVER_ERROR";
+            code: "UNAUTHORIZED" | "FORBIDDEN" | "INVALID_TOKEN" | "TOKEN_EXPIRED" | "BAD_CREDENTIALS" | "ACCOUNT_LOCKED" | "ACCOUNT_DISABLED" | "ELEMENT_NOT_FOUND" | "FILE_NOT_FOUND" | "FOLDER_NOT_FOUND" | "PARENT_FOLDER_NOT_FOUND" | "ROLE_NOT_FOUND" | "PERMISSION_NOT_FOUND" | "USER_NOT_FOUND" | "EVENT_NOT_FOUND" | "UNIT_TYPE_NOT_FOUND" | "EVENT_TYPE_NOT_FOUND" | "CONFIG_NOT_FOUND" | "ENDPOINT_NOT_FOUND" | "INVALID_FILE_TYPE" | "FILE_TOO_LARGE" | "EMPTY_FILE" | "QUOTA_EXCEEDED" | "STORAGE_ERROR" | "VALIDATION_ERROR" | "CONFLICT" | "FOLDER_NOT_EMPTY" | "FEATURE_DISABLED" | "INVALID_WIDGET_TYPE" | "CMS_VALIDATION_ERROR" | "DUPLICATE_WIDGET_IDS" | "INTERNAL_SERVER_ERROR";
             /** @description Map of field names to error messages */
             details?: {
                 [key: string]: string;
@@ -2377,7 +2451,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -2462,7 +2536,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -2547,7 +2621,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -2717,7 +2791,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -2800,7 +2874,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -2881,7 +2955,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -2966,7 +3040,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -3054,7 +3128,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -3139,7 +3213,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -3313,7 +3387,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -3485,7 +3559,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -3574,7 +3648,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -3657,7 +3731,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -3741,7 +3815,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -3825,7 +3899,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -3910,7 +3984,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -3996,7 +4070,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -4080,7 +4154,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -4164,7 +4238,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -4683,7 +4757,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -4947,7 +5021,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -5036,7 +5110,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -5125,7 +5199,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description User is not authenticated */
@@ -5218,7 +5292,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description User is not authenticated */
@@ -5311,7 +5385,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description User is not authenticated */
@@ -5394,7 +5468,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description User is not authenticated */
@@ -5481,7 +5555,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description User is not authenticated */
@@ -5566,7 +5640,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description User is not authenticated */
@@ -5655,7 +5729,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description User is not authenticated */
@@ -5744,7 +5818,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -5920,7 +5994,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Not authenticated */
@@ -6095,7 +6169,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Not authenticated */
@@ -6269,7 +6343,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Not authenticated */
@@ -6439,7 +6513,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Not authenticated */
@@ -6613,7 +6687,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -6696,7 +6770,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Not authenticated */
@@ -6779,7 +6853,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -6864,7 +6938,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -6949,7 +7023,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -7121,7 +7195,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -7293,7 +7367,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -7378,7 +7452,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -7550,7 +7624,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -7722,7 +7796,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ErrorResponse"] | components["schemas"]["ValidationErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */

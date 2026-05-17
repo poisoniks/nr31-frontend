@@ -180,7 +180,7 @@ export const WidgetSettingsModal: React.FC<WidgetSettingsModalProps> = ({
             ...e.formData, 
             id: widget.id, 
             type: widget.type,
-            bodyContent: widget.bodyContent 
+            bodyContent: (widget as any).bodyContent 
         });
         onClose();
     };
@@ -188,7 +188,7 @@ export const WidgetSettingsModal: React.FC<WidgetSettingsModalProps> = ({
     // Remove id, type, and bodyContent from formData for the form display
     // Also recursively convert null values to undefined to prevent AJV/RJSF validation errors for optional fields
     const formDataForDisplay = React.useMemo(() => {
-        const { id, type, bodyContent, ...rest } = formData;
+        const { id, type, bodyContent, ...rest } = formData as any;
         
         const sanitizeNulls = (val: any): any => {
             if (val === null) return undefined;
