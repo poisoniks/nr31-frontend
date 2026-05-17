@@ -17,6 +17,7 @@ const CmsPage: React.FC<{ slug?: string }> = ({ slug: defaultSlug }) => {
     const { t } = useTranslation();
 
     const isEditMode = useCmsStore(state => state.isEditMode);
+    const isDirty = useCmsStore(state => state.isDirty);
     const pageData = useCmsStore(state => state.pageData);
     const loadPublishedPage = useCmsStore(state => state.loadPublishedPage);
     const loadDraftPage = useCmsStore(state => state.loadDraftPage);
@@ -45,6 +46,20 @@ const CmsPage: React.FC<{ slug?: string }> = ({ slug: defaultSlug }) => {
             loadPublishedPage(slug);
         }
     }, [slug, isEditMode, loadPublishedPage, loadDraftPage, loadSlotRestrictions, loadWidgetSchemas]);
+
+    // Warn user before leaving page with unsaved changes
+    useEffect(() => {
+        const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+            if (isEditMode && isDirty) {
+                e.preventDefault();
+                // Modern browsers ignore custom messages, but setting returnValue is required
+                e.returnValue = t('cms.confirm_leave_unsaved');
+            }
+        };
+
+        window.addEventListener('beforeunload', handleBeforeUnload);
+        return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+    }, [isEditMode, isDirty, t]);
 
     if (!pageData) {
         return (
