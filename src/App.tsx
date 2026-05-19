@@ -16,6 +16,9 @@ import StaticErrorPage from './pages/StaticErrorPage';
 import { useTranslation } from 'react-i18next';
 import { useUIStore } from './store/useUIStore';
 import GlobalErrorPopup from './components/ui/GlobalErrorPopup';
+import KbExplorer from './pages/kb/KbExplorer';
+import KbArticle from './pages/kb/KbArticle';
+import KbArticleEditor from './pages/kb/KbArticleEditor';
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -48,6 +51,18 @@ function App() {
             <Route path="/pages/:slug" element={<CmsPage />} />
             <Route path="/roster" element={<Roster />} />
             <Route path="/events" element={<Events />} />
+            <Route path="/kb" element={<KbExplorer />} />
+            <Route path="/kb/article/:slug" element={<KbArticle />} />
+            <Route path="/kb/article/:slug/edit" element={
+              <ProtectedRoute>
+                <RequirePermission 
+                  permission="kb:write" 
+                  fallback={<AccessDenied />}
+                >
+                  <KbArticleEditor />
+                </RequirePermission>
+              </ProtectedRoute>
+            } />
             <Route path="/profile" element={
               <ProtectedRoute>
                 <Profile />

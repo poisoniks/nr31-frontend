@@ -40,6 +40,7 @@ const Header: React.FC = () => {
         { name: t('header.home'), path: '/' },
         { name: t('header.roster'), path: '/roster' },
         { name: t('header.events'), path: '/events' },
+        { name: t('header.kb'), path: '/kb' },
         ...(hasAdminPermission ? [{ name: t('header.admin'), path: '/admin' }] : [])
     ];
 

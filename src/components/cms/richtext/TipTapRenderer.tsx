@@ -52,7 +52,7 @@ function renderNode(node: any): React.ReactNode {
       // Render empty paragraphs with a non-breaking space to preserve newlines
       const isEmpty = !children || (Array.isArray(children) && children.length === 0);
       return <p className="text-nr-text/80 leading-relaxed mb-4 last:mb-0">{isEmpty ? '\u00A0' : children}</p>;
-    case 'heading':
+    case 'heading': {
       const level = node.attrs?.level || 2;
       const Tag = `h${level}` as any;
       const headingClasses = level === 1 
@@ -60,7 +60,17 @@ function renderNode(node: any): React.ReactNode {
         : level === 2
         ? "font-serif text-2xl font-bold text-nr-text mb-4 mt-8 first:mt-0"
         : "font-serif text-xl font-bold text-nr-text mb-3 mt-6 first:mt-0";
-      return <Tag className={headingClasses}>{children}</Tag>;
+      
+      const getTextFromNode = (n: any): string => {
+        if (!n) return '';
+        if (n.type === 'text') return n.text || '';
+        return n.content?.map(getTextFromNode).join('') || '';
+      };
+      const nodeText = getTextFromNode(node);
+      const headingId = nodeText.toLowerCase().replace(/[^\p{L}\d\s-]/gu, '').replace(/\s+/g, '-');
+      
+      return <Tag id={headingId} className={headingClasses}>{children}</Tag>;
+    }
     case 'bulletList':
       return <ul className="space-y-2 text-nr-text/80 list-disc list-inside marker:text-nr-accent my-4">{children}</ul>;
     case 'orderedList':

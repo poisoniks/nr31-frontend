@@ -849,7 +849,7 @@ export interface paths {
          *     Security requirement:
          *     - Must have authority file:upload:public
          */
-        post: operations["createFolder"];
+        post: operations["createFolder_1"];
         delete?: never;
         options?: never;
         head?: never;
@@ -873,7 +873,7 @@ export interface paths {
          *     Security requirement:
          *     - Must have authority file:delete
          */
-        delete: operations["deleteFolder"];
+        delete: operations["deleteFolder_1"];
         options?: never;
         head?: never;
         /**
@@ -883,7 +883,7 @@ export interface paths {
          *     Security requirement:
          *     - Must have authority file:upload:public
          */
-        patch: operations["updateFolder"];
+        patch: operations["updateFolder_1"];
         trace?: never;
     };
     "/api/v1/files/{id}": {
@@ -908,6 +908,168 @@ export interface paths {
          *     - Must have authority file:delete
          */
         delete: operations["deleteFile_1"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/kb/articles": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Create a new article
+         * @description Security requirement:
+         *     - Has security restrictions
+         */
+        post: operations["createArticle"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/kb/articles/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Update an existing article
+         * @description Security requirement:
+         *     - Has security restrictions
+         */
+        put: operations["updateArticle"];
+        post?: never;
+        /**
+         * Delete an article
+         * @description Security requirement:
+         *     - Has security restrictions
+         */
+        delete: operations["deleteArticle"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/kb/articles/{slug}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get an article by slug */
+        get: operations["getArticleBySlug"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/kb/folders": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Create a new folder
+         * @description Security requirement:
+         *     - Must have authority kb:admin
+         */
+        post: operations["createFolder"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/kb/folders/root": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get top-level (root) folders */
+        get: operations["getRootFolders"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/kb/folders/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Update an existing folder
+         * @description Security requirement:
+         *     - Must have authority kb:admin
+         */
+        put: operations["updateFolder"];
+        post?: never;
+        /**
+         * Delete an empty folder
+         * @description Security requirement:
+         *     - Must have authority kb:admin
+         */
+        delete: operations["deleteFolder"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/kb/folders/{slug}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get folder details by slug */
+        get: operations["getFolderBySlug"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/kb/search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Search articles via full-text search and trigrams */
+        get: operations["searchArticles"];
+        put?: never;
+        post?: never;
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -1188,80 +1350,6 @@ export interface components {
             /** @description Type of the event */
             type: components["schemas"]["EventTypeDTO"];
         };
-        /** @description Response containing CMS layout validation error details */
-        CmsValidationErrorResponse: {
-            /**
-             * @description Standardized error code
-             * @example INTERNAL_SERVER_ERROR
-             * @enum {string}
-             */
-            code: "UNAUTHORIZED" | "FORBIDDEN" | "INVALID_TOKEN" | "TOKEN_EXPIRED" | "BAD_CREDENTIALS" | "ACCOUNT_LOCKED" | "ACCOUNT_DISABLED" | "ELEMENT_NOT_FOUND" | "FILE_NOT_FOUND" | "FOLDER_NOT_FOUND" | "PARENT_FOLDER_NOT_FOUND" | "ROLE_NOT_FOUND" | "PERMISSION_NOT_FOUND" | "USER_NOT_FOUND" | "EVENT_NOT_FOUND" | "UNIT_TYPE_NOT_FOUND" | "EVENT_TYPE_NOT_FOUND" | "CONFIG_NOT_FOUND" | "ENDPOINT_NOT_FOUND" | "INVALID_FILE_TYPE" | "FILE_TOO_LARGE" | "EMPTY_FILE" | "QUOTA_EXCEEDED" | "STORAGE_ERROR" | "VALIDATION_ERROR" | "CONFLICT" | "FOLDER_NOT_EMPTY" | "FEATURE_DISABLED" | "INVALID_WIDGET_TYPE" | "CMS_VALIDATION_ERROR" | "DUPLICATE_WIDGET_IDS" | "INTERNAL_SERVER_ERROR";
-            /** @description Map of field/widget identifiers to their translation interpolation context parameters */
-            context?: {
-                [key: string]: {
-                    [key: string]: unknown;
-                };
-            };
-            /** @description Map of field/widget identifiers to translation keys */
-            details?: {
-                [key: string]: string;
-            };
-            /**
-             * @description Error message
-             * @example An unexpected error occurred
-             */
-            message: string;
-            /**
-             * @description Standardized error codes for the application.
-             *
-             *     ### Authentication & Authorization
-             *     * `UNAUTHORIZED`: User is not authenticated
-             *     * `FORBIDDEN`: User does not have required permissions
-             *     * `INVALID_TOKEN`: Provided token is invalid
-             *     * `TOKEN_EXPIRED`: Provided token has expired
-             *     * `BAD_CREDENTIALS`: Invalid username or password
-             *     * `ACCOUNT_LOCKED`: Account is locked due to too many failed attempts
-             *     * `ACCOUNT_DISABLED`: Account is disabled by administrator
-             *
-             *     ### Resource Errors
-             *     * `ELEMENT_NOT_FOUND`: Requested element not found. Metadata: 'id' (UUID or Long) or other identifier
-             *     * `FILE_NOT_FOUND`: Requested file not found. Metadata: 'id' (UUID)
-             *     * `FOLDER_NOT_FOUND`: Requested folder not found. Metadata: 'id' (UUID)
-             *     * `PARENT_FOLDER_NOT_FOUND`: Parent folder for the operation not found. Metadata: 'id' (UUID)
-             *     * `ROLE_NOT_FOUND`: Role not found. Metadata: 'id' (Long)
-             *     * `PERMISSION_NOT_FOUND`: Permission not found. Metadata: 'id' (Long)
-             *     * `USER_NOT_FOUND`: User not found. Metadata: 'id' (Long) or 'username' (String)
-             *     * `EVENT_NOT_FOUND`: Calendar event not found. Metadata: 'id' (String/UUID)
-             *     * `UNIT_TYPE_NOT_FOUND`: Unit type not found. Metadata: 'id' (Long)
-             *     * `EVENT_TYPE_NOT_FOUND`: Event type not found. Metadata: 'id' (Long)
-             *     * `CONFIG_NOT_FOUND`: System configuration not found. Metadata: 'name' (String)
-             *     * `ENDPOINT_NOT_FOUND`: Requested endpoint not found
-             *
-             *     ### File Handling
-             *     * `INVALID_FILE_TYPE`: File type is not allowed for this operation
-             *     * `FILE_TOO_LARGE`: File size exceeds the maximum limit
-             *     * `EMPTY_FILE`: Cannot process an empty file
-             *     * `QUOTA_EXCEEDED`: User has exceeded their storage quota. Metadata: 'currentSize' (Long), 'maxQuota' (Long), 'fileSize' (Long)
-             *     * `STORAGE_ERROR`: Generic storage error. Metadata: 'path' (String) or 'id' (UUID)
-             *
-             *     ### Logic & Validation
-             *     * `VALIDATION_ERROR`: Request validation failed. Detailed errors in 'details' field for ValidationErrorResponse
-             *     * `CONFLICT`: Operation conflicts with the current state of the resource
-             *     * `FOLDER_NOT_EMPTY`: Cannot delete a folder that is not empty. Metadata: 'id' (UUID)
-             *     * `FEATURE_DISABLED`: The requested feature is currently disabled
-             *
-             *     ### Server Errors
-             *     * `INTERNAL_SERVER_ERROR`: An unexpected error occurred on the server
-             */
-            metadata?: {
-                [key: string]: unknown;
-            };
-            /**
-             * Format: date-time
-             * @description Timestamp when the error occurred
-             */
-            timestamp: string;
-        };
         /** @description Request representation for creating a new calendar event */
         CreateEventRequest: {
             /**
@@ -1311,6 +1399,22 @@ export interface components {
              * @example 1
              */
             type: number;
+        };
+        CreateKbArticleRequest: {
+            content: components["schemas"]["JsonNode"];
+            /** Format: int64 */
+            folderId: number;
+            title: {
+                [key: string]: string;
+            };
+        };
+        CreateKbFolderRequest: {
+            name: {
+                [key: string]: string;
+            };
+            /** Format: int64 */
+            parentId?: number;
+            restricted?: boolean;
         };
         /** @description Response object containing discord bot status */
         DiscordBotStatusResponse: {
@@ -1406,7 +1510,7 @@ export interface components {
              * @example INTERNAL_SERVER_ERROR
              * @enum {string}
              */
-            code: "UNAUTHORIZED" | "FORBIDDEN" | "INVALID_TOKEN" | "TOKEN_EXPIRED" | "BAD_CREDENTIALS" | "ACCOUNT_LOCKED" | "ACCOUNT_DISABLED" | "ELEMENT_NOT_FOUND" | "FILE_NOT_FOUND" | "FOLDER_NOT_FOUND" | "PARENT_FOLDER_NOT_FOUND" | "ROLE_NOT_FOUND" | "PERMISSION_NOT_FOUND" | "USER_NOT_FOUND" | "EVENT_NOT_FOUND" | "UNIT_TYPE_NOT_FOUND" | "EVENT_TYPE_NOT_FOUND" | "CONFIG_NOT_FOUND" | "ENDPOINT_NOT_FOUND" | "INVALID_FILE_TYPE" | "FILE_TOO_LARGE" | "EMPTY_FILE" | "QUOTA_EXCEEDED" | "STORAGE_ERROR" | "VALIDATION_ERROR" | "CONFLICT" | "FOLDER_NOT_EMPTY" | "FEATURE_DISABLED" | "INVALID_WIDGET_TYPE" | "CMS_VALIDATION_ERROR" | "DUPLICATE_WIDGET_IDS" | "INTERNAL_SERVER_ERROR";
+            code: "UNAUTHORIZED" | "FORBIDDEN" | "INVALID_TOKEN" | "TOKEN_EXPIRED" | "BAD_CREDENTIALS" | "ACCOUNT_LOCKED" | "ACCOUNT_DISABLED" | "ELEMENT_NOT_FOUND" | "FILE_NOT_FOUND" | "FOLDER_NOT_FOUND" | "PARENT_FOLDER_NOT_FOUND" | "ROLE_NOT_FOUND" | "PERMISSION_NOT_FOUND" | "USER_NOT_FOUND" | "EVENT_NOT_FOUND" | "UNIT_TYPE_NOT_FOUND" | "EVENT_TYPE_NOT_FOUND" | "CONFIG_NOT_FOUND" | "ENDPOINT_NOT_FOUND" | "INVALID_FILE_TYPE" | "FILE_TOO_LARGE" | "EMPTY_FILE" | "QUOTA_EXCEEDED" | "STORAGE_ERROR" | "VALIDATION_ERROR" | "CONFLICT" | "FOLDER_NOT_EMPTY" | "FEATURE_DISABLED" | "INVALID_WIDGET_TYPE" | "CMS_VALIDATION_ERROR" | "DUPLICATE_WIDGET_IDS" | "KB_FOLDER_NOT_FOUND" | "KB_ARTICLE_NOT_FOUND" | "KB_FOLDER_NOT_EMPTY" | "INTERNAL_SERVER_ERROR";
             /**
              * @description Error message
              * @example An unexpected error occurred
@@ -1661,6 +1765,67 @@ export interface components {
             textual?: boolean;
             valueNode?: boolean;
         };
+        KbArticleDetailDto: {
+            /** Format: int64 */
+            authorId?: number;
+            authorName?: string;
+            breadcrumbs?: components["schemas"]["KbFolderDto"][];
+            content?: components["schemas"]["JsonNode"];
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: int64 */
+            folderId?: number;
+            folderName?: {
+                [key: string]: string;
+            };
+            /** Format: int64 */
+            id?: number;
+            slug?: string;
+            title?: {
+                [key: string]: string;
+            };
+            /** Format: date-time */
+            updatedAt?: string;
+        };
+        KbArticleSummaryDto: {
+            /** Format: int64 */
+            authorId?: number;
+            authorName?: string;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: int64 */
+            id?: number;
+            slug?: string;
+            title?: {
+                [key: string]: string;
+            };
+            /** Format: date-time */
+            updatedAt?: string;
+        };
+        KbFolderDetailDto: {
+            articles?: components["schemas"]["PageObject"];
+            /** Format: int64 */
+            id?: number;
+            name?: {
+                [key: string]: string;
+            };
+            restricted?: boolean;
+            slug?: string;
+            subFolders?: components["schemas"]["KbFolderDto"][];
+        };
+        KbFolderDto: {
+            /** Format: int64 */
+            id?: number;
+            name?: {
+                [key: string]: string;
+            };
+            restricted?: boolean;
+            slug?: string;
+        };
+        KbSearchResultDto: {
+            article?: components["schemas"]["KbArticleSummaryDto"];
+            breadcrumbs?: components["schemas"]["KbFolderDto"][];
+        };
         /** @description Complete layout data for a page */
         LayoutDataDto: {
             /** @description List of slots in the page layout */
@@ -1777,6 +1942,24 @@ export interface components {
             /** Format: int64 */
             totalPages: number;
         };
+        PageObject: {
+            content?: components["schemas"]["KbArticleSummaryDto"][];
+            empty?: boolean;
+            first?: boolean;
+            last?: boolean;
+            /** Format: int32 */
+            number?: number;
+            /** Format: int32 */
+            numberOfElements?: number;
+            pageable?: components["schemas"]["PageableObject"];
+            /** Format: int32 */
+            size?: number;
+            sort?: components["schemas"]["SortObject"];
+            /** Format: int64 */
+            totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
+        };
         /** @description Response DTO representing a page revision */
         PageResponseDto: {
             /**
@@ -1827,6 +2010,17 @@ export interface components {
             /** Format: int32 */
             size: number;
             sort?: string[];
+        };
+        PageableObject: {
+            /** Format: int64 */
+            offset?: number;
+            /** Format: int32 */
+            pageNumber?: number;
+            /** Format: int32 */
+            pageSize?: number;
+            paged?: boolean;
+            sort?: components["schemas"]["SortObject"];
+            unpaged?: boolean;
         };
         PagedModelAppConfigDto: {
             content: components["schemas"]["AppConfigDto"][];
@@ -2102,6 +2296,11 @@ export interface components {
                 [key: string]: string[];
             };
         };
+        SortObject: {
+            empty?: boolean;
+            sorted?: boolean;
+            unsorted?: boolean;
+        };
         /** @description DTO representing a supported locale */
         SupportedLocaleDTO: {
             /**
@@ -2258,6 +2457,22 @@ export interface components {
              */
             type: number;
         };
+        UpdateKbArticleRequest: {
+            content?: components["schemas"]["JsonNode"];
+            /** Format: int64 */
+            folderId?: number;
+            title?: {
+                [key: string]: string;
+            };
+        };
+        UpdateKbFolderRequest: {
+            name?: {
+                [key: string]: string;
+            };
+            /** Format: int64 */
+            parentId?: number;
+            restricted?: boolean;
+        };
         /** @description Request to update slot restriction configuration */
         UpdateSlotRestrictionsRequest: {
             /**
@@ -2306,7 +2521,7 @@ export interface components {
              * @example INTERNAL_SERVER_ERROR
              * @enum {string}
              */
-            code: "UNAUTHORIZED" | "FORBIDDEN" | "INVALID_TOKEN" | "TOKEN_EXPIRED" | "BAD_CREDENTIALS" | "ACCOUNT_LOCKED" | "ACCOUNT_DISABLED" | "ELEMENT_NOT_FOUND" | "FILE_NOT_FOUND" | "FOLDER_NOT_FOUND" | "PARENT_FOLDER_NOT_FOUND" | "ROLE_NOT_FOUND" | "PERMISSION_NOT_FOUND" | "USER_NOT_FOUND" | "EVENT_NOT_FOUND" | "UNIT_TYPE_NOT_FOUND" | "EVENT_TYPE_NOT_FOUND" | "CONFIG_NOT_FOUND" | "ENDPOINT_NOT_FOUND" | "INVALID_FILE_TYPE" | "FILE_TOO_LARGE" | "EMPTY_FILE" | "QUOTA_EXCEEDED" | "STORAGE_ERROR" | "VALIDATION_ERROR" | "CONFLICT" | "FOLDER_NOT_EMPTY" | "FEATURE_DISABLED" | "INVALID_WIDGET_TYPE" | "CMS_VALIDATION_ERROR" | "DUPLICATE_WIDGET_IDS" | "INTERNAL_SERVER_ERROR";
+            code: "UNAUTHORIZED" | "FORBIDDEN" | "INVALID_TOKEN" | "TOKEN_EXPIRED" | "BAD_CREDENTIALS" | "ACCOUNT_LOCKED" | "ACCOUNT_DISABLED" | "ELEMENT_NOT_FOUND" | "FILE_NOT_FOUND" | "FOLDER_NOT_FOUND" | "PARENT_FOLDER_NOT_FOUND" | "ROLE_NOT_FOUND" | "PERMISSION_NOT_FOUND" | "USER_NOT_FOUND" | "EVENT_NOT_FOUND" | "UNIT_TYPE_NOT_FOUND" | "EVENT_TYPE_NOT_FOUND" | "CONFIG_NOT_FOUND" | "ENDPOINT_NOT_FOUND" | "INVALID_FILE_TYPE" | "FILE_TOO_LARGE" | "EMPTY_FILE" | "QUOTA_EXCEEDED" | "STORAGE_ERROR" | "VALIDATION_ERROR" | "CONFLICT" | "FOLDER_NOT_EMPTY" | "FEATURE_DISABLED" | "INVALID_WIDGET_TYPE" | "CMS_VALIDATION_ERROR" | "DUPLICATE_WIDGET_IDS" | "KB_FOLDER_NOT_FOUND" | "KB_ARTICLE_NOT_FOUND" | "KB_FOLDER_NOT_EMPTY" | "INTERNAL_SERVER_ERROR";
             /** @description Map of field names to error messages */
             details?: {
                 [key: string]: string;
@@ -2445,13 +2660,13 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description Validation error */
+            /** @description Bad Request */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -2530,13 +2745,13 @@ export interface operations {
                     "*/*": components["schemas"]["PagedModelAppConfigDto"];
                 };
             };
-            /** @description Validation error */
+            /** @description Bad Request */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -2615,13 +2830,13 @@ export interface operations {
                     "*/*": components["schemas"]["AppConfigDto"];
                 };
             };
-            /** @description Validation error */
+            /** @description Bad Request */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -2785,13 +3000,13 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description Validation error */
+            /** @description Bad Request */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -2868,13 +3083,13 @@ export interface operations {
                     "*/*": components["schemas"]["DiscordBotStatusResponse"];
                 };
             };
-            /** @description Validation error */
+            /** @description Bad Request */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -2949,13 +3164,13 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description Validation error */
+            /** @description Bad Request */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -3034,13 +3249,13 @@ export interface operations {
                     "application/json": components["schemas"]["PagedModelString"];
                 };
             };
-            /** @description Validation error */
+            /** @description Bad Request */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -3122,13 +3337,13 @@ export interface operations {
                     "*/*": string;
                 };
             };
-            /** @description Validation error */
+            /** @description Bad Request */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -3207,13 +3422,13 @@ export interface operations {
                     "*/*": components["schemas"]["PagedModelPermissionDTO"];
                 };
             };
-            /** @description Validation error */
+            /** @description Bad Request */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -3381,13 +3596,13 @@ export interface operations {
                     "*/*": components["schemas"]["PagedModelRoleDTO"];
                 };
             };
-            /** @description Validation error */
+            /** @description Bad Request */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -3553,13 +3768,13 @@ export interface operations {
                     "*/*": components["schemas"]["RoleDTO"];
                 };
             };
-            /** @description Validation error */
+            /** @description Bad Request */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -3642,13 +3857,13 @@ export interface operations {
                     "*/*": components["schemas"]["RoleDTO"];
                 };
             };
-            /** @description Validation error */
+            /** @description Bad Request */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -3725,13 +3940,13 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description Validation error */
+            /** @description Bad Request */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -3809,13 +4024,13 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description Validation error */
+            /** @description Bad Request */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -3893,13 +4108,13 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description Validation error */
+            /** @description Bad Request */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -3978,13 +4193,13 @@ export interface operations {
                     "*/*": components["schemas"]["PagedModelUserDTO"];
                 };
             };
-            /** @description Validation error */
+            /** @description Bad Request */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -4064,13 +4279,13 @@ export interface operations {
                     "*/*": components["schemas"]["PagedModelUserDTO"];
                 };
             };
-            /** @description Validation error */
+            /** @description Bad Request */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -4148,13 +4363,13 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description Validation error */
+            /** @description Bad Request */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -4232,13 +4447,13 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description Validation error */
+            /** @description Bad Request */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -4751,13 +4966,13 @@ export interface operations {
                     "application/json": components["schemas"]["CalendarEventDTO"];
                 };
             };
-            /** @description Validation error */
+            /** @description Bad Request */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -5015,13 +5230,13 @@ export interface operations {
                     "application/json": components["schemas"]["DiscordWidgetDataDto"];
                 };
             };
-            /** @description Validation error */
+            /** @description Bad Request */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -5104,13 +5319,13 @@ export interface operations {
                     "application/json": components["schemas"]["PageResponseDto"];
                 };
             };
-            /** @description Validation error */
+            /** @description Bad Request */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -5193,13 +5408,13 @@ export interface operations {
                     "application/json": components["schemas"]["PageResponseDto"];
                 };
             };
-            /** @description Validation error */
+            /** @description Bad Request */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description User is not authenticated */
@@ -5292,7 +5507,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description User is not authenticated */
@@ -5379,13 +5594,13 @@ export interface operations {
                     "application/json": components["schemas"]["PageResponseDto"];
                 };
             };
-            /** @description Validation error */
+            /** @description Bad Request */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description User is not authenticated */
@@ -5462,13 +5677,13 @@ export interface operations {
                     "application/json": components["schemas"]["SlotRestrictionsDto"];
                 };
             };
-            /** @description Validation error */
+            /** @description Bad Request */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description User is not authenticated */
@@ -5555,7 +5770,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description User is not authenticated */
@@ -5634,13 +5849,13 @@ export interface operations {
                     };
                 };
             };
-            /** @description Validation error */
+            /** @description Bad Request */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description User is not authenticated */
@@ -5723,13 +5938,13 @@ export interface operations {
                     "application/json": components["schemas"]["JsonNode"];
                 };
             };
-            /** @description Validation error */
+            /** @description Bad Request */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description User is not authenticated */
@@ -5812,13 +6027,13 @@ export interface operations {
                     "application/json": components["schemas"]["YoutubeVideoDto"];
                 };
             };
-            /** @description Validation error */
+            /** @description Bad Request */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -5988,13 +6203,13 @@ export interface operations {
                     "application/json": components["schemas"]["PagedModelFileMetadataDTO"];
                 };
             };
-            /** @description Validation error */
+            /** @description Bad Request */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Not authenticated */
@@ -6163,13 +6378,13 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description Validation error */
+            /** @description Bad Request */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Not authenticated */
@@ -6337,13 +6552,13 @@ export interface operations {
                     "application/json": components["schemas"]["MediaFolderDTO"][];
                 };
             };
-            /** @description Validation error */
+            /** @description Bad Request */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Not authenticated */
@@ -6402,7 +6617,7 @@ export interface operations {
             };
         };
     };
-    createFolder: {
+    createFolder_1: {
         parameters: {
             query?: never;
             header?: never;
@@ -6489,7 +6704,7 @@ export interface operations {
             };
         };
     };
-    deleteFolder: {
+    deleteFolder_1: {
         parameters: {
             query?: never;
             header?: never;
@@ -6507,13 +6722,13 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description Validation error */
+            /** @description Bad Request */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Not authenticated */
@@ -6572,7 +6787,7 @@ export interface operations {
             };
         };
     };
-    updateFolder: {
+    updateFolder_1: {
         parameters: {
             query?: never;
             header?: never;
@@ -6681,13 +6896,13 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description Validation error */
+            /** @description Bad Request */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -6764,13 +6979,13 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description Validation error */
+            /** @description Bad Request */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Not authenticated */
@@ -6829,6 +7044,864 @@ export interface operations {
             };
         };
     };
+    createArticle: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateKbArticleRequest"];
+            };
+        };
+        responses: {
+            /** @description Article created successfully */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["KbArticleDetailDto"];
+                };
+            };
+            /** @description Invalid request payload */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Insufficient permissions */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Content Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    updateArticle: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateKbArticleRequest"];
+            };
+        };
+        responses: {
+            /** @description Article updated successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["KbArticleDetailDto"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Insufficient permissions */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Article not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Content Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    deleteArticle: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Article deleted successfully */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Insufficient permissions */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Article not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Content Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    getArticleBySlug: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Article details retrieved successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["KbArticleDetailDto"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Article not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Content Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    createFolder: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateKbFolderRequest"];
+            };
+        };
+        responses: {
+            /** @description Folder created successfully */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["KbFolderDto"];
+                };
+            };
+            /** @description Invalid request payload */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Insufficient permissions */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Content Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    getRootFolders: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description List of root folders retrieved successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["KbFolderDto"][];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Content Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    updateFolder: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateKbFolderRequest"];
+            };
+        };
+        responses: {
+            /** @description Folder updated successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["KbFolderDto"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Insufficient permissions */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Folder not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Content Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    deleteFolder: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Folder deleted successfully */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Folder is not empty */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Insufficient permissions */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Folder not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Content Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    getFolderBySlug: {
+        parameters: {
+            query: {
+                pageable: components["schemas"]["Pageable"];
+            };
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Folder details, subfolders, and articles retrieved successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["KbFolderDetailDto"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Folder not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Content Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    searchArticles: {
+        parameters: {
+            query: {
+                q: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Search completed successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["KbSearchResultDto"][];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Content Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
     getAllowedMimeTypes: {
         parameters: {
             query?: never;
@@ -6847,13 +7920,13 @@ export interface operations {
                     "application/json": string[];
                 };
             };
-            /** @description Validation error */
+            /** @description Bad Request */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -6932,13 +8005,13 @@ export interface operations {
                     "application/json": components["schemas"]["PagedModelSupportedLocaleDTO"];
                 };
             };
-            /** @description Validation error */
+            /** @description Bad Request */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -7017,13 +8090,13 @@ export interface operations {
                     "application/json": components["schemas"]["PagedModelEventTypeDTO"];
                 };
             };
-            /** @description Validation error */
+            /** @description Bad Request */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -7189,13 +8262,13 @@ export interface operations {
                     "application/json": components["schemas"]["EventTypeDTO"];
                 };
             };
-            /** @description Validation error */
+            /** @description Bad Request */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -7361,13 +8434,13 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description Validation error */
+            /** @description Bad Request */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -7446,13 +8519,13 @@ export interface operations {
                     "application/json": components["schemas"]["PagedModelUnitTypeDTO"];
                 };
             };
-            /** @description Validation error */
+            /** @description Bad Request */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -7618,13 +8691,13 @@ export interface operations {
                     "application/json": components["schemas"]["UnitTypeDTO"];
                 };
             };
-            /** @description Validation error */
+            /** @description Bad Request */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -7790,13 +8863,13 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description Validation error */
+            /** @description Bad Request */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ValidationErrorResponse"] | (components["schemas"]["ValidationErrorResponse"] | components["schemas"]["CmsValidationErrorResponse"]) | components["schemas"]["ErrorResponse"];
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Unauthorized */
