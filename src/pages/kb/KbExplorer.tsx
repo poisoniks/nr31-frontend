@@ -65,6 +65,8 @@ const KbExplorer: React.FC = () => {
         }
     }, [size, setTotalPages, t]);
 
+    const lastFolderSlugRef = React.useRef(folderSlug);
+
     // Combined load effect
     useEffect(() => {
         setMobileTreeOpen(false);
@@ -72,15 +74,21 @@ const KbExplorer: React.FC = () => {
         if (!folderSlug) {
             setFolderDetail(null);
             setLoading(false);
+            lastFolderSlugRef.current = '';
         } else {
-            fetchFolderDetail(folderSlug, page);
-        }
-    }, [folderSlug, page, fetchFolderDetail]);
+            const hasFolderChanged = lastFolderSlugRef.current !== folderSlug;
+            lastFolderSlugRef.current = folderSlug;
 
-    // Reset pagination page when folder changes
-    useEffect(() => {
-        resetPage();
-    }, [folderSlug, resetPage]);
+            if (hasFolderChanged && page !== 0) {
+                // Changing folder and page is not 0: just reset page.
+                // The page state change will trigger this effect again, which will fetch page 0.
+                resetPage();
+            } else {
+                // Either page is already 0, or we are navigating within the same folder (pagination click)
+                fetchFolderDetail(folderSlug, page);
+            }
+        }
+    }, [folderSlug, page, fetchFolderDetail, resetPage]);
 
     const handleNewFolderClick = (parentId?: number) => {
         setModalParentId(parentId);
