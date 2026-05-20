@@ -546,5 +546,13 @@
     "kb.welcome_placeholder": "Шукайте статті або виберіть категорію зі структури папок ліворуч, щоб почати читання",
     "kb.error.load": "Не вдалося завантажити вміст",
     "kb.error.save": "Не вдалося зберегти",
-    "kb.error.delete": "Не вдалося видалити"
+    "kb.error.delete": "Не вдалося видалити",
+    "kb.copy_definitions": "Копіювати описи елементів",
+    "kb.open_json_editor": "Відкрити редактор JSON",
+    "kb.json_editor": "Редактор JSON",
+    "kb.json_placeholder": "Вставте TipTap JSON сюди...",
+    "kb.invalid_json": "Некоректний формат JSON",
+    "kb.apply_json": "Застосувати JSON",
+    "kb.format_json": "Форматувати JSON",
+    "kb.move_panel_side": "Перемістити панель на іншу сторону"
 }

@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, Save, Folder, Loader2 } from 'lucide-react';
+import { ArrowLeft, Save, Folder, Loader2, Code } from 'lucide-react';
 import { kbApi } from '../../api/kbApi';
 import type { KbFolderDto } from '../../api/kbApi';
 import { TipTapEditor } from '../../components/cms/richtext/TipTapEditor';
+import { JsonSidePanel } from '../../components/cms/richtext/JsonSidePanel';
+import { CopyDefinitionsButton } from '../../components/cms/richtext/CopyDefinitionsButton';
 import LocaleTabBar from '../../components/ui/LocaleTabBar';
 import Button from '../../components/ui/Button';
 import { useAuthStore } from '../../store/useAuthStore';
@@ -31,11 +33,15 @@ const KbArticleEditor: React.FC = () => {
     const [content, setContent] = useState<Record<string, any>>({});
     const [folderId, setFolderId] = useState<number | ''>('');
 
+    // JSON Editor states
+    const [isSidePanelOpen, setIsSidePanelOpen] = useState(false);
+
     // Metadata states
     const [folders, setFolders] = useState<FlatFolderOption[]>([]);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [errors, setErrors] = useState<{ folderId?: string; title?: string }>({});
     const [articleId, setArticleId] = useState<number | null>(null);
 
     // Recursively build a flat list of folders with depth markers
@@ -108,15 +114,21 @@ const KbArticleEditor: React.FC = () => {
     const handleSave = async (e: React.FormEvent) => {
         e.preventDefault();
         setError(null);
+        setErrors({});
+
+        const newErrors: { folderId?: string; title?: string } = {};
 
         if (!folderId) {
-            setError(t('kb.article.select_folder'));
-            return;
+            newErrors.folderId = t('kb.article.select_folder');
         }
 
         const hasTitle = Object.values(title).some((tStr) => tStr.trim() !== '');
         if (!hasTitle) {
-            setError(t('cms_validation.field.required'));
+            newErrors.title = t('cms_validation.field.required');
+        }
+
+        if (Object.keys(newErrors).length > 0) {
+            setErrors(newErrors);
             return;
         }
 
@@ -126,7 +138,7 @@ const KbArticleEditor: React.FC = () => {
                 const updated = await kbApi.updateArticle(articleId, {
                     title,
                     content,
-                    folderId
+                    folderId: Number(folderId)
                 });
                 navigate(`/kb/article/${updated.slug}`);
             } else {
@@ -150,6 +162,9 @@ const KbArticleEditor: React.FC = () => {
             ...prev,
             [activeLocale]: val
         }));
+        if (errors.title) {
+            setErrors((prev) => ({ ...prev, title: undefined }));
+        }
     };
 
     const handleContentChange = (newVal: any) => {
@@ -171,7 +186,7 @@ const KbArticleEditor: React.FC = () => {
     const currentContent = content[activeLocale] || null;
 
     return (
-        <div className="max-w-7xl mx-auto px-4 py-8 mt-16 w-full animate-fade-in">
+        <div className="max-w-7xl mx-auto px-4 py-8 mt-16 w-full animate-fade-in relative">
             <form onSubmit={handleSave} className="flex flex-col gap-6">
 
                 {/* Editor Action Header */}
@@ -213,8 +228,18 @@ const KbArticleEditor: React.FC = () => {
                     </label>
                     <select
                         value={folderId}
-                        onChange={(e) => setFolderId(e.target.value ? Number(e.target.value) : '')}
-                        className="w-full h-11 px-4 rounded-lg bg-nr-surface/60 border border-nr-border text-nr-text focus:outline-none focus:ring-2 focus:ring-nr-accent/40 focus:border-nr-accent transition-all cursor-pointer"
+                        onChange={(e) => {
+                            const val = e.target.value ? Number(e.target.value) : '';
+                            setFolderId(val);
+                            if (val && errors.folderId) {
+                                setErrors((prev) => ({ ...prev, folderId: undefined }));
+                            }
+                        }}
+                        className={`w-full h-11 px-4 rounded-lg bg-nr-surface/60 border text-nr-text focus:outline-none focus:ring-2 transition-all cursor-pointer ${
+                            errors.folderId
+                                ? 'border-red-500/50 focus:ring-red-500/20 focus:border-red-500'
+                                : 'border-nr-border focus:ring-nr-accent/40 focus:border-nr-accent'
+                        }`}
                         disabled={saving}
                     >
                         <option value="">{t('kb.article.select_folder')}</option>
@@ -224,6 +249,11 @@ const KbArticleEditor: React.FC = () => {
                             </option>
                         ))}
                     </select>
+                    {errors.folderId && (
+                        <p className="text-red-500 text-[10px] mt-1 font-medium">
+                            {errors.folderId}
+                        </p>
+                    )}
                 </div>
 
                 {/* Localized Content Section */}
@@ -232,7 +262,24 @@ const KbArticleEditor: React.FC = () => {
                         <span className="text-xs font-semibold text-nr-text/50 uppercase tracking-wider">
                             {t('admin.news.editor.description')}
                         </span>
-                        <LocaleTabBar activeLocale={activeLocale} onLocaleChange={setActiveLocale} />
+                        <div className="flex items-center gap-4">
+                            <div className="flex items-center gap-1">
+                                <CopyDefinitionsButton />
+                                <button
+                                     type="button"
+                                     onClick={() => setIsSidePanelOpen(!isSidePanelOpen)}
+                                     className={`flex items-center justify-center w-8 h-8 rounded-lg transition-colors cursor-pointer ${
+                                         isSidePanelOpen
+                                             ? 'text-nr-accent bg-nr-accent/15 hover:bg-nr-accent/25'
+                                             : 'text-nr-text/50 hover:text-nr-accent hover:bg-nr-accent/10'
+                                     }`}
+                                     title={t('kb.open_json_editor', { defaultValue: 'Open JSON Editor' })}
+                                 >
+                                     <Code size={16} />
+                                 </button>
+                            </div>
+                            <LocaleTabBar activeLocale={activeLocale} onLocaleChange={setActiveLocale} />
+                        </div>
                     </div>
 
                     {/* Article Title Input */}
@@ -241,9 +288,18 @@ const KbArticleEditor: React.FC = () => {
                         value={currentTitle}
                         onChange={(e) => handleTitleChange(e.target.value)}
                         placeholder={`${t('kb.article.title_placeholder')} (${activeLocale.toUpperCase()})...`}
-                        className="w-full h-12 px-4 rounded-lg bg-nr-surface/40 border border-nr-border text-nr-text placeholder-nr-text/30 font-serif text-xl focus:outline-none focus:ring-2 focus:ring-nr-accent/40 focus:border-nr-accent transition-all"
+                        className={`w-full h-12 px-4 rounded-lg bg-nr-surface/40 border text-nr-text placeholder-nr-text/30 font-serif text-xl focus:outline-none focus:ring-2 transition-all ${
+                            errors.title
+                                ? 'border-red-500/50 focus:ring-red-500/20 focus:border-red-500'
+                                : 'border-nr-border focus:ring-nr-accent/40 focus:border-nr-accent'
+                        }`}
                         disabled={saving}
                     />
+                    {errors.title && (
+                        <p className="text-red-500 text-[10px] mt-1 font-medium">
+                            {errors.title}
+                        </p>
+                    )}
 
                     {/* TipTap Rich Text Editor block */}
                     <div className="border border-nr-border/30 rounded-xl bg-black/20 dark:bg-white/5 backdrop-blur-sm relative z-0 shadow-sm mt-2">
@@ -256,6 +312,12 @@ const KbArticleEditor: React.FC = () => {
                     </div>
                 </div>
             </form>
+            <JsonSidePanel
+                isOpen={isSidePanelOpen}
+                onClose={() => setIsSidePanelOpen(false)}
+                content={currentContent}
+                onChange={handleContentChange}
+            />
         </div>
     );
 };

@@ -546,5 +546,13 @@
     "kb.welcome_placeholder": "Search articles or select a category from the folder tree on the left to start reading",
     "kb.error.load": "Failed to load content",
     "kb.error.save": "Failed to save",
-    "kb.error.delete": "Failed to delete"
+    "kb.error.delete": "Failed to delete",
+    "kb.copy_definitions": "Copy definitions",
+    "kb.open_json_editor": "Open JSON Editor",
+    "kb.json_editor": "JSON Editor",
+    "kb.json_placeholder": "Paste TipTap JSON here...",
+    "kb.invalid_json": "Invalid JSON formatting",
+    "kb.apply_json": "Apply JSON",
+    "kb.format_json": "Format JSON",
+    "kb.move_panel_side": "Move panel to the other side"
 }

@@ -223,6 +223,15 @@ export const TipTapEditor: React.FC<TipTapEditorProps> = ({ content, onChange, s
     return null;
   }
 
+  React.useEffect(() => {
+    if (content === undefined) return;
+    const currentJson = JSON.stringify(editor.getJSON());
+    const newJson = JSON.stringify(content);
+    if (currentJson !== newJson && !editor.isFocused) {
+      editor.commands.setContent(content || '');
+    }
+  }, [content, editor]);
+
   const toggleLink = () => {
     const previousUrl = editor.getAttributes('link').href;
     const url = window.prompt(t('cms.richtext.prompt_url'), previousUrl);
@@ -384,7 +393,7 @@ export const TipTapEditor: React.FC<TipTapEditorProps> = ({ content, onChange, s
             icon={<Palette size={16} />}
             title={t('cms.richtext.text_color')}
           />
-          
+
           {colorPickerOpen && (
             <div className="absolute left-0 top-full mt-2 w-56 bg-nr-bg/95 backdrop-blur-xl border border-nr-border/60 shadow-xl rounded-xl z-50 overflow-hidden animate-fade-in-up">
               <div className="p-2">
@@ -398,14 +407,14 @@ export const TipTapEditor: React.FC<TipTapEditorProps> = ({ content, onChange, s
                       onClick={() => applyColor(color.value, color.gradient)}
                       className="flex items-center gap-2 p-2 hover:bg-nr-accent/10 rounded-lg text-left text-xs transition-colors text-nr-text/80 group cursor-pointer"
                     >
-                      <div 
+                      <div
                         className={`w-6 h-6 rounded border border-nr-border/50 shadow-sm flex-shrink-0 ${color.gradient ? '' : ''}`}
                         style={{
-                          background: color.gradient 
-                            ? 'linear-gradient(135deg, #D4AF37 0%, #E5B81B 50%, #F4D03F 100%)' 
-                            : color.value 
-                            ? color.value 
-                            : 'linear-gradient(135deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.1) 49%, transparent 49%, transparent 51%, rgba(0,0,0,0.1) 51%, rgba(0,0,0,0.1) 100%)',
+                          background: color.gradient
+                            ? 'linear-gradient(135deg, #D4AF37 0%, #E5B81B 50%, #F4D03F 100%)'
+                            : color.value
+                              ? color.value
+                              : 'linear-gradient(135deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.1) 49%, transparent 49%, transparent 51%, rgba(0,0,0,0.1) 51%, rgba(0,0,0,0.1) 100%)',
                           backgroundSize: color.value === null && !color.gradient ? '8px 8px' : undefined
                         }}
                       />
@@ -425,7 +434,7 @@ export const TipTapEditor: React.FC<TipTapEditorProps> = ({ content, onChange, s
             icon={<Plus size={16} />}
             title={t('cms.richtext.add_element')}
           />
-          
+
           {dropdownOpen && (
             <div className="absolute left-0 top-full mt-2 w-64 bg-nr-bg/95 backdrop-blur-xl border border-nr-border/60 shadow-xl rounded-xl z-50 overflow-hidden animate-fade-in-up">
               <div className="p-2 border-b border-nr-border/50 flex items-center gap-2 bg-black/5">

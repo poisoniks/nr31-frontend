@@ -27,6 +27,9 @@ interface CmsState {
     setValidationErrors: (errors: CmsWidgetValidationError[]) => void;
     clearValidationErrors: () => void;
 
+    activeJsonEditorWidgetId: string | null;
+    setActiveJsonEditorWidgetId: (id: string | null) => void;
+
     loadPublishedPage: (slug: string) => Promise<void>;
     loadDraftPage: (slug: string) => Promise<void>;
     loadSlotRestrictions: () => Promise<void>;
@@ -56,6 +59,9 @@ export const useCmsStore = create<CmsState>((set, get) => ({
     validationErrors: [],
     setValidationErrors: (errors) => set({ validationErrors: errors }),
     clearValidationErrors: () => set({ validationErrors: [] }),
+
+    activeJsonEditorWidgetId: null,
+    setActiveJsonEditorWidgetId: (id) => set({ activeJsonEditorWidgetId: id }),
 
     loadPublishedPage: async (slug: string) => {
         try {
