@@ -89,6 +89,17 @@ const KbArticle: React.FC = () => {
     const localizedContent = contentMap?.[currentLang] || contentMap?.['en'] || contentMap?.['uk'] || null;
     const dateToFormat = article.updatedAt || article.createdAt || '';
 
+    const isAuthor = !!(
+        user &&
+        article &&
+        (
+            (user.id && user.id === article.authorId) ||
+            (user.userId && user.userId === article.authorId) ||
+            (user.sub && user.sub === article.authorName)
+        )
+    );
+    const canEdit = (hasWrite || hasAdmin) && (isAuthor || hasAdmin);
+
     return (
         <div className="max-w-7xl mx-auto px-4 py-8 mt-16 w-full animate-fade-in relative">
             <div className="flex flex-col lg:flex-row gap-8 items-start">
@@ -138,9 +149,9 @@ const KbArticle: React.FC = () => {
                         </div>
 
                         {/* Writer/Admin controls */}
-                        {(hasWrite || hasAdmin) && (
+                        {(canEdit || hasAdmin) && (
                             <div className="flex items-center gap-2">
-                                {hasWrite && (
+                                {canEdit && (
                                     <Link to={`/kb/article/${slug}/edit`}>
                                         <Button variant="ghost" className="flex items-center gap-1 py-1.5 px-3 text-xs">
                                             <Edit size={14} />
