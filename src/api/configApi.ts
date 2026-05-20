@@ -20,4 +20,12 @@ export const configApi = {
         const response = await api.put<AppConfigDto>(`/v1/admin/config/${encodeURIComponent(name)}`, dto);
         return response.data;
     },
+
+    searchConfigs: async (name: string, pageable?: Pageable): Promise<PagedModelAppConfigDto> => {
+        const response = await api.get<PagedModelAppConfigDto>('/v1/admin/config/search', {
+            params: { name, ...pageable },
+        });
+        return response.data;
+    },
 };
+

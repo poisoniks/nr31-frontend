@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Settings2, ChevronDown, ChevronRight, Save, RefreshCw, AlertCircle, CheckCircle } from 'lucide-react';
+import { Settings2, ChevronDown, ChevronRight, Save, RefreshCw, AlertCircle, CheckCircle, Search, X } from 'lucide-react';
 import { configApi } from '../../api/configApi';
 import { useUIStore } from '../../store/useUIStore';
 import { useAuthStore } from '../../store/useAuthStore';
@@ -25,6 +25,8 @@ interface JsonSchemaProperty {
     minLength?: number;
     maxLength?: number;
     default?: unknown;
+    patternProperties?: Record<string, JsonSchemaProperty>;
+    additionalProperties?: boolean | JsonSchemaProperty;
 }
 
 interface JsonSchema extends JsonSchemaProperty {
@@ -79,7 +81,181 @@ const inputClass =
     'w-full bg-nr-bg border border-nr-border rounded-lg px-3 py-2 text-sm text-nr-text ' +
     'focus:outline-none focus:border-nr-accent/60 transition-colors';
 
+const getPropertySchema = (schema: JsonSchemaProperty, key: string): JsonSchemaProperty => {
+    if (schema.properties && schema.properties[key]) {
+        return schema.properties[key];
+    }
+    if (schema.patternProperties) {
+        for (const pattern of Object.keys(schema.patternProperties)) {
+            try {
+                const regex = new RegExp(pattern);
+                if (regex.test(key)) {
+                    return schema.patternProperties[pattern];
+                }
+            } catch {
+                // Ignore invalid regex
+            }
+        }
+    }
+    if (schema.additionalProperties && typeof schema.additionalProperties === 'object') {
+        return schema.additionalProperties as JsonSchemaProperty;
+    }
+    return {};
+};
+
+interface DynamicObjectFieldProps {
+    schema: JsonSchemaProperty;
+    value: unknown;
+    onChange: (v: unknown) => void;
+    depth: number;
+    lang: string;
+    readOnly?: boolean;
+}
+
+const DynamicObjectField: React.FC<DynamicObjectFieldProps> = ({
+    schema,
+    value,
+    onChange,
+    depth,
+    lang,
+    readOnly,
+}) => {
+    const { t } = useTranslation();
+    const obj = (typeof value === 'object' && value !== null ? value : {}) as Record<string, unknown>;
+    const keys = Object.keys(obj);
+
+    const [newKey, setNewKey] = useState('');
+    const [keyError, setKeyError] = useState('');
+
+    const handleAddKey = () => {
+        const trimmed = newKey.trim();
+        if (!trimmed) return;
+        if (trimmed in obj) {
+            setKeyError(t('admin.config.key_exists') || 'Key already exists');
+            return;
+        }
+
+        // Validate against pattern if patternProperties exists
+        let patternMatched = false;
+        let matchedSchema: JsonSchemaProperty = {};
+
+        if (schema.patternProperties) {
+            for (const pattern of Object.keys(schema.patternProperties)) {
+                try {
+                    const regex = new RegExp(pattern);
+                    if (regex.test(trimmed)) {
+                        patternMatched = true;
+                        matchedSchema = schema.patternProperties[pattern];
+                        break;
+                    }
+                } catch {}
+            }
+        } else if (schema.additionalProperties) {
+            patternMatched = true;
+            if (typeof schema.additionalProperties === 'object') {
+                matchedSchema = schema.additionalProperties as JsonSchemaProperty;
+            }
+        } else {
+            patternMatched = true;
+        }
+
+        if (!patternMatched) {
+            setKeyError(t('admin.config.invalid_key_pattern') || 'Key does not match pattern requirements');
+            return;
+        }
+
+        // Determine default value based on matchedSchema
+        const valType = resolveType(matchedSchema);
+        const defaultValue =
+            valType === 'array' ? [] :
+            valType === 'boolean' ? false :
+            valType === 'number' || valType === 'integer' ? 0 :
+            valType === 'object' ? {} :
+            '';
+
+        onChange({
+            ...obj,
+            [trimmed]: defaultValue,
+        });
+        setNewKey('');
+        setKeyError('');
+    };
+
+    const handleRemoveKey = (k: string) => {
+        const copy = { ...obj };
+        delete copy[k];
+        onChange(copy);
+    };
+
+    return (
+        <div className="space-y-4 pl-3 border-l-2 border-nr-border/40">
+            {keys.length === 0 ? (
+                <p className="text-xs text-nr-text/40 italic">
+                    {t('admin.config.no_properties') || 'No items defined'}
+                </p>
+            ) : (
+                <div className="space-y-4">
+                    {keys.map(k => {
+                        const propSchema = getPropertySchema(schema, k);
+                        return (
+                            <div key={k} className="p-3 rounded-lg border border-nr-border/30 bg-nr-bg/10 space-y-2">
+                                <div className="flex items-center justify-between">
+                                    <span className="font-mono text-xs font-bold text-nr-accent">{k}</span>
+                                    {!readOnly && (
+                                        <button
+                                            type="button"
+                                            onClick={() => handleRemoveKey(k)}
+                                            className="p-1 rounded text-nr-text/30 hover:text-red-400 hover:bg-red-500/10 transition-colors cursor-pointer text-xs"
+                                            title="Remove property"
+                                        >
+                                            Delete
+                                        </button>
+                                    )}
+                                </div>
+                                <SchemaField
+                                    schema={propSchema}
+                                    value={obj[k]}
+                                    onChange={v => onChange({ ...obj, [k]: v })}
+                                    depth={depth + 1}
+                                    lang={lang}
+                                    readOnly={readOnly}
+                                />
+                            </div>
+                        );
+                    })}
+                </div>
+            )}
+
+            {!readOnly && (
+                <div className="space-y-1 pt-2">
+                    <div className="flex gap-2">
+                        <input
+                            type="text"
+                            className={`${inputClass} max-w-[200px]`}
+                            placeholder={t('admin.config.new_key_placeholder') || 'Property name...'}
+                            value={newKey}
+                            onChange={e => {
+                                setNewKey(e.target.value);
+                                setKeyError('');
+                            }}
+                        />
+                        <button
+                            type="button"
+                            onClick={handleAddKey}
+                            className="text-xs px-3 py-2 rounded border border-nr-accent/30 text-nr-accent hover:bg-nr-accent/10 transition-colors cursor-pointer"
+                        >
+                            {t('admin.config.add_key')}
+                        </button>
+                    </div>
+                    {keyError && <p className="text-xs text-red-400 mt-1">{keyError}</p>}
+                </div>
+            )}
+        </div>
+    );
+};
+
 const SchemaField: React.FC<FieldProps> = ({ schema, value, onChange, depth = 0, lang, readOnly }) => {
+    const { t } = useTranslation();
     const type = resolveType(schema);
 
     /* ── enum ── */
@@ -195,7 +371,7 @@ const SchemaField: React.FC<FieldProps> = ({ schema, value, onChange, depth = 0,
                         onClick={addItem}
                         className="text-xs px-2 py-1 rounded border border-nr-accent/30 text-nr-accent hover:bg-nr-accent/10 transition-colors cursor-pointer"
                     >
-                        + Add item
+                        {t('admin.config.add_item')}
                     </button>
                 )}
             </div>
@@ -203,36 +379,49 @@ const SchemaField: React.FC<FieldProps> = ({ schema, value, onChange, depth = 0,
     }
 
     /* ── object ── */
-    if (type === 'object' && schema.properties) {
-        const obj = (typeof value === 'object' && value !== null ? value : {}) as Record<string, unknown>;
-        return (
-            <div className="space-y-3 pl-3 border-l-2 border-nr-border/40">
-                {Object.entries(schema.properties).map(([key, propSchema]) => {
-                    const label = (lang && propSchema.title) || key;
-                    const desc = propSchema.description || '';
-                    return (
-                        <div key={key} className="space-y-1">
-                            <label className="text-xs font-bold text-nr-text/50 uppercase tracking-wider flex items-center gap-1">
-                                {label}
-                                {schema.required?.includes(key) && (
-                                    <span className="text-nr-accent">*</span>
+    if (type === 'object') {
+        if (schema.properties) {
+            const obj = (typeof value === 'object' && value !== null ? value : {}) as Record<string, unknown>;
+            return (
+                <div className="space-y-3 pl-3 border-l-2 border-nr-border/40">
+                    {Object.entries(schema.properties).map(([key, propSchema]) => {
+                        const label = (lang && propSchema.title) || key;
+                        const desc = propSchema.description || '';
+                        return (
+                            <div key={key} className="space-y-1">
+                                <label className="text-xs font-bold text-nr-text/50 uppercase tracking-wider flex items-center gap-1">
+                                    {label}
+                                    {schema.required?.includes(key) && (
+                                        <span className="text-nr-accent">*</span>
+                                    )}
+                                </label>
+                                {desc && (
+                                    <p className="text-xs text-nr-text/40 mb-1">{desc}</p>
                                 )}
-                            </label>
-                            {desc && (
-                                <p className="text-xs text-nr-text/40 mb-1">{desc}</p>
-                            )}
-                            <SchemaField
-                                schema={propSchema}
-                                value={obj[key] ?? propSchema.default}
-                                onChange={v => onChange({ ...obj, [key]: v })}
-                                depth={depth + 1}
-                                lang={lang}
-                                readOnly={readOnly}
-                            />
-                        </div>
-                    );
-                })}
-            </div>
+                                <SchemaField
+                                    schema={propSchema}
+                                    value={obj[key] ?? propSchema.default}
+                                    onChange={v => onChange({ ...obj, [key]: v })}
+                                    depth={depth + 1}
+                                    lang={lang}
+                                    readOnly={readOnly}
+                                />
+                            </div>
+                        );
+                    })}
+                </div>
+            );
+        }
+
+        return (
+            <DynamicObjectField
+                schema={schema}
+                value={value}
+                onChange={onChange}
+                depth={depth}
+                lang={lang}
+                readOnly={readOnly}
+            />
         );
     }
 
@@ -428,13 +617,25 @@ const SystemConfigPage: React.FC = () => {
 
     const [configs, setConfigs] = useState<AppConfigDto[]>([]);
     const [loading, setLoading] = useState(true);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [debouncedQuery, setDebouncedQuery] = useState('');
 
-    const { page, size, totalPages, setTotalPages, handlePageChange } = usePagination(10);
+    const { page, size, totalPages, setTotalPages, handlePageChange, resetPage } = usePagination(10);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedQuery(searchQuery);
+            resetPage();
+        }, 400);
+        return () => clearTimeout(timer);
+    }, [searchQuery, resetPage]);
 
     const fetchConfigs = useCallback(async () => {
         setLoading(true);
         try {
-            const data = await configApi.getAllConfigs({ page, size });
+            const data = debouncedQuery.trim()
+                ? await configApi.searchConfigs(debouncedQuery.trim(), { page, size })
+                : await configApi.getAllConfigs({ page, size });
             setConfigs(data.content);
             setTotalPages(data.page?.totalPages || 1);
         } catch {
@@ -442,7 +643,7 @@ const SystemConfigPage: React.FC = () => {
         } finally {
             setLoading(false);
         }
-    }, [page, size, setError, t, setTotalPages]);
+    }, [page, size, debouncedQuery, setError, t, setTotalPages]);
 
     useEffect(() => {
         fetchConfigs();
@@ -455,12 +656,32 @@ const SystemConfigPage: React.FC = () => {
     return (
         <div className="space-y-6 animate-fade-in-up">
             {/* Page header */}
-            <div className="flex flex-col gap-1">
-                <h1 className="text-2xl font-serif font-bold text-nr-text flex items-center gap-3">
-                    <Settings2 className="text-nr-accent" size={24} />
-                    {t('admin.config.title')}
-                </h1>
-                <p className="text-nr-text/60">{t('admin.config.subtitle')}</p>
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div className="flex flex-col gap-1">
+                    <h1 className="text-2xl font-serif font-bold text-nr-text flex items-center gap-3">
+                        <Settings2 className="text-nr-accent" size={24} />
+                        {t('admin.config.title')}
+                    </h1>
+                    <p className="text-nr-text/60">{t('admin.config.subtitle')}</p>
+                </div>
+                <div className="relative max-w-xs w-full">
+                    <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-nr-text/30" />
+                    <input
+                        type="text"
+                        className={`${inputClass} pl-8 pr-8`}
+                        placeholder={t('admin.config.search_placeholder')}
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                    {searchQuery && (
+                        <button
+                            onClick={() => setSearchQuery('')}
+                            className="absolute right-2 top-1/2 -translate-y-1/2 p-0.5 rounded text-nr-text/30 hover:text-nr-text/60 cursor-pointer"
+                        >
+                            <X size={14} />
+                        </button>
+                    )}
+                </div>
             </div>
 
             {/* Config list */}
