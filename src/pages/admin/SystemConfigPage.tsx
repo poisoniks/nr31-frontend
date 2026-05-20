@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Settings2, ChevronDown, ChevronRight, Save, RefreshCw, AlertCircle, CheckCircle, Search, X } from 'lucide-react';
+import { Settings2, ChevronDown, ChevronRight, Save, RefreshCw, AlertCircle, CheckCircle, Search, X, Edit2 } from 'lucide-react';
 import { configApi } from '../../api/configApi';
 import { useUIStore } from '../../store/useUIStore';
 import { useAuthStore } from '../../store/useAuthStore';
@@ -8,6 +8,7 @@ import type { components } from '../../api/types';
 import Button from '../../components/ui/Button';
 import Pagination from '../../components/ui/Pagination';
 import { usePagination } from '../../hooks/usePagination';
+import LocaleTabBar from '../../components/ui/LocaleTabBar';
 
 type AppConfigDto = components['schemas']['AppConfigDto'];
 
@@ -469,13 +470,32 @@ const ConfigCard: React.FC<ConfigCardProps> = ({ config, lang, onSaved, readOnly
     const initialValue = parseJson<unknown>(config.configValue);
 
     const [value, setValue] = useState<unknown>(initialValue);
+    const [descriptionMap, setDescriptionMap] = useState<Record<string, string>>(config.description || {});
+    const [activeLocale, setActiveLocale] = useState(lang);
+    const [editingDescription, setEditingDescription] = useState(false);
     const [expanded, setExpanded] = useState(false);
     const [saving, setSaving] = useState(false);
     const [dirty, setDirty] = useState(false);
     const [saved, setSaved] = useState(false);
 
+    useEffect(() => {
+        setValue(parseJson<unknown>(config.configValue));
+        setDescriptionMap(config.description || {});
+        setActiveLocale(lang);
+        setEditingDescription(false);
+        setDirty(false);
+    }, [config, lang]);
+
     const handleChange = (v: unknown) => {
         setValue(v);
+        setDirty(true);
+    };
+
+    const handleDescriptionChange = (langKey: string, newText: string) => {
+        setDescriptionMap(prev => ({
+            ...prev,
+            [langKey]: newText,
+        }));
         setDirty(true);
     };
 
@@ -486,6 +506,7 @@ const ConfigCard: React.FC<ConfigCardProps> = ({ config, lang, onSaved, readOnly
             const updated = await configApi.updateConfig(config.name, {
                 ...config,
                 configValue: serialized,
+                description: descriptionMap,
             });
             onSaved(updated);
             setDirty(false);
@@ -500,23 +521,26 @@ const ConfigCard: React.FC<ConfigCardProps> = ({ config, lang, onSaved, readOnly
 
     const handleReset = () => {
         setValue(initialValue);
+        setDescriptionMap(config.description || {});
+        setEditingDescription(false);
         setDirty(false);
     };
 
-    const description = localized(config.description, lang);
+    const description = localized(descriptionMap, lang);
     const topType = schema ? resolveType(schema) : 'string';
     const isComplex = topType === 'object' || topType === 'array';
 
     return (
         <div className={`rounded-xl border transition-colors ${dirty ? 'border-nr-accent/40' : 'border-nr-border/50'} bg-white/5 dark:bg-black/20 backdrop-blur-md overflow-hidden`}>
             {/* Header row */}
-            <button
-                type="button"
-                id={`config-card-${config.name}`}
-                onClick={() => isComplex && setExpanded(p => !p)}
-                className={`w-full flex items-center gap-3 px-5 py-4 text-left transition-colors ${isComplex ? 'hover:bg-nr-text/[0.02] cursor-pointer' : 'cursor-default'}`}
+            <div
+                className="w-full flex items-center justify-between gap-3 px-5 py-4 text-left"
             >
-                <div className="flex-1 min-w-0">
+                <div
+                    id={`config-card-${config.name}`}
+                    onClick={() => isComplex && setExpanded(p => !p)}
+                    className={`flex-1 min-w-0 ${isComplex ? 'cursor-pointer hover:opacity-80 transition-opacity' : ''}`}
+                >
                     <div className="flex items-center gap-2">
                         <span className="font-mono text-sm text-nr-text/80">{config.name}</span>
                         {dirty && (
@@ -534,18 +558,60 @@ const ConfigCard: React.FC<ConfigCardProps> = ({ config, lang, onSaved, readOnly
                         <p className="text-xs text-nr-text/50 mt-0.5 truncate">{description}</p>
                     )}
                 </div>
-                {isComplex && (
-                    <span className="text-nr-text/30 flex-shrink-0">
-                        {expanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
-                    </span>
-                )}
-            </button>
+                <div className="flex items-center gap-2.5 flex-shrink-0">
+                    {/* Pen Button (Edit description) */}
+                    {!readOnly && (
+                        <button
+                            type="button"
+                            onClick={() => {
+                                setEditingDescription(p => !p);
+                                if (isComplex && !expanded) {
+                                    setExpanded(true);
+                                }
+                            }}
+                            className={`p-1.5 rounded-lg transition-colors cursor-pointer ${editingDescription ? 'text-nr-accent bg-nr-accent/15 hover:bg-nr-accent/25' : 'text-nr-text/40 hover:text-nr-accent hover:bg-nr-accent/10'}`}
+                            title="Edit description"
+                        >
+                            <Edit2 size={14} />
+                        </button>
+                    )}
+                    {isComplex && (
+                        <button
+                            type="button"
+                            onClick={() => setExpanded(p => !p)}
+                            className="text-nr-text/30 hover:text-nr-text/60 p-1.5 rounded-lg cursor-pointer"
+                        >
+                            {expanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+                        </button>
+                    )}
+                </div>
+            </div>
 
             {/* Body */}
             <div className={isComplex && !expanded ? 'hidden' : 'px-5 pb-5'}>
+                {/* Editable descriptions with LocaleTabBar if write access is granted */}
+                {!readOnly && editingDescription && (
+                    <div className="mb-4 pb-4 border-b border-nr-border/30 space-y-2">
+                        <div className="flex justify-between items-center">
+                            <label className="text-xs font-bold text-nr-text/50 uppercase tracking-wider">
+                                {t('admin.config.description_label')}
+                            </label>
+                            <LocaleTabBar activeLocale={activeLocale} onLocaleChange={setActiveLocale} />
+                        </div>
+                        <input
+                            type="text"
+                            className={inputClass}
+                            value={descriptionMap[activeLocale] ?? ''}
+                            onChange={e => handleDescriptionChange(activeLocale, e.target.value)}
+                            disabled={readOnly}
+                            placeholder={`${activeLocale.toUpperCase()} description`}
+                        />
+                    </div>
+                )}
+
                 {schema ? (
                     <div className="space-y-2">
-                        {description && isComplex && (
+                        {description && isComplex && readOnly && (
                             <p className="text-xs text-nr-text/40 pb-1">{description}</p>
                         )}
                         <SchemaField
