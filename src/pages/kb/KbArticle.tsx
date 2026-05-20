@@ -173,33 +173,36 @@ const KbArticle: React.FC = () => {
                         )}
                     </div>
 
-                    {/* Article Header Details */}
-                    <div className="flex flex-col gap-4">
-                        <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl font-bold text-nr-text leading-tight mt-2">
-                            {title}
-                        </h1>
+                    {/* Article Content Wrapper Card */}
+                    <div className="glass-card p-6 sm:p-8 rounded-xl flex flex-col gap-6">
+                        {/* Article Header Details */}
+                        <div className="flex flex-col gap-4">
+                            <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl font-bold text-nr-text leading-tight mt-2">
+                                {title}
+                            </h1>
 
-                        <div className="flex items-center flex-wrap gap-4 py-2.5 border-y border-nr-border/10 text-xs text-nr-text/60">
-                            {article.authorName && (
-                                <div className="flex items-center gap-1.5">
-                                    <div className="p-1 bg-nr-border/10 rounded-full">
-                                        <User size={12} />
+                            <div className="flex items-center flex-wrap gap-4 py-2.5 border-y border-nr-border/10 text-xs text-nr-text/60">
+                                {article.authorName && (
+                                    <div className="flex items-center gap-1.5">
+                                        <div className="p-1 bg-nr-border/10 rounded-full">
+                                            <User size={12} />
+                                        </div>
+                                        <span>{t('kb.article.by_author', { author: article.authorName })}</span>
                                     </div>
-                                    <span>{t('kb.article.by_author', { author: article.authorName })}</span>
-                                </div>
-                            )}
-                            {dateToFormat && (
-                                <div className="flex items-center gap-1.5">
-                                    <Calendar size={12} className="text-nr-text/40" />
-                                    <span>{new Date(dateToFormat).toLocaleDateString(currentLang, { day: 'numeric', month: 'long', year: 'numeric' })}</span>
-                                </div>
-                            )}
+                                )}
+                                {dateToFormat && (
+                                    <div className="flex items-center gap-1.5">
+                                        <Calendar size={12} className="text-nr-text/40" />
+                                        <span>{new Date(dateToFormat).toLocaleDateString(currentLang, { day: 'numeric', month: 'long', year: 'numeric' })}</span>
+                                    </div>
+                                )}
+                            </div>
                         </div>
-                    </div>
 
-                    {/* Main Rendered TipTap Body */}
-                    <div className="prose prose-amber max-w-none dark:prose-invert">
-                        <TipTapRenderer content={localizedContent} />
+                        {/* Main Rendered TipTap Body */}
+                        <div className="prose prose-amber max-w-none dark:prose-invert">
+                            <TipTapRenderer content={localizedContent} />
+                        </div>
                     </div>
                 </article>
 
