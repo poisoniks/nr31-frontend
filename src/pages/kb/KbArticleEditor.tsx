@@ -7,6 +7,7 @@ import type { KbFolderDto } from '../../api/kbApi';
 import { TipTapEditor } from '../../components/cms/richtext/TipTapEditor';
 import LocaleTabBar from '../../components/ui/LocaleTabBar';
 import Button from '../../components/ui/Button';
+import { useAuthStore } from '../../store/useAuthStore';
 
 interface FlatFolderOption {
     id: number;
@@ -19,6 +20,8 @@ const KbArticleEditor: React.FC = () => {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const currentLang = i18n.language || 'en';
+    const user = useAuthStore(state => state.user);
+    const hasAdmin = user?.authorities?.includes('kb:admin') ?? false;
 
     const isEditMode = slug !== 'new';
 
@@ -42,6 +45,9 @@ const KbArticleEditor: React.FC = () => {
             const flatList: FlatFolderOption[] = [];
 
             const traverse = async (folder: KbFolderDto, depth: number) => {
+                if (folder.restricted && !hasAdmin) {
+                    return;
+                }
                 const prefix = '— '.repeat(depth);
                 const nameText = folder.name?.[currentLang] || folder.name?.['en'] || folder.name?.['uk'] || '';
                 if (folder.id) {
