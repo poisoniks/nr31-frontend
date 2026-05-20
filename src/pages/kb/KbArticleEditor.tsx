@@ -246,11 +246,12 @@ const KbArticleEditor: React.FC = () => {
                     />
 
                     {/* TipTap Rich Text Editor block */}
-                    <div className="border border-nr-border/30 rounded-xl overflow-hidden bg-black/20 dark:bg-white/5 backdrop-blur-sm relative z-0 shadow-sm mt-2">
+                    <div className="border border-nr-border/30 rounded-xl bg-black/20 dark:bg-white/5 backdrop-blur-sm relative z-0 shadow-sm mt-2">
                         <TipTapEditor
                             key={activeLocale}
                             content={currentContent}
                             onChange={handleContentChange}
+                            stickyOffset="top-16"
                         />
                     </div>
                 </div>

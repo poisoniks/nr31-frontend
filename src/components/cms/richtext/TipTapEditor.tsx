@@ -16,6 +16,7 @@ import { Bold, Italic, Strikethrough, Heading1, Heading2, List, ListOrdered, Quo
 interface TipTapEditorProps {
   content?: any; // JSON AST
   onChange: (content: any) => void;
+  stickyOffset?: string;
 }
 
 
@@ -33,7 +34,7 @@ const EDITOR_STYLES = 'focus:outline-none max-w-none text-nr-text/80 leading-rel
   '[&_strong]:font-bold [&_em]:italic [&_s]:line-through [&_code]:bg-black/10 [&_code]:dark:bg-white/10 [&_code]:px-1 [&_code]:rounded [&_code]:font-mono [&_code]:text-sm ' +
   '[&_blockquote]:border-l-4 [&_blockquote]:border-nr-accent [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:my-4';
 
-export const TipTapEditor: React.FC<TipTapEditorProps> = ({ content, onChange }) => {
+export const TipTapEditor: React.FC<TipTapEditorProps> = ({ content, onChange, stickyOffset }) => {
   const { t } = useTranslation();
   // Force re-render when selection changes to update toolbar button states
   const [, setSelectionUpdate] = useState(0);
@@ -300,7 +301,7 @@ export const TipTapEditor: React.FC<TipTapEditorProps> = ({ content, onChange })
 
   return (
     <div className="flex flex-col h-full relative">
-      <div className="flex flex-wrap items-center gap-1 p-2 border-b border-nr-border/50 bg-black/5 dark:bg-white/5 sticky top-0 z-10">
+      <div className={`flex flex-wrap items-center gap-1 p-2 border-b border-nr-border/50 bg-nr-bg/90 backdrop-blur-md sticky ${stickyOffset || 'top-0'} z-30`}>
         <MenuButton
           onClick={() => editor.chain().focus().toggleBold().run()}
           isActive={editor.isActive('bold')}
