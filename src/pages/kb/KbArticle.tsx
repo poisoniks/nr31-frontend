@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { FolderOpen, Edit, Trash, ChevronLeft, Calendar, User, EyeOff } from 'lucide-react';
+import { BookOpen, Edit, Trash, ChevronLeft, Calendar, User, EyeOff } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '../../store/useAuthStore';
 import { kbApi } from '../../api/kbApi';
@@ -116,19 +116,20 @@ const KbArticle: React.FC = () => {
                 <article className="flex-1 min-w-0 flex flex-col gap-6">
                     {/* Floating trigger/action bar */}
                     <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-nr-border/10">
-                        {/* Folder tree toggle toggle tab */}
+                        {/* Folder tree toggle tab */}
                         <button
                             onClick={() => setTreeOpen(!treeOpen)}
                             className={`
-                                flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all cursor-pointer
+                                p-3 bg-nr-surface/50 border border-nr-border rounded-xl text-nr-text/75 hover:text-nr-text hover:bg-nr-surface transition-all cursor-pointer
                                 ${treeOpen
-                                    ? 'bg-nr-accent text-white border-nr-accent'
-                                    : 'bg-nr-surface/50 border-nr-border text-nr-text/75 hover:bg-nr-surface'
+                                    ? 'bg-nr-accent/15 border-nr-accent/50 text-nr-accent'
+                                    : ''
                                 }
                             `}
+                            title={t('kb.title')}
+                            aria-label={t('kb.title')}
                         >
-                            <FolderOpen size={14} />
-                            <span>{t('kb.title')}</span>
+                            <BookOpen size={20} />
                         </button>
 
                         {/* Breadcrumbs path */}

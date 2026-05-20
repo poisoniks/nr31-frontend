@@ -32,6 +32,7 @@ const KbExplorer: React.FC = () => {
 
     // Sidebar Folder Tree state (Mobile toggle)
     const [mobileTreeOpen, setMobileTreeOpen] = useState(false);
+    const [refreshKey, setRefreshKey] = useState(0);
 
     // States for folder data
     const [folderDetail, setFolderDetail] = useState<KbFolderDetailDto | null>(null);
@@ -87,6 +88,7 @@ const KbExplorer: React.FC = () => {
     };
 
     const handleCreateSuccess = () => {
+        setRefreshKey(prev => prev + 1);
         if (folderSlug) {
             fetchFolderDetail(folderSlug, page);
         }
@@ -99,15 +101,12 @@ const KbExplorer: React.FC = () => {
 
         try {
             await kbApi.deleteFolder(folderDetail.id);
+            setRefreshKey(prev => prev + 1);
             navigate('/kb');
         } catch (err) {
             console.error('Failed to delete folder', err);
             setGlobalError(t('kb.error.delete'));
         }
-    };
-
-    const handleFolderTreeDeleted = () => {
-        navigate('/kb');
     };
 
     const folderName = folderDetail
@@ -131,7 +130,7 @@ const KbExplorer: React.FC = () => {
                             </button>
                         )}
                     </div>
-                    <KbFolderTree activeSlug={folderSlug} onFolderDeleted={handleFolderTreeDeleted} />
+                    <KbFolderTree activeSlug={folderSlug} key={refreshKey} />
                 </aside>
 
                 {/* Mobile folder tree overlay drawer */}
@@ -146,7 +145,7 @@ const KbExplorer: React.FC = () => {
                                 </button>
                             </div>
                             <div className="flex-1">
-                                <KbFolderTree activeSlug={folderSlug} onFolderDeleted={handleFolderTreeDeleted} />
+                                <KbFolderTree activeSlug={folderSlug} key={refreshKey} />
                             </div>
                             {hasAdmin && (
                                 <Button

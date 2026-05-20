@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Menu, Globe, Moon, Sun, LogIn, User, LogOut } from 'lucide-react';
+import { Menu, Globe, Moon, Sun, LogIn, User, LogOut, BookOpen } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import { useTheme } from '../ThemeProvider';
@@ -9,6 +9,7 @@ import { useAuthStore } from '../../store/useAuthStore';
 import LoginModal from '../auth/LoginModal';
 import { localeApi } from '../../api/localeApi';
 import { useCmsStore } from '../../store/useCmsStore';
+import HeaderSearchBar from './HeaderSearchBar';
 
 const Header: React.FC = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -40,14 +41,13 @@ const Header: React.FC = () => {
         { name: t('header.home'), path: '/' },
         { name: t('header.roster'), path: '/roster' },
         { name: t('header.events'), path: '/events' },
-        { name: t('header.kb'), path: '/kb' },
         ...(hasAdminPermission ? [{ name: t('header.admin'), path: '/admin' }] : [])
     ];
 
     const toggleLanguage = async () => {
         const codes = await localeApi.getAvailableLocaleCodes();
         if (codes.length === 0) return;
-        
+
         const currentCode = (i18n.language || '').split('-')[0];
         const currentIndex = codes.indexOf(currentCode);
         const nextIndex = currentIndex >= 0 ? (currentIndex + 1) % codes.length : 0;
@@ -83,33 +83,54 @@ const Header: React.FC = () => {
                     </div>
 
                     {/* Center Navigation - Desktop */}
-                    <nav className="hidden md:flex items-center gap-8">
-                        {navLinks.map((link) => (
+                    <div className="hidden md:flex items-center gap-6">
+                        <nav className="flex items-center gap-8">
+                            {navLinks.map((link) => (
+                                <Link
+                                    key={link.path}
+                                    to={link.path}
+                                    className={`text-sm font-medium uppercase tracking-wide transition-colors relative px-2 py-1
+                      ${location.pathname === link.path ? 'text-nr-accent' : 'text-nr-text/70 hover:text-nr-text'}
+                    `}
+                                >
+                                    {link.name}
+                                    {location.pathname === link.path && (
+                                        <span className="absolute bottom-0 left-0 w-full h-0.5 bg-nr-accent rounded-full shadow-[0_0_8px_rgba(245,158,11,0.8)]"></span>
+                                    )}
+                                </Link>
+                            ))}
+                        </nav>
+
+                        {/* Divider */}
+                        <div className="h-4 w-px bg-nr-border/20"></div>
+
+                        {/* KB Book Icon and Mini Search Bar */}
+                        <div className="flex items-center gap-3">
                             <Link
-                                key={link.path}
-                                to={link.path}
-                                className={`text-sm font-medium uppercase tracking-wide transition-colors relative px-2 py-1
-                  ${location.pathname === link.path ? 'text-nr-accent' : 'text-nr-text/70 hover:text-nr-text'}
-                `}
+                                to="/kb"
+                                className={`p-2 rounded-full transition-colors cursor-pointer
+                                  ${location.pathname.startsWith('/kb')
+                                        ? 'text-nr-accent bg-nr-accent/10 hover:bg-nr-accent/20'
+                                        : 'text-nr-text/60 hover:text-nr-text hover:bg-black/10 dark:hover:bg-white/10'
+                                    }`}
+                                title={t('header.kb')}
+                                aria-label={t('header.kb')}
                             >
-                                {link.name}
-                                {location.pathname === link.path && (
-                                    <span className="absolute bottom-0 left-0 w-full h-0.5 bg-nr-accent rounded-full shadow-[0_0_8px_rgba(245,158,11,0.8)]"></span>
-                                )}
+                                <BookOpen size={20} />
                             </Link>
-                        ))}
-                    </nav>
+                            <HeaderSearchBar />
+                        </div>
+                    </div>
 
                     {/* Right section */}
                     <div className="flex items-center gap-4">
                         {hasCmsWritePermission && (
                             <button
                                 onClick={toggleEditMode}
-                                className={`p-2 rounded-full transition-colors cursor-pointer ${
-                                    isEditMode 
-                                        ? 'text-nr-accent bg-nr-accent/10 hover:bg-nr-accent/20' 
+                                className={`p-2 rounded-full transition-colors cursor-pointer ${isEditMode
+                                        ? 'text-nr-accent bg-nr-accent/10 hover:bg-nr-accent/20'
                                         : 'text-nr-text/60 hover:text-nr-text hover:bg-black/10 dark:hover:bg-white/10'
-                                }`}
+                                    }`}
                                 aria-label="Toggle Edit Mode"
                                 title={t('cms.edit_mode')}
                             >
@@ -155,23 +176,23 @@ const Header: React.FC = () => {
 
                         {isAuthenticated ? (
                             <div className="relative" ref={profileDropdownRef}>
-                                <Button 
-                                    variant="ghost" 
-                                    size="icon" 
-                                    className="border border-nr-border text-nr-text/80" 
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="border border-nr-border text-nr-text/80"
                                     aria-label="Profile"
                                     onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
                                 >
                                     <User size={20} />
                                 </Button>
-                                
+
                                 {isProfileDropdownOpen && (
                                     <div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg glass border border-nr-border py-1 z-50">
                                         <div className="px-4 py-2 border-b border-nr-border">
                                             <p className="text-sm font-medium text-nr-text truncate">{user?.sub || 'User'}</p>
                                         </div>
-                                        <Link 
-                                            to="/profile" 
+                                        <Link
+                                            to="/profile"
                                             className="block px-4 py-2 text-sm text-nr-text/80 hover:bg-black/5 dark:hover:bg-white/10 hover:text-nr-text transition-colors"
                                             onClick={() => setIsProfileDropdownOpen(false)}
                                         >
