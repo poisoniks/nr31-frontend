@@ -591,5 +591,8 @@
     "register.needs_verification_title": "Підтвердіть вашу електронну пошту",
     "register.needs_verification_description": "Акаунт з такою електронною поштою вже існує, але ще не підтверджений. Натисніть нижче, щоб надіслати лист для підтвердження повторно.",
     "error.EMAIL_ALREADY_EXISTS": "Ця електронна адреса вже використовується",
-    "error.USERNAME_ALREADY_EXISTS": "Це ім'я користувача вже зайнято"
+    "error.USERNAME_ALREADY_EXISTS": "Це ім'я користувача вже зайнято",
+    "register.validation.password.required": "Пароль обов'язковий",
+    "register.validation.password.min_length": "Пароль повинен містити щонайменше 8 символів",
+    "register.validation.password.pattern": "Пароль повинен містити щонайменше одну велику літеру, одну малу літеру, одну цифру та один спеціальний символ"
 }

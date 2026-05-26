@@ -591,5 +591,8 @@
     "register.needs_verification_title": "Verify Your Email",
     "register.needs_verification_description": "An account with this email already exists but is not yet verified. Click below to resend the verification email.",
     "error.EMAIL_ALREADY_EXISTS": "This email address is already in use",
-    "error.USERNAME_ALREADY_EXISTS": "This username is already taken"
+    "error.USERNAME_ALREADY_EXISTS": "This username is already taken",
+    "register.validation.password.required": "Password is required",
+    "register.validation.password.min_length": "Password must be at least 8 characters",
+    "register.validation.password.pattern": "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character"
 }
