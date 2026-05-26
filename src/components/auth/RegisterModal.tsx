@@ -4,6 +4,7 @@ import Modal from '../ui/Modal';
 import Button from '../ui/Button';
 import { authApi } from '../../api/authApi';
 import { Mail } from 'lucide-react';
+import { useResendVerification } from '../../hooks/useResendVerification';
 import type { components } from '../../api/types';
 
 type ValidationErrorResponse = components['schemas']['ValidationErrorResponse'];
@@ -25,6 +26,10 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
     const [generalError, setGeneralError] = useState('');
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
+    
+    const [needsVerification, setNeedsVerification] = useState(false);
+    const [resendEmail, setResendEmail] = useState('');
+    const { resend, status: resendStatus, countdown, errorMessage } = useResendVerification(resendEmail);
 
     const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -45,7 +50,10 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
             } else if (status === 409) {
                 const errorResponse = data as ErrorResponse;
                 const code = errorResponse?.code;
-                if (code) {
+                if (code === 'EMAIL_ALREADY_EXISTS' && errorResponse?.metadata?.resendVerificationEmail === true) {
+                    setNeedsVerification(true);
+                    setResendEmail(email);
+                } else if (code) {
                     setGeneralError(t(`error.${code}`, { defaultValue: errorResponse.message }));
                 } else {
                     setGeneralError(t('register.error_conflict'));
@@ -68,6 +76,8 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
         setEmail('');
         setPassword('');
         setSuccess(false);
+        setNeedsVerification(false);
+        setResendEmail('');
         onClose();
     };
 
@@ -92,6 +102,61 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
                     <Button
                         type="button"
                         variant="primary"
+                        size="md"
+                        className="w-full mt-2"
+                        onClick={handleBackToLogin}
+                    >
+                        {t('register.back_to_login')}
+                    </Button>
+                </div>
+            </Modal>
+        );
+    }
+
+    if (needsVerification) {
+        return (
+            <Modal isOpen={isOpen} onClose={handleClose} title={t('register.needs_verification_title')}>
+                <div className="flex flex-col items-center text-center space-y-4 py-4">
+                    <div className="w-16 h-16 rounded-full bg-amber-500/15 flex items-center justify-center">
+                        <Mail className="w-8 h-8 text-amber-500" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-nr-text">
+                        {t('register.needs_verification_title')}
+                    </h3>
+                    <p className="text-sm text-nr-text/70 leading-relaxed">
+                        {t('register.needs_verification_description')}
+                    </p>
+                    
+                    <div className="w-full space-y-3 pt-2">
+                        <Button
+                            type="button"
+                            variant="primary"
+                            size="md"
+                            className="w-full"
+                            onClick={resend}
+                            disabled={resendStatus === 'loading' || countdown > 0 || resendStatus === 'success'}
+                        >
+                            {resendStatus === 'loading' ? '...' : 
+                             countdown > 0 ? t('resend.button_countdown', { seconds: countdown }) :
+                             t('resend.button')}
+                        </Button>
+
+                        {resendStatus === 'success' && (
+                            <p className="text-emerald-500 text-sm font-medium">
+                                {t('resend.success')}
+                            </p>
+                        )}
+
+                        {errorMessage && (
+                            <p className="text-red-500 text-sm font-medium">
+                                {errorMessage}
+                            </p>
+                        )}
+                    </div>
+
+                    <Button
+                        type="button"
+                        variant="secondary"
                         size="md"
                         className="w-full mt-2"
                         onClick={handleBackToLogin}

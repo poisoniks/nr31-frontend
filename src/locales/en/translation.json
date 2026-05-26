@@ -581,5 +581,15 @@
     "verify_email.success_description": "Your email has been successfully verified. You can now log in to your account.",
     "verify_email.error_title": "Verification Failed",
     "verify_email.error_description": "Something went wrong while verifying your email. The link may be invalid or expired.",
-    "verify_email.go_home": "Go to Home"
+    "verify_email.go_home": "Go to Home",
+    "verify_email.expired_title": "Link Expired",
+    "verify_email.expired_description": "Your verification link has expired. Click below to receive a new one.",
+    "resend.button": "Resend Verification Email",
+    "resend.button_countdown": "Resend in {{seconds}}s",
+    "resend.success": "Email sent! Check your inbox.",
+    "resend.error": "Something went wrong. Please try again.",
+    "register.needs_verification_title": "Verify Your Email",
+    "register.needs_verification_description": "An account with this email already exists but is not yet verified. Click below to resend the verification email.",
+    "error.EMAIL_ALREADY_EXISTS": "This email address is already in use",
+    "error.USERNAME_ALREADY_EXISTS": "This username is already taken"
 }

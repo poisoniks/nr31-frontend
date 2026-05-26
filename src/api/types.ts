@@ -520,6 +520,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/auth/resend-verification": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Resend verification email
+         * @description Resends the verification email if the user exists and is not verified
+         */
+        post: operations["resendVerificationEmail"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/auth/verify-email": {
         parameters: {
             query?: never;
@@ -1307,9 +1327,9 @@ export interface components {
         /** @description DTO for application configuration */
         AppConfigDto: {
             /** @description JSON schema used to validate the configValue */
-            configSchema?: string;
+            configSchema?: components["schemas"]["JsonNode"];
             /** @description The actual configuration value as a JSON object, validated by schema */
-            configValue: string;
+            configValue: components["schemas"]["JsonNode"];
             /**
              * @description Description of the configuration (localized)
              * @example {
@@ -1573,16 +1593,15 @@ export interface components {
              * @example INTERNAL_SERVER_ERROR
              * @enum {string}
              */
-            code: "UNAUTHORIZED" | "FORBIDDEN" | "INVALID_TOKEN" | "TOKEN_EXPIRED" | "BAD_CREDENTIALS" | "ACCOUNT_LOCKED" | "ACCOUNT_DISABLED" | "ELEMENT_NOT_FOUND" | "FILE_NOT_FOUND" | "FOLDER_NOT_FOUND" | "PARENT_FOLDER_NOT_FOUND" | "ROLE_NOT_FOUND" | "PERMISSION_NOT_FOUND" | "USER_NOT_FOUND" | "EVENT_NOT_FOUND" | "UNIT_TYPE_NOT_FOUND" | "EVENT_TYPE_NOT_FOUND" | "CONFIG_NOT_FOUND" | "ENDPOINT_NOT_FOUND" | "INVALID_FILE_TYPE" | "FILE_TOO_LARGE" | "EMPTY_FILE" | "QUOTA_EXCEEDED" | "STORAGE_ERROR" | "VALIDATION_ERROR" | "CONFLICT" | "FOLDER_NOT_EMPTY" | "FEATURE_DISABLED" | "INVALID_WIDGET_TYPE" | "CMS_VALIDATION_ERROR" | "DUPLICATE_WIDGET_IDS" | "KB_FOLDER_NOT_FOUND" | "KB_ARTICLE_NOT_FOUND" | "KB_FOLDER_NOT_EMPTY" | "INTERNAL_SERVER_ERROR";
+            code: "UNAUTHORIZED" | "FORBIDDEN" | "INVALID_TOKEN" | "TOKEN_EXPIRED" | "BAD_CREDENTIALS" | "ACCOUNT_LOCKED" | "ACCOUNT_DISABLED" | "ELEMENT_NOT_FOUND" | "FILE_NOT_FOUND" | "FOLDER_NOT_FOUND" | "PARENT_FOLDER_NOT_FOUND" | "ROLE_NOT_FOUND" | "PERMISSION_NOT_FOUND" | "USER_NOT_FOUND" | "EVENT_NOT_FOUND" | "UNIT_TYPE_NOT_FOUND" | "EVENT_TYPE_NOT_FOUND" | "CONFIG_NOT_FOUND" | "ENDPOINT_NOT_FOUND" | "EMAIL_ALREADY_EXISTS" | "USERNAME_ALREADY_EXISTS" | "INVALID_FILE_TYPE" | "FILE_TOO_LARGE" | "EMPTY_FILE" | "QUOTA_EXCEEDED" | "STORAGE_ERROR" | "VALIDATION_ERROR" | "CONFLICT" | "FOLDER_NOT_EMPTY" | "FEATURE_DISABLED" | "TOO_MANY_REQUESTS" | "INVALID_WIDGET_TYPE" | "CMS_VALIDATION_ERROR" | "DUPLICATE_WIDGET_IDS" | "KB_FOLDER_NOT_FOUND" | "KB_ARTICLE_NOT_FOUND" | "KB_FOLDER_NOT_EMPTY" | "INTERNAL_SERVER_ERROR";
             /**
              * @description Error message
              * @example An unexpected error occurred
              */
             message: string;
             /**
-             * @description Standardized error codes for the application.
+             * @description Standardized error codes for the application:
              *
-             *     ### Authentication & Authorization
              *     * `UNAUTHORIZED`: User is not authenticated
              *     * `FORBIDDEN`: User does not have required permissions
              *     * `INVALID_TOKEN`: Provided token is invalid
@@ -1590,8 +1609,6 @@ export interface components {
              *     * `BAD_CREDENTIALS`: Invalid username or password
              *     * `ACCOUNT_LOCKED`: Account is locked due to too many failed attempts
              *     * `ACCOUNT_DISABLED`: Account is disabled by administrator
-             *
-             *     ### Resource Errors
              *     * `ELEMENT_NOT_FOUND`: Requested element not found. Metadata: 'id' (UUID or Long) or other identifier
              *     * `FILE_NOT_FOUND`: Requested file not found. Metadata: 'id' (UUID)
              *     * `FOLDER_NOT_FOUND`: Requested folder not found. Metadata: 'id' (UUID)
@@ -1604,21 +1621,24 @@ export interface components {
              *     * `EVENT_TYPE_NOT_FOUND`: Event type not found. Metadata: 'id' (Long)
              *     * `CONFIG_NOT_FOUND`: System configuration not found. Metadata: 'name' (String)
              *     * `ENDPOINT_NOT_FOUND`: Requested endpoint not found
-             *
-             *     ### File Handling
+             *     * `EMAIL_ALREADY_EXISTS`: The provided email address is already in use
+             *     * `USERNAME_ALREADY_EXISTS`: The provided username is already in use
              *     * `INVALID_FILE_TYPE`: File type is not allowed for this operation
              *     * `FILE_TOO_LARGE`: File size exceeds the maximum limit
              *     * `EMPTY_FILE`: Cannot process an empty file
              *     * `QUOTA_EXCEEDED`: User has exceeded their storage quota. Metadata: 'currentSize' (Long), 'maxQuota' (Long), 'fileSize' (Long)
              *     * `STORAGE_ERROR`: Generic storage error. Metadata: 'path' (String) or 'id' (UUID)
-             *
-             *     ### Logic & Validation
              *     * `VALIDATION_ERROR`: Request validation failed. Detailed errors in 'details' field for ValidationErrorResponse
              *     * `CONFLICT`: Operation conflicts with the current state of the resource
              *     * `FOLDER_NOT_EMPTY`: Cannot delete a folder that is not empty. Metadata: 'id' (UUID)
              *     * `FEATURE_DISABLED`: The requested feature is currently disabled
-             *
-             *     ### Server Errors
+             *     * `TOO_MANY_REQUESTS`: Too many requests. Please try again later
+             *     * `INVALID_WIDGET_TYPE`: The specified CMS widget type is invalid
+             *     * `CMS_VALIDATION_ERROR`: CMS content validation failed
+             *     * `DUPLICATE_WIDGET_IDS`: Duplicate widget identifiers detected within the CMS structure
+             *     * `KB_FOLDER_NOT_FOUND`: Knowledge Base folder not found
+             *     * `KB_ARTICLE_NOT_FOUND`: Knowledge Base article not found
+             *     * `KB_FOLDER_NOT_EMPTY`: Knowledge Base folder cannot be deleted because it is not empty
              *     * `INTERNAL_SERVER_ERROR`: An unexpected error occurred on the server
              */
             metadata?: {
@@ -2228,6 +2248,15 @@ export interface components {
              */
             username: string;
         };
+        /** @description Request object for resending verification email */
+        ResendVerificationRequest: {
+            /**
+             * Format: email
+             * @description User's email
+             * @example user@example.com
+             */
+            email: string;
+        };
         /** @description Rich text widget with TipTap JSON AST support */
         RichTextWidgetDto: {
             type: "RichTextWidgetDto";
@@ -2613,7 +2642,7 @@ export interface components {
              * @example INTERNAL_SERVER_ERROR
              * @enum {string}
              */
-            code: "UNAUTHORIZED" | "FORBIDDEN" | "INVALID_TOKEN" | "TOKEN_EXPIRED" | "BAD_CREDENTIALS" | "ACCOUNT_LOCKED" | "ACCOUNT_DISABLED" | "ELEMENT_NOT_FOUND" | "FILE_NOT_FOUND" | "FOLDER_NOT_FOUND" | "PARENT_FOLDER_NOT_FOUND" | "ROLE_NOT_FOUND" | "PERMISSION_NOT_FOUND" | "USER_NOT_FOUND" | "EVENT_NOT_FOUND" | "UNIT_TYPE_NOT_FOUND" | "EVENT_TYPE_NOT_FOUND" | "CONFIG_NOT_FOUND" | "ENDPOINT_NOT_FOUND" | "INVALID_FILE_TYPE" | "FILE_TOO_LARGE" | "EMPTY_FILE" | "QUOTA_EXCEEDED" | "STORAGE_ERROR" | "VALIDATION_ERROR" | "CONFLICT" | "FOLDER_NOT_EMPTY" | "FEATURE_DISABLED" | "INVALID_WIDGET_TYPE" | "CMS_VALIDATION_ERROR" | "DUPLICATE_WIDGET_IDS" | "KB_FOLDER_NOT_FOUND" | "KB_ARTICLE_NOT_FOUND" | "KB_FOLDER_NOT_EMPTY" | "INTERNAL_SERVER_ERROR";
+            code: "UNAUTHORIZED" | "FORBIDDEN" | "INVALID_TOKEN" | "TOKEN_EXPIRED" | "BAD_CREDENTIALS" | "ACCOUNT_LOCKED" | "ACCOUNT_DISABLED" | "ELEMENT_NOT_FOUND" | "FILE_NOT_FOUND" | "FOLDER_NOT_FOUND" | "PARENT_FOLDER_NOT_FOUND" | "ROLE_NOT_FOUND" | "PERMISSION_NOT_FOUND" | "USER_NOT_FOUND" | "EVENT_NOT_FOUND" | "UNIT_TYPE_NOT_FOUND" | "EVENT_TYPE_NOT_FOUND" | "CONFIG_NOT_FOUND" | "ENDPOINT_NOT_FOUND" | "EMAIL_ALREADY_EXISTS" | "USERNAME_ALREADY_EXISTS" | "INVALID_FILE_TYPE" | "FILE_TOO_LARGE" | "EMPTY_FILE" | "QUOTA_EXCEEDED" | "STORAGE_ERROR" | "VALIDATION_ERROR" | "CONFLICT" | "FOLDER_NOT_EMPTY" | "FEATURE_DISABLED" | "TOO_MANY_REQUESTS" | "INVALID_WIDGET_TYPE" | "CMS_VALIDATION_ERROR" | "DUPLICATE_WIDGET_IDS" | "KB_FOLDER_NOT_FOUND" | "KB_ARTICLE_NOT_FOUND" | "KB_FOLDER_NOT_EMPTY" | "INTERNAL_SERVER_ERROR";
             /** @description Map of field names to error messages */
             details?: {
                 [key: string]: string;
@@ -2624,9 +2653,8 @@ export interface components {
              */
             message: string;
             /**
-             * @description Standardized error codes for the application.
+             * @description Standardized error codes for the application:
              *
-             *     ### Authentication & Authorization
              *     * `UNAUTHORIZED`: User is not authenticated
              *     * `FORBIDDEN`: User does not have required permissions
              *     * `INVALID_TOKEN`: Provided token is invalid
@@ -2634,8 +2662,6 @@ export interface components {
              *     * `BAD_CREDENTIALS`: Invalid username or password
              *     * `ACCOUNT_LOCKED`: Account is locked due to too many failed attempts
              *     * `ACCOUNT_DISABLED`: Account is disabled by administrator
-             *
-             *     ### Resource Errors
              *     * `ELEMENT_NOT_FOUND`: Requested element not found. Metadata: 'id' (UUID or Long) or other identifier
              *     * `FILE_NOT_FOUND`: Requested file not found. Metadata: 'id' (UUID)
              *     * `FOLDER_NOT_FOUND`: Requested folder not found. Metadata: 'id' (UUID)
@@ -2648,21 +2674,24 @@ export interface components {
              *     * `EVENT_TYPE_NOT_FOUND`: Event type not found. Metadata: 'id' (Long)
              *     * `CONFIG_NOT_FOUND`: System configuration not found. Metadata: 'name' (String)
              *     * `ENDPOINT_NOT_FOUND`: Requested endpoint not found
-             *
-             *     ### File Handling
+             *     * `EMAIL_ALREADY_EXISTS`: The provided email address is already in use
+             *     * `USERNAME_ALREADY_EXISTS`: The provided username is already in use
              *     * `INVALID_FILE_TYPE`: File type is not allowed for this operation
              *     * `FILE_TOO_LARGE`: File size exceeds the maximum limit
              *     * `EMPTY_FILE`: Cannot process an empty file
              *     * `QUOTA_EXCEEDED`: User has exceeded their storage quota. Metadata: 'currentSize' (Long), 'maxQuota' (Long), 'fileSize' (Long)
              *     * `STORAGE_ERROR`: Generic storage error. Metadata: 'path' (String) or 'id' (UUID)
-             *
-             *     ### Logic & Validation
              *     * `VALIDATION_ERROR`: Request validation failed. Detailed errors in 'details' field for ValidationErrorResponse
              *     * `CONFLICT`: Operation conflicts with the current state of the resource
              *     * `FOLDER_NOT_EMPTY`: Cannot delete a folder that is not empty. Metadata: 'id' (UUID)
              *     * `FEATURE_DISABLED`: The requested feature is currently disabled
-             *
-             *     ### Server Errors
+             *     * `TOO_MANY_REQUESTS`: Too many requests. Please try again later
+             *     * `INVALID_WIDGET_TYPE`: The specified CMS widget type is invalid
+             *     * `CMS_VALIDATION_ERROR`: CMS content validation failed
+             *     * `DUPLICATE_WIDGET_IDS`: Duplicate widget identifiers detected within the CMS structure
+             *     * `KB_FOLDER_NOT_FOUND`: Knowledge Base folder not found
+             *     * `KB_ARTICLE_NOT_FOUND`: Knowledge Base article not found
+             *     * `KB_FOLDER_NOT_EMPTY`: Knowledge Base folder cannot be deleted because it is not empty
              *     * `INTERNAL_SERVER_ERROR`: An unexpected error occurred on the server
              */
             metadata?: {
@@ -2806,6 +2835,15 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
             /** @description Internal Server Error */
             500: {
                 headers: {
@@ -2884,6 +2922,15 @@ export interface operations {
             };
             /** @description Content Too Large */
             413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -2977,6 +3024,15 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
             /** @description Internal Server Error */
             500: {
                 headers: {
@@ -3055,6 +3111,15 @@ export interface operations {
             };
             /** @description Content Too Large */
             413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -3151,6 +3216,15 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
             /** @description Internal Server Error */
             500: {
                 headers: {
@@ -3225,6 +3299,15 @@ export interface operations {
             };
             /** @description Content Too Large */
             413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -3315,6 +3398,15 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
             /** @description Internal Server Error */
             500: {
                 headers: {
@@ -3389,6 +3481,15 @@ export interface operations {
             };
             /** @description Content Too Large */
             413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -3474,6 +3575,15 @@ export interface operations {
             };
             /** @description Content Too Large */
             413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -3569,6 +3679,15 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
             /** @description Internal Server Error */
             500: {
                 headers: {
@@ -3647,6 +3766,15 @@ export interface operations {
             };
             /** @description Content Too Large */
             413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -3743,6 +3871,15 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
             /** @description Internal Server Error */
             500: {
                 headers: {
@@ -3821,6 +3958,15 @@ export interface operations {
             };
             /** @description Content Too Large */
             413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -3915,6 +4061,15 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
             /** @description Internal Server Error */
             500: {
                 headers: {
@@ -3993,6 +4148,15 @@ export interface operations {
             };
             /** @description Content Too Large */
             413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -4089,6 +4253,15 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
             /** @description Internal Server Error */
             500: {
                 headers: {
@@ -4165,6 +4338,15 @@ export interface operations {
             };
             /** @description Content Too Large */
             413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -4256,6 +4438,15 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
             /** @description Internal Server Error */
             500: {
                 headers: {
@@ -4333,6 +4524,15 @@ export interface operations {
             };
             /** @description Content Too Large */
             413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -4418,6 +4618,15 @@ export interface operations {
             };
             /** @description Content Too Large */
             413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -4511,6 +4720,15 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
             /** @description Internal Server Error */
             500: {
                 headers: {
@@ -4595,6 +4813,15 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
             /** @description Internal Server Error */
             500: {
                 headers: {
@@ -4672,6 +4899,15 @@ export interface operations {
             };
             /** @description Content Too Large */
             413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -4766,6 +5002,15 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
             /** @description Internal Server Error */
             500: {
                 headers: {
@@ -4844,6 +5089,15 @@ export interface operations {
             };
             /** @description Content Too Large */
             413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -4938,6 +5192,15 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
             /** @description Internal Server Error */
             500: {
                 headers: {
@@ -5023,6 +5286,109 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    resendVerificationEmail: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ResendVerificationRequest"];
+            };
+        };
+        responses: {
+            /** @description Verification email resent successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Invalid request body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ValidationErrorResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Email is already verified */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Content Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Too many requests - please wait 5 minutes before resending */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
             /** @description Internal Server Error */
             500: {
                 headers: {
@@ -5099,6 +5465,15 @@ export interface operations {
             };
             /** @description Content Too Large */
             413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -5193,6 +5568,15 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
             /** @description Internal Server Error */
             500: {
                 headers: {
@@ -5280,6 +5664,15 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
             /** @description Internal Server Error */
             500: {
                 headers: {
@@ -5359,6 +5752,15 @@ export interface operations {
             };
             /** @description Content Too Large */
             413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -5455,6 +5857,15 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
             /** @description Internal Server Error */
             500: {
                 headers: {
@@ -5534,6 +5945,15 @@ export interface operations {
             };
             /** @description Content Too Large */
             413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -5630,6 +6050,15 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
             /** @description Internal Server Error */
             500: {
                 headers: {
@@ -5719,6 +6148,15 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
             /** @description Internal Server Error */
             500: {
                 headers: {
@@ -5801,6 +6239,15 @@ export interface operations {
             };
             /** @description Content Too Large */
             413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -5901,6 +6348,15 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
             /** @description Internal Server Error */
             500: {
                 headers: {
@@ -5994,6 +6450,15 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
             /** @description Internal Server Error */
             500: {
                 headers: {
@@ -6070,6 +6535,15 @@ export interface operations {
             };
             /** @description Content Too Large */
             413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -6164,6 +6638,15 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
             /** @description Internal Server Error */
             500: {
                 headers: {
@@ -6242,6 +6725,15 @@ export interface operations {
             };
             /** @description Content Too Large */
             413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -6338,6 +6830,15 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
             /** @description Internal Server Error */
             500: {
                 headers: {
@@ -6420,6 +6921,15 @@ export interface operations {
             };
             /** @description Content Too Large */
             413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -6517,6 +7027,15 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
             /** @description Internal Server Error */
             500: {
                 headers: {
@@ -6596,6 +7115,15 @@ export interface operations {
             };
             /** @description Content Too Large */
             413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -6695,6 +7223,15 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
             /** @description Internal Server Error */
             500: {
                 headers: {
@@ -6771,6 +7308,15 @@ export interface operations {
             };
             /** @description Content Too Large */
             413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -6867,6 +7413,15 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
             /** @description Internal Server Error */
             500: {
                 headers: {
@@ -6945,6 +7500,15 @@ export interface operations {
             };
             /** @description Content Too Large */
             413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -7039,6 +7603,15 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
             /** @description Internal Server Error */
             500: {
                 headers: {
@@ -7115,6 +7688,15 @@ export interface operations {
             };
             /** @description Content Too Large */
             413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -7211,6 +7793,15 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
             /** @description Internal Server Error */
             500: {
                 headers: {
@@ -7289,6 +7880,15 @@ export interface operations {
             };
             /** @description Content Too Large */
             413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -7379,6 +7979,15 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
             /** @description Internal Server Error */
             500: {
                 headers: {
@@ -7459,6 +8068,15 @@ export interface operations {
             };
             /** @description Content Too Large */
             413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -7555,6 +8173,15 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
             /** @description Internal Server Error */
             500: {
                 headers: {
@@ -7631,6 +8258,15 @@ export interface operations {
             };
             /** @description Content Too Large */
             413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -7716,6 +8352,15 @@ export interface operations {
             };
             /** @description Content Too Large */
             413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -7810,6 +8455,15 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
             /** @description Internal Server Error */
             500: {
                 headers: {
@@ -7886,6 +8540,15 @@ export interface operations {
             };
             /** @description Content Too Large */
             413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -7982,6 +8645,15 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
             /** @description Internal Server Error */
             500: {
                 headers: {
@@ -8058,6 +8730,15 @@ export interface operations {
             };
             /** @description Content Too Large */
             413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -8152,6 +8833,15 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
             /** @description Internal Server Error */
             500: {
                 headers: {
@@ -8237,6 +8927,15 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
             /** @description Internal Server Error */
             500: {
                 headers: {
@@ -8313,6 +9012,15 @@ export interface operations {
             };
             /** @description Content Too Large */
             413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -8405,6 +9113,15 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
             /** @description Internal Server Error */
             500: {
                 headers: {
@@ -8483,6 +9200,15 @@ export interface operations {
             };
             /** @description Content Too Large */
             413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -8577,6 +9303,15 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
             /** @description Internal Server Error */
             500: {
                 headers: {
@@ -8655,6 +9390,15 @@ export interface operations {
             };
             /** @description Content Too Large */
             413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -8751,6 +9495,15 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
             /** @description Internal Server Error */
             500: {
                 headers: {
@@ -8827,6 +9580,15 @@ export interface operations {
             };
             /** @description Content Too Large */
             413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -8912,6 +9674,15 @@ export interface operations {
             };
             /** @description Content Too Large */
             413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -9006,6 +9777,15 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
             /** @description Internal Server Error */
             500: {
                 headers: {
@@ -9084,6 +9864,15 @@ export interface operations {
             };
             /** @description Content Too Large */
             413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -9180,6 +9969,15 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
             /** @description Internal Server Error */
             500: {
                 headers: {
@@ -9256,6 +10054,15 @@ export interface operations {
             };
             /** @description Content Too Large */
             413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
                 headers: {
                     [name: string]: unknown;
                 };

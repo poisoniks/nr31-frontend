@@ -11,6 +11,9 @@ type LogoutRequest = LogoutPath['requestBody']['content']['application/json'];
 type RegisterPath = paths['/api/v1/auth/register']['post'];
 type RegisterRequest = RegisterPath['requestBody']['content']['application/json'];
 
+type ResendVerificationPath = paths['/api/v1/auth/resend-verification']['post'];
+type ResendVerificationRequest = ResendVerificationPath['requestBody']['content']['application/json'];
+
 export const authApi = {
     login: async (data: LoginRequest): Promise<LoginResponse> => {
         const response = await api.post<LoginResponse>('/v1/auth/login', data);
@@ -26,6 +29,9 @@ export const authApi = {
         await api.post('/v1/auth/verify-email', null, {
             params: { token },
         });
+    },
+    resendVerification: async (data: ResendVerificationRequest): Promise<void> => {
+        await api.post('/v1/auth/resend-verification', data);
     },
 };
 

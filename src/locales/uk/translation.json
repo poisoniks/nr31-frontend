@@ -581,5 +581,15 @@
     "verify_email.success_description": "Вашу електронну пошту успішно підтверджено. Тепер ви можете увійти до свого акаунту.",
     "verify_email.error_title": "Підтвердження не вдалося",
     "verify_email.error_description": "Щось пішло не так під час підтвердження електронної пошти. Посилання може бути недійсним або термін його дії закінчився.",
-    "verify_email.go_home": "На головну"
+    "verify_email.go_home": "На головну",
+    "verify_email.expired_title": "Посилання прострочено",
+    "verify_email.expired_description": "Ваше посилання для підтвердження прострочено. Натисніть нижче, щоб отримати нове.",
+    "resend.button": "Надіслати лист повторно",
+    "resend.button_countdown": "Повторити через {{seconds}}с",
+    "resend.success": "Лист надіслано! Перевірте свою пошту.",
+    "resend.error": "Щось пішло не так. Будь ласка, спробуйте ще раз.",
+    "register.needs_verification_title": "Підтвердіть вашу електронну пошту",
+    "register.needs_verification_description": "Акаунт з такою електронною поштою вже існує, але ще не підтверджений. Натисніть нижче, щоб надіслати лист для підтвердження повторно.",
+    "error.EMAIL_ALREADY_EXISTS": "Ця електронна адреса вже використовується",
+    "error.USERNAME_ALREADY_EXISTS": "Це ім'я користувача вже зайнято"
 }
