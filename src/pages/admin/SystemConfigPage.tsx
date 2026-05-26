@@ -41,15 +41,6 @@ const localized = (map: Record<string, string> | undefined, lang: string): strin
     return map[lang] || Object.values(map)[0] || '';
 };
 
-const parseJson = <T,>(str: string | undefined): T | null => {
-    if (!str) return null;
-    try {
-        return JSON.parse(str) as T;
-    } catch {
-        return null;
-    }
-};
-
 const resolveType = (schema: JsonSchemaProperty): string => {
     if (!schema.type) return 'string';
     if (Array.isArray(schema.type)) {
@@ -466,8 +457,8 @@ const ConfigCard: React.FC<ConfigCardProps> = ({ config, lang, onSaved, readOnly
     const { t } = useTranslation();
     const { setError } = useUIStore();
 
-    const schema = parseJson<JsonSchema>(config.configSchema);
-    const initialValue = parseJson<unknown>(config.configValue);
+    const schema = config.configSchema as unknown as JsonSchema | undefined;
+    const initialValue = config.configValue;
 
     const [value, setValue] = useState<unknown>(initialValue);
     const [descriptionMap, setDescriptionMap] = useState<Record<string, string>>(config.description || {});
@@ -479,7 +470,7 @@ const ConfigCard: React.FC<ConfigCardProps> = ({ config, lang, onSaved, readOnly
     const [saved, setSaved] = useState(false);
 
     useEffect(() => {
-        setValue(parseJson<unknown>(config.configValue));
+        setValue(config.configValue);
         setDescriptionMap(config.description || {});
         setActiveLocale(lang);
         setEditingDescription(false);
@@ -502,10 +493,9 @@ const ConfigCard: React.FC<ConfigCardProps> = ({ config, lang, onSaved, readOnly
     const handleSave = async () => {
         setSaving(true);
         try {
-            const serialized = JSON.stringify(value);
             const updated = await configApi.updateConfig(config.name, {
                 ...config,
-                configValue: serialized,
+                configValue: value as any,
                 description: descriptionMap,
             });
             onSaved(updated);
