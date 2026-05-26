@@ -8,9 +8,10 @@ import { useAuthStore } from '../../store/useAuthStore';
 interface LoginModalProps {
     isOpen: boolean;
     onClose: () => void;
+    onSwitchToRegister: () => void;
 }
 
-const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
+const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onSwitchToRegister }) => {
     const { t } = useTranslation();
     const login = useAuthStore(state => state.login);
 
@@ -46,6 +47,11 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
         setUsername('');
         setPassword('');
         onClose();
+    };
+
+    const handleSwitchToRegister = () => {
+        handleClose();
+        onSwitchToRegister();
     };
 
     return (
@@ -96,6 +102,17 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
                 >
                     {loading ? '...' : t('login.submit')}
                 </Button>
+
+                <p className="text-center text-sm text-nr-text/60">
+                    {t('login.not_registered')}{' '}
+                    <button
+                        type="button"
+                        onClick={handleSwitchToRegister}
+                        className="text-nr-accent hover:text-nr-accent-hover underline underline-offset-2 transition-colors cursor-pointer"
+                    >
+                        {t('login.register_link')}
+                    </button>
+                </p>
             </form>
         </Modal>
     );

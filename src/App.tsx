@@ -10,6 +10,7 @@ import Admin from './pages/Admin';
 import Profile from './pages/Profile';
 import Home from './pages/Home';
 import AccessDenied from './pages/AccessDenied';
+import VerifyEmail from './pages/VerifyEmail';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { RequirePermission } from './components/auth/RequirePermission';
 import StaticErrorPage from './pages/StaticErrorPage';
@@ -78,6 +79,7 @@ function App() {
                 </RequirePermission>
               </ProtectedRoute>
             } />
+            <Route path="/verify-email" element={<VerifyEmail />} />
             <Route path="/error" element={<StaticErrorPage />} />
             <Route path="*" element={<StaticErrorPage />} />
           </Routes>

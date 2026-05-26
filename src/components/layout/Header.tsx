@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import Button from '../ui/Button';
 import { useAuthStore } from '../../store/useAuthStore';
 import LoginModal from '../auth/LoginModal';
+import RegisterModal from '../auth/RegisterModal';
 import { localeApi } from '../../api/localeApi';
 import { useCmsStore } from '../../store/useCmsStore';
 import HeaderSearchBar from './HeaderSearchBar';
@@ -14,6 +15,7 @@ import HeaderSearchBar from './HeaderSearchBar';
 const Header: React.FC = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [isLoginOpen, setIsLoginOpen] = useState(false);
+    const [isRegisterOpen, setIsRegisterOpen] = useState(false);
     const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
     const profileDropdownRef = useRef<HTMLDivElement>(null);
     const location = useLocation();
@@ -233,7 +235,8 @@ const Header: React.FC = () => {
             </header>
 
             <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
-            <LoginModal isOpen={isLoginOpen} onClose={() => setIsLoginOpen(false)} />
+            <LoginModal isOpen={isLoginOpen} onClose={() => setIsLoginOpen(false)} onSwitchToRegister={() => setIsRegisterOpen(true)} />
+            <RegisterModal isOpen={isRegisterOpen} onClose={() => setIsRegisterOpen(false)} onSwitchToLogin={() => setIsLoginOpen(true)} />
         </>
     );
 };
