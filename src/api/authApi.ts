@@ -14,6 +14,12 @@ type RegisterRequest = RegisterPath['requestBody']['content']['application/json'
 type ResendVerificationPath = paths['/api/v1/auth/resend-verification']['post'];
 type ResendVerificationRequest = ResendVerificationPath['requestBody']['content']['application/json'];
 
+type ForgotPasswordPath = paths['/api/v1/auth/forgot-password']['post'];
+type ForgotPasswordRequest = ForgotPasswordPath['requestBody']['content']['application/json'];
+
+type ResetPasswordPath = paths['/api/v1/auth/reset-password']['post'];
+type ResetPasswordRequest = ResetPasswordPath['requestBody']['content']['application/json'];
+
 export const authApi = {
     login: async (data: LoginRequest): Promise<LoginResponse> => {
         const response = await api.post<LoginResponse>('/v1/auth/login', data);
@@ -32,6 +38,12 @@ export const authApi = {
     },
     resendVerification: async (data: ResendVerificationRequest): Promise<void> => {
         await api.post('/v1/auth/resend-verification', data);
+    },
+    forgotPassword: async (data: ForgotPasswordRequest): Promise<void> => {
+        await api.post('/v1/auth/forgot-password', data);
+    },
+    resetPassword: async (data: ResetPasswordRequest): Promise<void> => {
+        await api.post('/v1/auth/reset-password', data);
     },
 };
 

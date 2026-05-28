@@ -11,6 +11,7 @@ import Profile from './pages/Profile';
 import Home from './pages/Home';
 import AccessDenied from './pages/AccessDenied';
 import VerifyEmail from './pages/VerifyEmail';
+import ResetPassword from './pages/ResetPassword';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { RequirePermission } from './components/auth/RequirePermission';
 import StaticErrorPage from './pages/StaticErrorPage';
@@ -80,6 +81,7 @@ function App() {
               </ProtectedRoute>
             } />
             <Route path="/verify-email" element={<VerifyEmail />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/error" element={<StaticErrorPage />} />
             <Route path="*" element={<StaticErrorPage />} />
           </Routes>
