@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Swords } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -16,6 +16,14 @@ export const NextEventWidget: React.FC<{ widget: WidgetDto; isEditMode: boolean 
 
     const [nearestEvent, setNearestEvent] = useState<EventDTO | null>(null);
     const [loading, setLoading] = useState(!isEditMode);
+    const [timeRemaining, setTimeRemaining] = useState({
+        days: 0,
+        hours: 0,
+        minutes: 0,
+        seconds: 0,
+        isLessThan24h: false,
+        inProgress: false
+    });
 
     useEffect(() => {
         if (!isEditMode) {
@@ -31,23 +39,43 @@ export const NextEventWidget: React.FC<{ widget: WidgetDto; isEditMode: boolean 
 
     const titleOverride = data.titleOverride?.[lang] || data.titleOverride?.['en'];
 
-    const timeRemaining = useMemo(() => {
-        if (!nearestEvent) return { days: 0, hours: 0, minutes: 0, inProgress: false };
-        const now = new Date();
-        const start = new Date(nearestEvent.start);
-        const end = nearestEvent.end ? new Date(nearestEvent.end) : new Date(start.getTime() + 60 * 60 * 1000);
-        
-        if (now >= start && now <= end) {
-            return { days: 0, hours: 0, minutes: 0, inProgress: true };
+    useEffect(() => {
+        if (!nearestEvent) {
+            setTimeRemaining({ days: 0, hours: 0, minutes: 0, seconds: 0, isLessThan24h: false, inProgress: false });
+            return;
         }
-        
-        let diffMs = start.getTime() - now.getTime();
-        if (diffMs < 0) diffMs = 0;
-        
-        const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
-        return { days, hours, minutes, inProgress: false };
+
+        const updateCountdown = () => {
+            const now = new Date();
+            const start = new Date(nearestEvent.start);
+            const end = nearestEvent.end ? new Date(nearestEvent.end) : new Date(start.getTime() + 60 * 60 * 1000);
+
+            if (now >= start && now <= end) {
+                setTimeRemaining({ days: 0, hours: 0, minutes: 0, seconds: 0, isLessThan24h: false, inProgress: true });
+                return;
+            }
+
+            let diffMs = start.getTime() - now.getTime();
+            if (diffMs < 0) diffMs = 0;
+
+            const isLessThan24h = diffMs < 24 * 60 * 60 * 1000;
+
+            if (isLessThan24h) {
+                const hours = Math.floor(diffMs / (1000 * 60 * 60));
+                const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((diffMs % (1000 * 60)) / 1000);
+                setTimeRemaining({ days: 0, hours, minutes, seconds, isLessThan24h, inProgress: false });
+            } else {
+                const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+                setTimeRemaining({ days, hours, minutes, seconds: 0, isLessThan24h, inProgress: false });
+            }
+        };
+
+        updateCountdown();
+        const interval = setInterval(updateCountdown, 1000);
+        return () => clearInterval(interval);
     }, [nearestEvent]);
 
     const localized = (textObj?: Record<string, string>) => {
@@ -114,9 +142,19 @@ export const NextEventWidget: React.FC<{ widget: WidgetDto; isEditMode: boolean 
                     </div>
                 ) : (
                     <div className="grid grid-cols-3 gap-2 font-mono text-2xl md:text-3xl font-bold tracking-wider text-nr-accent mb-1 drop-shadow-[0_0_5px_rgba(251,191,36,0.3)]">
-                        <div>{String(timeRemaining.days).padStart(2, '0')}<span className="block mt-1 text-[10px] text-nr-text/50 font-sans font-medium uppercase tracking-widest">{t('time.days')}</span></div>
-                        <div>{String(timeRemaining.hours).padStart(2, '0')}<span className="block mt-1 text-[10px] text-nr-text/50 font-sans font-medium uppercase tracking-widest">{t('time.hours')}</span></div>
-                        <div>{String(timeRemaining.minutes).padStart(2, '0')}<span className="block mt-1 px-1 text-[10px] text-nr-text/50 font-sans font-medium uppercase tracking-widest">{t('time.minutes')}</span></div>
+                        {timeRemaining.isLessThan24h ? (
+                            <>
+                                <div>{String(timeRemaining.hours).padStart(2, '0')}<span className="block mt-1 text-[10px] text-nr-text/50 font-sans font-medium uppercase tracking-widest">{t('time.hours')}</span></div>
+                                <div>{String(timeRemaining.minutes).padStart(2, '0')}<span className="block mt-1 text-[10px] text-nr-text/50 font-sans font-medium uppercase tracking-widest">{t('time.minutes')}</span></div>
+                                <div>{String(timeRemaining.seconds).padStart(2, '0')}<span className="block mt-1 px-1 text-[10px] text-nr-text/50 font-sans font-medium uppercase tracking-widest">{t('time.seconds')}</span></div>
+                            </>
+                        ) : (
+                            <>
+                                <div>{String(timeRemaining.days).padStart(2, '0')}<span className="block mt-1 text-[10px] text-nr-text/50 font-sans font-medium uppercase tracking-widest">{t('time.days')}</span></div>
+                                <div>{String(timeRemaining.hours).padStart(2, '0')}<span className="block mt-1 text-[10px] text-nr-text/50 font-sans font-medium uppercase tracking-widest">{t('time.hours')}</span></div>
+                                <div>{String(timeRemaining.minutes).padStart(2, '0')}<span className="block mt-1 px-1 text-[10px] text-nr-text/50 font-sans font-medium uppercase tracking-widest">{t('time.minutes')}</span></div>
+                            </>
+                        )}
                     </div>
                 )}
             </div>

@@ -93,6 +93,7 @@
     "time.days": "Days",
     "time.hours": "Hrs",
     "time.minutes": "Min",
+    "time.seconds": "Sec",
     "rsvp.yes": "I will attend",
     "roster.status.leave": "On Leave",
     "roster.status.reserve": "Reserve",
