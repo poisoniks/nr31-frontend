@@ -16,7 +16,6 @@ const Roster = lazy(() => import('./pages/Roster'));
 const Events = lazy(() => import('./pages/Events'));
 const Admin = lazy(() => import('./pages/Admin'));
 const Profile = lazy(() => import('./pages/Profile'));
-const Home = lazy(() => import('./pages/Home'));
 const AccessDenied = lazy(() => import('./pages/AccessDenied'));
 const VerifyEmail = lazy(() => import('./pages/VerifyEmail'));
 const ResetPassword = lazy(() => import('./pages/ResetPassword'));
@@ -53,7 +52,6 @@ function App() {
           <Suspense fallback={<PageLoader />}>
             <Routes>
               <Route path="/" element={<CmsPage slug="home" />} />
-              <Route path="/legacy-home" element={<Home />} />
               <Route path="/pages/:slug" element={<CmsPage />} />
               <Route path="/roster" element={<Roster />} />
               <Route path="/events" element={<Events />} />
