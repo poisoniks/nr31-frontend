@@ -27,7 +27,7 @@ export const LocalizedStringField: React.FC<FieldProps> = (props) => {
                     activeLocale={activeLocale} 
                     onLocaleChange={setActiveLocale} 
                 />
-                <div className="border border-nr-border/30 rounded-b-xl rounded-tr-xl overflow-hidden bg-black/20 dark:bg-white/5 backdrop-blur-sm relative z-0">
+                <div className="border border-nr-border/30 rounded-b-xl rounded-tr-xl overflow-hidden bg-nr-surface/50 dark:bg-white/5 backdrop-blur-sm relative z-0">
                     <input
                         id={props.idSchema?.$id}
                         name={props.name}

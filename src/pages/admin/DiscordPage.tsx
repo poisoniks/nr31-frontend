@@ -194,7 +194,7 @@ const DiscordPage: React.FC = () => {
                         className={`flex items-center gap-2 px-5 py-2.5 rounded-lg font-medium text-sm transition-all duration-300 cursor-pointer ${
                             canStart
                                 ? 'bg-green-600 hover:bg-green-500 text-white shadow-[0_0_14px_rgba(34,197,94,0.25)] hover:shadow-[0_0_20px_rgba(34,197,94,0.4)]'
-                                : 'bg-green-600/30 text-green-300/50 cursor-not-allowed'
+                                : 'bg-green-600/10 dark:bg-green-600/20 text-green-700/50 dark:text-green-300/30 cursor-not-allowed'
                         }`}
                     >
                         {actionLoading === 'start' ? (
@@ -206,7 +206,7 @@ const DiscordPage: React.FC = () => {
                             ? t('admin.discord.starting')
                             : t('admin.discord.start_btn')}
                     </button>
-
+ 
                     <button
                         id="discord-stop-btn"
                         onClick={handleStop}
@@ -214,7 +214,7 @@ const DiscordPage: React.FC = () => {
                         className={`flex items-center gap-2 px-5 py-2.5 rounded-lg font-medium text-sm transition-all duration-300 cursor-pointer ${
                             canStop
                                 ? 'bg-red-600 hover:bg-red-500 text-white shadow-[0_0_14px_rgba(239,68,68,0.25)] hover:shadow-[0_0_20px_rgba(239,68,68,0.4)]'
-                                : 'bg-red-600/30 text-red-300/50 cursor-not-allowed'
+                                : 'bg-red-600/10 dark:bg-red-600/20 text-red-700/50 dark:text-red-300/30 cursor-not-allowed'
                         }`}
                     >
                         {actionLoading === 'stop' ? (

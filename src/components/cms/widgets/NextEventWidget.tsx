@@ -135,13 +135,13 @@ export const NextEventWidget: React.FC<{ widget: WidgetDto; isEditMode: boolean 
                 {!timeRemaining.inProgress && <span className="w-2 h-2 rounded-full bg-nr-accent animate-pulse shadow-[0_0_8px_rgba(251,191,36,0.8)]"></span>}
             </h4>
             
-            <div className="bg-black/10 dark:bg-black/40 border border-nr-border rounded-lg p-4 mb-4 text-center relative z-10 shadow-inner">
+            <div className="bg-nr-text/5 dark:bg-black/40 border border-nr-border rounded-lg p-4 mb-4 text-center relative z-10 shadow-inner">
                 {timeRemaining.inProgress ? (
                     <div className="font-serif text-2xl font-bold tracking-wider text-emerald-500 uppercase py-2 drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]">
                         {t('cms.widget.next_event.in_progress').toUpperCase()}
                     </div>
                 ) : (
-                    <div className="grid grid-cols-3 gap-2 font-mono text-2xl md:text-3xl font-bold tracking-wider text-nr-accent mb-1 drop-shadow-[0_0_5px_rgba(251,191,36,0.3)]">
+                    <div className="grid grid-cols-3 gap-2 font-mono text-2xl md:text-3xl font-bold tracking-wider text-nr-accent mb-1 drop-shadow-[0_1px_1px_rgba(59,48,36,0.5)] dark:drop-shadow-[0_0_5px_rgba(251,191,36,0.3)]">
                         {timeRemaining.isLessThan24h ? (
                             <>
                                 <div>{String(timeRemaining.hours).padStart(2, '0')}<span className="block mt-1 text-[10px] text-nr-text/50 font-sans font-medium uppercase tracking-widest">{t('time.hours')}</span></div>
@@ -162,7 +162,7 @@ export const NextEventWidget: React.FC<{ widget: WidgetDto; isEditMode: boolean 
             <h5 className="font-serif text-xl font-bold text-center mb-5 text-nr-text drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)] leading-tight">{localized(nearestEvent.title)}</h5>
             
             {nearestEvent.participatingUnits && nearestEvent.participatingUnits.length > 0 && (
-                <div className="flex flex-wrap justify-center gap-2.5 mb-6 relative z-10 p-3 bg-black/5 dark:bg-white/5 rounded-lg border border-nr-border/30">
+                <div className="flex flex-wrap justify-center gap-2.5 mb-6 relative z-10 p-3 bg-nr-text/5 dark:bg-white/5 rounded-lg border border-nr-border/30">
                     <div className="w-full text-center text-[10px] uppercase tracking-wider text-nr-text/50 font-bold mb-1 w-full">{t('cms.widget.next_event.units')}</div>
                     {nearestEvent.participatingUnits.map((unit: any) => (
                         <div key={unit.id} className="relative group cursor-help transition-transform hover:scale-110">

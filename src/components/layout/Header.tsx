@@ -92,7 +92,7 @@ const Header: React.FC = () => {
                                     key={link.path}
                                     to={link.path}
                                     className={`text-sm font-medium uppercase tracking-wide transition-colors relative px-2 py-1
-                      ${location.pathname === link.path ? 'text-nr-accent' : 'text-nr-text/70 hover:text-nr-text'}
+                      ${location.pathname === link.path ? 'text-nr-text font-bold' : 'text-nr-text/70 hover:text-nr-text'}
                     `}
                                 >
                                     {link.name}

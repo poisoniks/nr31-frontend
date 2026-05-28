@@ -16,10 +16,10 @@ const LOAD_OLDER_THRESHOLD = 40;
 const extractFileName = (path: string): string => path.split('/').pop() ?? path;
 
 const getLogLevelClass = (line: string): string => {
-    if (line.includes(' ERROR ')) return 'text-red-400';
-    if (line.includes(' WARN ')) return 'text-amber-400';
-    if (line.includes(' DEBUG ')) return 'text-blue-400';
-    if (line.includes(' TRACE ')) return 'text-purple-400';
+    if (line.includes(' ERROR ')) return 'text-red-600 dark:text-red-400';
+    if (line.includes(' WARN ')) return 'text-amber-700 dark:text-amber-400';
+    if (line.includes(' DEBUG ')) return 'text-blue-600 dark:text-blue-400';
+    if (line.includes(' TRACE ')) return 'text-purple-600 dark:text-purple-400';
     return 'text-nr-text/80';
 };
 
@@ -466,20 +466,20 @@ const LogsPage: React.FC = () => {
                         /* ── Scroll container (virtualizer root) ─────────── */
                         <div
                             ref={scrollRef}
-                            className="overflow-auto h-[600px] bg-neutral-950/80"
+                            className="overflow-auto h-[600px] bg-black/5 dark:bg-neutral-950/80"
                             style={{ contain: 'strict' }}
                         >
                             {/* Header rows: pinned inside the scroll container so they
                                 scroll away but are still part of the scrollable area */}
                             {isLoadingOlder && (
-                                <div className="flex items-center justify-center gap-2 py-2 text-xs text-nr-text/50 sticky top-0 z-10 bg-neutral-950/90 backdrop-blur-sm">
+                                <div className="flex items-center justify-center gap-2 py-2 text-xs text-nr-text/50 sticky top-0 z-10 bg-nr-surface/90 dark:bg-neutral-950/90 backdrop-blur-sm">
                                     <Loader2 size={12} className="animate-spin text-nr-accent" />
                                     {t('admin.logs.loading_older')}
                                 </div>
                             )}
 
                             {!hasMoreOlder && logLines.length > 0 && !isLoadingInitial && (
-                                <div className="flex items-center justify-center gap-2 py-1.5 text-xs text-nr-text/30 border-b border-white/5">
+                                <div className="flex items-center justify-center gap-2 py-1.5 text-xs text-nr-text/30 border-b border-nr-border/20">
                                     {t('admin.logs.beginning_of_file')}
                                 </div>
                             )}
@@ -500,7 +500,7 @@ const LogsPage: React.FC = () => {
                                             key={item.key}
                                             data-index={item.index}
                                             ref={virtualizer.measureElement}
-                                            className={`log-line absolute top-0 left-0 w-full flex hover:bg-white/5 transition-colors duration-75 ${isCurrentMatch
+                                            className={`log-line absolute top-0 left-0 w-full flex hover:bg-nr-text/5 dark:hover:bg-white/5 transition-colors duration-75 ${isCurrentMatch
                                                     ? 'bg-nr-accent/20 border-l-2 border-nr-accent'
                                                     : isMatchLine
                                                         ? 'bg-nr-accent/10'
@@ -509,7 +509,7 @@ const LogsPage: React.FC = () => {
                                             style={{ transform: `translateY(${item.start}px)` }}
                                         >
                                             {/* Line number gutter */}
-                                            <span className="select-none text-nr-text/20 text-right pr-3 pl-3 py-px min-w-[3.5rem] border-r border-white/5 flex-shrink-0">
+                                            <span className="select-none text-nr-text/20 text-right pr-3 pl-3 py-px min-w-[3.5rem] border-r border-nr-border/20 flex-shrink-0">
                                                 {item.index + 1}
                                             </span>
                                             {/* Line content */}

@@ -29,7 +29,7 @@ export const LocalizedRichTextField: React.FC<FieldProps> = (props) => {
                     onLocaleChange={setActiveLocale} 
                 />
                 <div 
-                    className="border border-nr-border/30 rounded-b-xl rounded-tr-xl overflow-hidden bg-black/20 dark:bg-white/5 backdrop-blur-sm relative z-0 shadow-sm"
+                    className="border border-nr-border/30 rounded-b-xl rounded-tr-xl overflow-hidden bg-nr-surface/50 dark:bg-white/5 backdrop-blur-sm relative z-0 shadow-sm"
                     onBlur={props.onBlur && (() => props.onBlur(props.idSchema?.$id, data))}
                     onFocus={props.onFocus && (() => props.onFocus(props.idSchema?.$id, data))}
                 >
