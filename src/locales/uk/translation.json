@@ -624,5 +624,9 @@
     "profile.change_password_submit": "Оновити пароль",
     "profile.no_roles": "Ролі не призначено",
     "profile.error.invalid_current_password": "Невірно вказано поточний пароль",
-    "profile.error.same_password": "Новий пароль не може збігатися зі старим паролем"
+    "profile.error.same_password": "Новий пароль не може збігатися зі старим паролем",
+    "maintenance.title": "Технічні роботи",
+    "maintenance.subtitle": "Ця сторінка тимчасово недоступна",
+    "maintenance.description": "Зараз ми оновлюємо списки особового складу та системи обліку. Будь ласка, завітайте сюди пізніше.",
+    "maintenance.back_home": "На головну"
 }

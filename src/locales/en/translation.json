@@ -624,5 +624,9 @@
     "profile.change_password_submit": "Update Password",
     "profile.no_roles": "No roles assigned",
     "profile.error.invalid_current_password": "Invalid current password",
-    "profile.error.same_password": "New password cannot be the same as the old password"
+    "profile.error.same_password": "New password cannot be the same as the old password",
+    "maintenance.title": "Under Maintenance",
+    "maintenance.subtitle": "This page is temporarily unavailable",
+    "maintenance.description": "We are currently updating our personnel records and roster systems. Please check back later.",
+    "maintenance.back_home": "Back to Home"
 }
