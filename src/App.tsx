@@ -1,26 +1,29 @@
-import { useEffect } from 'react';
+import { useEffect, Suspense, lazy } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { ThemeProvider } from './components/ThemeProvider';
 import Header from './components/layout/Header';
 import Footer from './components/layout/Footer';
-import CmsPage from './pages/CmsPage';
-import Roster from './pages/Roster';
-import Events from './pages/Events';
-import Admin from './pages/Admin';
-import Profile from './pages/Profile';
-import Home from './pages/Home';
-import AccessDenied from './pages/AccessDenied';
-import VerifyEmail from './pages/VerifyEmail';
-import ResetPassword from './pages/ResetPassword';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { RequirePermission } from './components/auth/RequirePermission';
-import StaticErrorPage from './pages/StaticErrorPage';
 import { useTranslation } from 'react-i18next';
 import { useUIStore } from './store/useUIStore';
 import GlobalErrorPopup from './components/ui/GlobalErrorPopup';
-import KbExplorer from './pages/kb/KbExplorer';
-import KbArticle from './pages/kb/KbArticle';
-import KbArticleEditor from './pages/kb/KbArticleEditor';
+import PageLoader from './components/ui/PageLoader';
+
+// Lazy load page components
+const CmsPage = lazy(() => import('./pages/CmsPage'));
+const Roster = lazy(() => import('./pages/Roster'));
+const Events = lazy(() => import('./pages/Events'));
+const Admin = lazy(() => import('./pages/Admin'));
+const Profile = lazy(() => import('./pages/Profile'));
+const Home = lazy(() => import('./pages/Home'));
+const AccessDenied = lazy(() => import('./pages/AccessDenied'));
+const VerifyEmail = lazy(() => import('./pages/VerifyEmail'));
+const ResetPassword = lazy(() => import('./pages/ResetPassword'));
+const StaticErrorPage = lazy(() => import('./pages/StaticErrorPage'));
+const KbExplorer = lazy(() => import('./pages/kb/KbExplorer'));
+const KbArticle = lazy(() => import('./pages/kb/KbArticle'));
+const KbArticleEditor = lazy(() => import('./pages/kb/KbArticleEditor'));
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -47,44 +50,46 @@ function App() {
       <div className="flex flex-col min-h-screen relative">
         <Header />
         <main className="flex-1 flex flex-col relative">
-          <Routes>
-            <Route path="/" element={<CmsPage slug="home" />} />
-            <Route path="/legacy-home" element={<Home />} />
-            <Route path="/pages/:slug" element={<CmsPage />} />
-            <Route path="/roster" element={<Roster />} />
-            <Route path="/events" element={<Events />} />
-            <Route path="/kb" element={<KbExplorer />} />
-            <Route path="/kb/article/:slug" element={<KbArticle />} />
-            <Route path="/kb/article/:slug/edit" element={
-              <ProtectedRoute>
-                <RequirePermission 
-                  permission="kb:write" 
-                  fallback={<AccessDenied />}
-                >
-                  <KbArticleEditor />
-                </RequirePermission>
-              </ProtectedRoute>
-            } />
-            <Route path="/profile" element={
-              <ProtectedRoute>
-                <Profile />
-              </ProtectedRoute>
-            } />
-            <Route path="/admin" element={
-              <ProtectedRoute>
-                <RequirePermission 
-                  permission="admin:view" 
-                  fallback={<AccessDenied />}
-                >
-                  <Admin />
-                </RequirePermission>
-              </ProtectedRoute>
-            } />
-            <Route path="/verify-email" element={<VerifyEmail />} />
-            <Route path="/reset-password" element={<ResetPassword />} />
-            <Route path="/error" element={<StaticErrorPage />} />
-            <Route path="*" element={<StaticErrorPage />} />
-          </Routes>
+          <Suspense fallback={<PageLoader />}>
+            <Routes>
+              <Route path="/" element={<CmsPage slug="home" />} />
+              <Route path="/legacy-home" element={<Home />} />
+              <Route path="/pages/:slug" element={<CmsPage />} />
+              <Route path="/roster" element={<Roster />} />
+              <Route path="/events" element={<Events />} />
+              <Route path="/kb" element={<KbExplorer />} />
+              <Route path="/kb/article/:slug" element={<KbArticle />} />
+              <Route path="/kb/article/:slug/edit" element={
+                <ProtectedRoute>
+                  <RequirePermission 
+                    permission="kb:write" 
+                    fallback={<AccessDenied />}
+                  >
+                    <KbArticleEditor />
+                  </RequirePermission>
+                </ProtectedRoute>
+              } />
+              <Route path="/profile" element={
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              } />
+              <Route path="/admin" element={
+                <ProtectedRoute>
+                  <RequirePermission 
+                    permission="admin:view" 
+                    fallback={<AccessDenied />}
+                  >
+                    <Admin />
+                  </RequirePermission>
+                </ProtectedRoute>
+              } />
+              <Route path="/verify-email" element={<VerifyEmail />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
+              <Route path="/error" element={<StaticErrorPage />} />
+              <Route path="*" element={<StaticErrorPage />} />
+            </Routes>
+          </Suspense>
         </main>
         <Footer />
       </div>
