@@ -612,5 +612,17 @@
     "reset_password.error_description": "Щось пішло не так під час скидання пароля. Посилання може бути недійсним або термін його дії закінчився.",
     "reset_password.go_home": "На головну",
     "reset_password.validation.passwords_mismatch": "Паролі не збігаються",
-    "reset_password.no_token": "Недійсне або відсутнє посилання для скидання."
+    "reset_password.no_token": "Недійсне або відсутнє посилання для скидання.",
+    "profile.title": "Мій профіль",
+    "profile.roles": "Ролі",
+    "profile.change_password": "Змінити пароль",
+    "profile.change_password_title": "Зміна пароля",
+    "profile.current_password": "Поточний пароль",
+    "profile.new_password": "Новий пароль",
+    "profile.confirm_password": "Підтвердження нового пароля",
+    "profile.change_password_success": "Пароль успішно змінено",
+    "profile.change_password_submit": "Оновити пароль",
+    "profile.no_roles": "Ролі не призначено",
+    "profile.error.invalid_current_password": "Невірно вказано поточний пароль",
+    "profile.error.same_password": "Новий пароль не може збігатися зі старим паролем"
 }

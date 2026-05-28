@@ -20,6 +20,12 @@ type ForgotPasswordRequest = ForgotPasswordPath['requestBody']['content']['appli
 type ResetPasswordPath = paths['/api/v1/auth/reset-password']['post'];
 type ResetPasswordRequest = ResetPasswordPath['requestBody']['content']['application/json'];
 
+type ChangePasswordPath = paths['/api/v1/auth/password']['put'];
+type ChangePasswordRequest = ChangePasswordPath['requestBody']['content']['application/json'];
+
+type GetCurrentUserPath = paths['/api/v1/users/me']['get'];
+type UserDTO = GetCurrentUserPath['responses']['200']['content']['application/json'];
+
 export const authApi = {
     login: async (data: LoginRequest): Promise<LoginResponse> => {
         const response = await api.post<LoginResponse>('/v1/auth/login', data);
@@ -44,6 +50,13 @@ export const authApi = {
     },
     resetPassword: async (data: ResetPasswordRequest): Promise<void> => {
         await api.post('/v1/auth/reset-password', data);
+    },
+    changePassword: async (data: ChangePasswordRequest): Promise<void> => {
+        await api.put('/v1/auth/password', data);
+    },
+    getCurrentUser: async (): Promise<UserDTO> => {
+        const response = await api.get<UserDTO>('/v1/users/me');
+        return response.data;
     },
 };
 

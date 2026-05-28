@@ -612,5 +612,17 @@
     "reset_password.error_description": "Something went wrong while resetting your password. The link may be invalid or expired.",
     "reset_password.go_home": "Go to Home",
     "reset_password.validation.passwords_mismatch": "Passwords do not match",
-    "reset_password.no_token": "Invalid or missing reset link."
+    "reset_password.no_token": "Invalid or missing reset link.",
+    "profile.title": "My Profile",
+    "profile.roles": "Roles",
+    "profile.change_password": "Change Password",
+    "profile.change_password_title": "Change Password",
+    "profile.current_password": "Current Password",
+    "profile.new_password": "New Password",
+    "profile.confirm_password": "Confirm New Password",
+    "profile.change_password_success": "Password changed successfully",
+    "profile.change_password_submit": "Update Password",
+    "profile.no_roles": "No roles assigned",
+    "profile.error.invalid_current_password": "Invalid current password",
+    "profile.error.same_password": "New password cannot be the same as the old password"
 }

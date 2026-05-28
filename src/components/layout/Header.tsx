@@ -189,7 +189,7 @@ const Header: React.FC = () => {
                                 </Button>
 
                                 {isProfileDropdownOpen && (
-                                    <div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg glass border border-nr-border py-1 z-50">
+                                    <div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-nr-surface border border-nr-border py-1 z-50">
                                         <div className="px-4 py-2 border-b border-nr-border">
                                             <p className="text-sm font-medium text-nr-text truncate">{user?.sub || 'User'}</p>
                                         </div>
