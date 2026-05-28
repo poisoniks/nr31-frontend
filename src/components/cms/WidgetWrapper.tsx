@@ -86,7 +86,13 @@ export const WidgetWrapper: React.FC<WidgetWrapperProps> = ({
             )}
 
             {/* Toolbar that appears on hover */}
-            <div className={`absolute ${widget.type === 'hero' ? 'bottom-2' : 'top-2'} right-2 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 z-50 glass-card rounded-lg p-1 border border-nr-border/50 shadow-lg`}>
+            <div className={`absolute ${
+                widget.type === 'hero'
+                    ? 'bottom-2 right-2'
+                    : widget.type === 'richtext'
+                        ? 'top-2 left-1/2 -translate-x-1/2'
+                        : 'top-2 right-2'
+            } opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 z-50 glass-card rounded-lg p-1 border border-nr-border/50 shadow-lg`}>
                 <div
                     {...attributes}
                     {...listeners}
