@@ -47,7 +47,7 @@ const TreeNode: React.FC<TreeNodeProps> = ({ node, depth, activePageId, onSelect
             <div>
                 <button
                     onClick={() => toggleCategory(node.id)}
-                    className="w-full flex items-center gap-2.5 py-2.5 pr-3 rounded-lg text-sm font-medium transition-colors text-nr-text/70 hover:bg-black/5 dark:hover:bg-white/5 hover:text-nr-text"
+                    className="w-full flex items-center gap-2.5 py-2.5 pr-3 rounded-lg text-sm font-medium transition-colors text-nr-text/70 hover:bg-black/5 dark:hover:bg-white/5 hover:text-nr-text cursor-pointer"
                     style={{ paddingLeft: `${paddingLeft}px` }}
                 >
                     <span className="flex-shrink-0 text-nr-text/40 transition-transform duration-200">
@@ -78,7 +78,7 @@ const TreeNode: React.FC<TreeNodeProps> = ({ node, depth, activePageId, onSelect
     return (
         <button
             onClick={() => onSelectPage(node.id)}
-            className={`w-full flex items-center gap-2.5 py-2.5 pr-3 rounded-lg text-sm font-medium transition-colors ${
+            className={`w-full flex items-center gap-2.5 py-2.5 pr-3 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
                 isActive
                     ? 'bg-nr-accent/15 text-nr-accent border border-nr-accent/25'
                     : 'text-nr-text/60 hover:bg-black/5 dark:hover:bg-white/5 hover:text-nr-text'

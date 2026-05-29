@@ -103,6 +103,75 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/admin/host-metrics": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get current host metrics
+         * @description Proxies current system performance metrics from metrics collector sidecar
+         *
+         *     Security requirement:
+         *     - Must have authority admin:view
+         */
+        get: operations["getMetrics"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/host-metrics/history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get host metrics history
+         * @description Proxies recorded historical system metrics from metrics collector sidecar
+         *
+         *     Security requirement:
+         *     - Must have authority admin:view
+         */
+        get: operations["getHistory"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/host-metrics/stream": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Stream host metrics via SSE
+         * @description Opens an SSE stream to proxy real-time performance updates
+         *
+         *     Security requirement:
+         *     - Must have authority admin:view
+         */
+        get: operations["streamMetrics"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/admin/integrations/discord/start": {
         parameters: {
             query?: never;
@@ -1692,7 +1761,7 @@ export interface components {
              * @example INTERNAL_SERVER_ERROR
              * @enum {string}
              */
-            code: "UNAUTHORIZED" | "FORBIDDEN" | "INVALID_TOKEN" | "TOKEN_EXPIRED" | "BAD_CREDENTIALS" | "ACCOUNT_LOCKED" | "ACCOUNT_DISABLED" | "ELEMENT_NOT_FOUND" | "FILE_NOT_FOUND" | "FOLDER_NOT_FOUND" | "PARENT_FOLDER_NOT_FOUND" | "ROLE_NOT_FOUND" | "PERMISSION_NOT_FOUND" | "USER_NOT_FOUND" | "EVENT_NOT_FOUND" | "UNIT_TYPE_NOT_FOUND" | "EVENT_TYPE_NOT_FOUND" | "CONFIG_NOT_FOUND" | "ENDPOINT_NOT_FOUND" | "EMAIL_ALREADY_EXISTS" | "USERNAME_ALREADY_EXISTS" | "INVALID_FILE_TYPE" | "FILE_TOO_LARGE" | "EMPTY_FILE" | "QUOTA_EXCEEDED" | "STORAGE_ERROR" | "VALIDATION_ERROR" | "CONFLICT" | "FOLDER_NOT_EMPTY" | "FEATURE_DISABLED" | "TOO_MANY_REQUESTS" | "INVALID_WIDGET_TYPE" | "CMS_VALIDATION_ERROR" | "DUPLICATE_WIDGET_IDS" | "KB_FOLDER_NOT_FOUND" | "KB_ARTICLE_NOT_FOUND" | "KB_FOLDER_NOT_EMPTY" | "INTERNAL_SERVER_ERROR";
+            code: "UNAUTHORIZED" | "FORBIDDEN" | "INVALID_TOKEN" | "TOKEN_EXPIRED" | "BAD_CREDENTIALS" | "ACCOUNT_LOCKED" | "ACCOUNT_DISABLED" | "ELEMENT_NOT_FOUND" | "FILE_NOT_FOUND" | "FOLDER_NOT_FOUND" | "PARENT_FOLDER_NOT_FOUND" | "ROLE_NOT_FOUND" | "PERMISSION_NOT_FOUND" | "USER_NOT_FOUND" | "EVENT_NOT_FOUND" | "UNIT_TYPE_NOT_FOUND" | "EVENT_TYPE_NOT_FOUND" | "CONFIG_NOT_FOUND" | "ENDPOINT_NOT_FOUND" | "EMAIL_ALREADY_EXISTS" | "USERNAME_ALREADY_EXISTS" | "INVALID_FILE_TYPE" | "FILE_TOO_LARGE" | "EMPTY_FILE" | "QUOTA_EXCEEDED" | "STORAGE_ERROR" | "VALIDATION_ERROR" | "CONFLICT" | "FOLDER_NOT_EMPTY" | "FEATURE_DISABLED" | "TOO_MANY_REQUESTS" | "INVALID_WIDGET_TYPE" | "CMS_VALIDATION_ERROR" | "DUPLICATE_WIDGET_IDS" | "KB_FOLDER_NOT_FOUND" | "KB_ARTICLE_NOT_FOUND" | "KB_FOLDER_NOT_EMPTY" | "SERVICE_UNAVAILABLE" | "INTERNAL_SERVER_ERROR";
             /**
              * @description Error message
              * @example An unexpected error occurred
@@ -1738,6 +1807,7 @@ export interface components {
              *     * `KB_FOLDER_NOT_FOUND`: Knowledge Base folder not found
              *     * `KB_ARTICLE_NOT_FOUND`: Knowledge Base article not found
              *     * `KB_FOLDER_NOT_EMPTY`: Knowledge Base folder cannot be deleted because it is not empty
+             *     * `SERVICE_UNAVAILABLE`: The metrics collector service is temporarily unavailable
              *     * `INTERNAL_SERVER_ERROR`: An unexpected error occurred on the server
              */
             metadata?: {
@@ -2533,6 +2603,10 @@ export interface components {
             sorted?: boolean;
             unsorted?: boolean;
         };
+        SseEmitter: {
+            /** Format: int64 */
+            timeout?: number;
+        };
         /** @description DTO representing a supported locale */
         SupportedLocaleDTO: {
             /**
@@ -2763,7 +2837,7 @@ export interface components {
              * @example INTERNAL_SERVER_ERROR
              * @enum {string}
              */
-            code: "UNAUTHORIZED" | "FORBIDDEN" | "INVALID_TOKEN" | "TOKEN_EXPIRED" | "BAD_CREDENTIALS" | "ACCOUNT_LOCKED" | "ACCOUNT_DISABLED" | "ELEMENT_NOT_FOUND" | "FILE_NOT_FOUND" | "FOLDER_NOT_FOUND" | "PARENT_FOLDER_NOT_FOUND" | "ROLE_NOT_FOUND" | "PERMISSION_NOT_FOUND" | "USER_NOT_FOUND" | "EVENT_NOT_FOUND" | "UNIT_TYPE_NOT_FOUND" | "EVENT_TYPE_NOT_FOUND" | "CONFIG_NOT_FOUND" | "ENDPOINT_NOT_FOUND" | "EMAIL_ALREADY_EXISTS" | "USERNAME_ALREADY_EXISTS" | "INVALID_FILE_TYPE" | "FILE_TOO_LARGE" | "EMPTY_FILE" | "QUOTA_EXCEEDED" | "STORAGE_ERROR" | "VALIDATION_ERROR" | "CONFLICT" | "FOLDER_NOT_EMPTY" | "FEATURE_DISABLED" | "TOO_MANY_REQUESTS" | "INVALID_WIDGET_TYPE" | "CMS_VALIDATION_ERROR" | "DUPLICATE_WIDGET_IDS" | "KB_FOLDER_NOT_FOUND" | "KB_ARTICLE_NOT_FOUND" | "KB_FOLDER_NOT_EMPTY" | "INTERNAL_SERVER_ERROR";
+            code: "UNAUTHORIZED" | "FORBIDDEN" | "INVALID_TOKEN" | "TOKEN_EXPIRED" | "BAD_CREDENTIALS" | "ACCOUNT_LOCKED" | "ACCOUNT_DISABLED" | "ELEMENT_NOT_FOUND" | "FILE_NOT_FOUND" | "FOLDER_NOT_FOUND" | "PARENT_FOLDER_NOT_FOUND" | "ROLE_NOT_FOUND" | "PERMISSION_NOT_FOUND" | "USER_NOT_FOUND" | "EVENT_NOT_FOUND" | "UNIT_TYPE_NOT_FOUND" | "EVENT_TYPE_NOT_FOUND" | "CONFIG_NOT_FOUND" | "ENDPOINT_NOT_FOUND" | "EMAIL_ALREADY_EXISTS" | "USERNAME_ALREADY_EXISTS" | "INVALID_FILE_TYPE" | "FILE_TOO_LARGE" | "EMPTY_FILE" | "QUOTA_EXCEEDED" | "STORAGE_ERROR" | "VALIDATION_ERROR" | "CONFLICT" | "FOLDER_NOT_EMPTY" | "FEATURE_DISABLED" | "TOO_MANY_REQUESTS" | "INVALID_WIDGET_TYPE" | "CMS_VALIDATION_ERROR" | "DUPLICATE_WIDGET_IDS" | "KB_FOLDER_NOT_FOUND" | "KB_ARTICLE_NOT_FOUND" | "KB_FOLDER_NOT_EMPTY" | "SERVICE_UNAVAILABLE" | "INTERNAL_SERVER_ERROR";
             /** @description Map of field names to error messages */
             details?: {
                 [key: string]: string;
@@ -2813,6 +2887,7 @@ export interface components {
              *     * `KB_FOLDER_NOT_FOUND`: Knowledge Base folder not found
              *     * `KB_ARTICLE_NOT_FOUND`: Knowledge Base article not found
              *     * `KB_FOLDER_NOT_EMPTY`: Knowledge Base folder cannot be deleted because it is not empty
+             *     * `SERVICE_UNAVAILABLE`: The metrics collector service is temporarily unavailable
              *     * `INTERNAL_SERVER_ERROR`: An unexpected error occurred on the server
              */
             metadata?: {
@@ -2974,6 +3049,15 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
         };
     };
     getAllConfigs: {
@@ -3061,6 +3145,15 @@ export interface operations {
             };
             /** @description Internal Server Error */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -3163,6 +3256,15 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
         };
     };
     getConfig: {
@@ -3250,6 +3352,15 @@ export interface operations {
             };
             /** @description Internal Server Error */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -3355,6 +3466,318 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    getMetrics: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successfully retrieved metrics */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JsonNode"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Content Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Metrics collector service is unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    getHistory: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successfully retrieved metrics history */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JsonNode"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Content Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Metrics collector service is unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    streamMetrics: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successfully opened SSE stream */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/event-stream": components["schemas"]["SseEmitter"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ValidationErrorResponse"] | components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Content Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Metrics collector service is unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
         };
     };
     startBot: {
@@ -3438,6 +3861,15 @@ export interface operations {
             };
             /** @description Internal Server Error */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -3537,6 +3969,15 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
         };
     };
     stopBot: {
@@ -3620,6 +4061,15 @@ export interface operations {
             };
             /** @description Internal Server Error */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -3714,6 +4164,15 @@ export interface operations {
             };
             /** @description Internal Server Error */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -3818,6 +4277,15 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
         };
     };
     getAllPermissions: {
@@ -3905,6 +4373,15 @@ export interface operations {
             };
             /** @description Internal Server Error */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -4010,6 +4487,15 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
         };
     };
     getAllRoles: {
@@ -4097,6 +4583,15 @@ export interface operations {
             };
             /** @description Internal Server Error */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -4200,6 +4695,15 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
         };
     };
     getRole: {
@@ -4287,6 +4791,15 @@ export interface operations {
             };
             /** @description Internal Server Error */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -4392,6 +4905,15 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
         };
     };
     deleteRole: {
@@ -4477,6 +4999,15 @@ export interface operations {
             };
             /** @description Internal Server Error */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -4577,6 +5108,15 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
         };
     };
     unassignPermissionFromRole: {
@@ -4663,6 +5203,15 @@ export interface operations {
             };
             /** @description Internal Server Error */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -4757,6 +5306,15 @@ export interface operations {
             };
             /** @description Internal Server Error */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -4859,6 +5417,15 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
         };
     };
     assignRoleToUser: {
@@ -4945,6 +5512,15 @@ export interface operations {
             };
             /** @description Internal Server Error */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -5045,6 +5621,15 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
         };
     };
     forgotPassword: {
@@ -5132,6 +5717,15 @@ export interface operations {
             };
             /** @description Internal Server Error */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -5235,6 +5829,15 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
         };
     };
     logoutUser: {
@@ -5329,6 +5932,15 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
         };
     };
     changePassword: {
@@ -5416,6 +6028,15 @@ export interface operations {
             };
             /** @description Internal Server Error */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -5519,6 +6140,15 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
         };
     };
     registerUser: {
@@ -5606,6 +6236,15 @@ export interface operations {
             };
             /** @description Internal Server Error */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -5707,6 +6346,15 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
         };
     };
     resetPassword: {
@@ -5801,6 +6449,15 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
         };
     };
     verifyEmail: {
@@ -5886,6 +6543,15 @@ export interface operations {
             };
             /** @description Internal Server Error */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -5989,6 +6655,15 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
         };
     };
     createEvent: {
@@ -6085,6 +6760,15 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
         };
     };
     getNearestEvent: {
@@ -6173,6 +6857,15 @@ export interface operations {
             };
             /** @description Internal Server Error */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -6278,6 +6971,15 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
         };
     };
     deleteEvent: {
@@ -6366,6 +7068,15 @@ export interface operations {
             };
             /** @description Internal Server Error */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -6471,6 +7182,15 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
         };
     };
     getPublishedPage: {
@@ -6569,6 +7289,15 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
         };
     };
     getDraftPage: {
@@ -6660,6 +7389,15 @@ export interface operations {
             };
             /** @description Internal Server Error */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -6769,6 +7507,15 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
         };
     };
     publishDraft: {
@@ -6871,6 +7618,15 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
         };
     };
     getSlotRestrictions: {
@@ -6956,6 +7712,15 @@ export interface operations {
             };
             /** @description Internal Server Error */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -7059,6 +7824,15 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
         };
     };
     getAllWidgetSchemas: {
@@ -7146,6 +7920,15 @@ export interface operations {
             };
             /** @description Internal Server Error */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -7251,6 +8034,15 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
         };
     };
     getLatestYoutubeVideo: {
@@ -7342,6 +8134,15 @@ export interface operations {
             };
             /** @description Internal Server Error */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -7448,6 +8249,15 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
         };
     };
     listFiles: {
@@ -7536,6 +8346,15 @@ export interface operations {
             };
             /** @description Internal Server Error */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -7644,6 +8463,15 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
         };
     };
     deleteFile: {
@@ -7729,6 +8557,15 @@ export interface operations {
             };
             /** @description Internal Server Error */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -7834,6 +8671,15 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
         };
     };
     listFolders: {
@@ -7921,6 +8767,15 @@ export interface operations {
             };
             /** @description Internal Server Error */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -8024,6 +8879,15 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
         };
     };
     deleteFolder_1: {
@@ -8109,6 +8973,15 @@ export interface operations {
             };
             /** @description Internal Server Error */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -8214,6 +9087,15 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
         };
     };
     getFile: {
@@ -8301,6 +9183,15 @@ export interface operations {
             };
             /** @description Internal Server Error */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -8400,6 +9291,15 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
         };
     };
     createArticle: {
@@ -8489,6 +9389,15 @@ export interface operations {
             };
             /** @description Internal Server Error */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -8594,6 +9503,15 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
         };
     };
     deleteArticle: {
@@ -8679,6 +9597,15 @@ export interface operations {
             };
             /** @description Internal Server Error */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -8773,6 +9700,15 @@ export interface operations {
             };
             /** @description Internal Server Error */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -8876,6 +9812,15 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
         };
     };
     getRootFolders: {
@@ -8961,6 +9906,15 @@ export interface operations {
             };
             /** @description Internal Server Error */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -9066,6 +10020,15 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
         };
     };
     deleteFolder: {
@@ -9151,6 +10114,15 @@ export interface operations {
             };
             /** @description Internal Server Error */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -9254,6 +10226,15 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
         };
     };
     searchArticles: {
@@ -9348,6 +10329,15 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
         };
     };
     getAllowedMimeTypes: {
@@ -9433,6 +10423,15 @@ export interface operations {
             };
             /** @description Internal Server Error */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -9534,6 +10533,15 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
         };
     };
     getAllEventTypes: {
@@ -9621,6 +10629,15 @@ export interface operations {
             };
             /** @description Internal Server Error */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -9724,6 +10741,15 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
         };
     };
     getEventTypeById: {
@@ -9811,6 +10837,15 @@ export interface operations {
             };
             /** @description Internal Server Error */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -9916,6 +10951,15 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
         };
     };
     deleteEventType: {
@@ -10001,6 +11045,15 @@ export interface operations {
             };
             /** @description Internal Server Error */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -10095,6 +11148,15 @@ export interface operations {
             };
             /** @description Internal Server Error */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -10198,6 +11260,15 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
         };
     };
     getUnitTypeById: {
@@ -10285,6 +11356,15 @@ export interface operations {
             };
             /** @description Internal Server Error */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -10390,6 +11470,15 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
         };
     };
     deleteUnitType: {
@@ -10482,6 +11571,15 @@ export interface operations {
                     "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
         };
     };
     getCurrentUser: {
@@ -10567,6 +11665,15 @@ export interface operations {
             };
             /** @description Internal Server Error */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
