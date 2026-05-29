@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback, useLayoutEffect } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
-import { FileText, RefreshCw, Download, ChevronDown, Search, ArrowDown, ArrowUp, Loader2 } from 'lucide-react';
+import { FileText, RefreshCw, Download, ChevronDown, Search, ArrowDown, ArrowUp, Loader2, Sliders, CheckCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { adminApi } from '../../api/adminApi';
 import { useUIStore } from '../../store/useUIStore';
@@ -11,6 +11,7 @@ const CHUNK_SIZE = 500;
 const LINE_HEIGHT_EST = 18;
 /** How many virtual items from the top trigger an "older" fetch. */
 const LOAD_OLDER_THRESHOLD = 40;
+const LOG_LEVELS = ['TRACE', 'DEBUG', 'INFO', 'WARN', 'ERROR'] as const;
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 const extractFileName = (path: string): string => path.split('/').pop() ?? path;
@@ -51,6 +52,11 @@ const LogsPage: React.FC = () => {
 
     // ── State ────────────────────────────────────────────────────────────────
     const [logFiles, setLogFiles] = useState<string[]>([]);
+    const [isChangingLevel, setIsChangingLevel] = useState(false);
+    const [changeSuccess, setChangeSuccess] = useState(false);
+    const [currentLogLevel, setCurrentLogLevel] = useState<string | null>(null);
+    const [isLoadingLogLevel, setIsLoadingLogLevel] = useState(true);
+    const [isLevelDropdownOpen, setIsLevelDropdownOpen] = useState(false);
     const [selectedFile, setSelectedFile] = useState<string | null>(null);
     const [logLines, setLogLines] = useState<string[]>([]);
     const [isLoadingList, setIsLoadingList] = useState(true);
@@ -69,6 +75,7 @@ const LogsPage: React.FC = () => {
     // ── Refs ─────────────────────────────────────────────────────────────────
     const scrollRef = useRef<HTMLDivElement>(null);
     const dropdownRef = useRef<HTMLDivElement>(null);
+    const levelDropdownRef = useRef<HTMLDivElement>(null);
 
     /**
      * When we prepend older lines, logLines grows from the front. We need to
@@ -295,11 +302,46 @@ const LogsPage: React.FC = () => {
         if (selectedFile) loadInitialChunk(selectedFile);
     }, [selectedFile, loadInitialChunk]);
 
+    const fetchLogLevelConfig = useCallback(async () => {
+        try {
+            setIsLoadingLogLevel(true);
+            const config = await adminApi.getLoggerConfig('org.nr31.backend');
+            setCurrentLogLevel(config.effectiveLevel);
+        } catch (err: unknown) {
+            console.error('Failed to fetch log level:', err);
+        } finally {
+            setIsLoadingLogLevel(false);
+        }
+    }, []);
+
+    useEffect(() => {
+        fetchLogLevelConfig();
+    }, [fetchLogLevelConfig]);
+
+    const handleChangeLogLevel = useCallback(async (level: string) => {
+        try {
+            setIsChangingLevel(true);
+            setChangeSuccess(false);
+            await adminApi.setLogLevel('org.nr31.backend', level);
+            setCurrentLogLevel(level);
+            setChangeSuccess(true);
+            setTimeout(() => setChangeSuccess(false), 5000);
+        } catch (err: unknown) {
+            console.error('Failed to change log level:', err);
+            setError(t('admin.logs.change_level_error'));
+        } finally {
+            setIsChangingLevel(false);
+        }
+    }, [setError, t]);
+
     // ─── Dropdown outside click ───────────────────────────────────────────────
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
                 setIsDropdownOpen(false);
+            }
+            if (levelDropdownRef.current && !levelDropdownRef.current.contains(event.target as Node)) {
+                setIsLevelDropdownOpen(false);
             }
         };
         document.addEventListener('mousedown', handleClickOutside);
@@ -409,6 +451,60 @@ const LogsPage: React.FC = () => {
 
                     {/* Actions */}
                     <div className="flex items-center gap-1.5 ml-auto">
+                        {changeSuccess && (
+                            <span className="flex items-center gap-1.5 text-green-600 dark:text-green-400 text-xs font-medium animate-fade-in mr-2">
+                                <CheckCircle size={12} />
+                                {t('admin.logs.change_level_success')}
+                            </span>
+                        )}
+
+                        {/* Log level dropdown */}
+                        <div ref={levelDropdownRef} className="relative">
+                            <button
+                                id="log-level-selector"
+                                onClick={() => setIsLevelDropdownOpen(!isLevelDropdownOpen)}
+                                disabled={isChangingLevel || isLoadingLogLevel}
+                                className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium bg-black/20 border border-nr-border/30 text-nr-text hover:bg-black/30 transition-colors cursor-pointer disabled:cursor-not-allowed"
+                                title={t('admin.logs.change_level')}
+                            >
+                                {isChangingLevel || isLoadingLogLevel ? (
+                                    <Loader2 size={12} className="animate-spin text-nr-accent" />
+                                ) : (
+                                    <Sliders size={12} className="text-nr-accent" />
+                                )}
+                                <span>
+                                    {isLoadingLogLevel
+                                        ? t('admin.logs.level_loading')
+                                        : t('admin.logs.level_label', { level: currentLogLevel ?? 'INFO' })}
+                                </span>
+                                <ChevronDown
+                                    size={12}
+                                    className={`flex-shrink-0 transition-transform duration-200 ${isLevelDropdownOpen ? 'rotate-180' : ''}`}
+                                />
+                            </button>
+
+                            {isLevelDropdownOpen && (
+                                <div className="absolute top-full right-0 mt-1 min-w-[150px] rounded-lg border border-nr-border/50 bg-nr-bg/95 dark:bg-neutral-900/95 backdrop-blur-md shadow-xl z-50">
+                                    {LOG_LEVELS.map((level) => (
+                                        <button
+                                            key={level}
+                                            onClick={() => {
+                                                handleChangeLogLevel(level);
+                                                setIsLevelDropdownOpen(false);
+                                            }}
+                                            className={`w-full text-left px-3 py-2 text-xs transition-colors cursor-pointer ${
+                                                level === currentLogLevel
+                                                    ? 'bg-nr-accent/15 text-nr-accent font-semibold'
+                                                    : 'text-nr-text/80 hover:bg-black/10 dark:hover:bg-white/5'
+                                            }`}
+                                        >
+                                            {t(`admin.logs.level.${level}`)}
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+
                         <button
                             id="log-auto-scroll-toggle"
                             onClick={() => setAutoScroll((v) => !v)}

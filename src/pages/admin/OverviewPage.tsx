@@ -138,6 +138,7 @@ const StatCard: React.FC<StatCardProps> = ({ icon, title, children }) => (
 );
 
 interface StackedBarSegment {
+    key: string;
     label: string;
     value: number;
     color: string;
@@ -153,11 +154,11 @@ const StackedBar: React.FC<StackedBarProps> = ({ segments, total }) => {
     const activeSegments = segments.filter((s) => s.value > 0);
     return (
         <div className="h-3 w-full rounded-full bg-nr-text/10 overflow-hidden flex transition-all duration-300">
-            {activeSegments.map((segment, idx) => {
+            {activeSegments.map((segment) => {
                 const pct = total > 0 ? (segment.value / total) * 100 : 0;
                 return (
                     <div
-                        key={idx}
+                        key={segment.key}
                         className="h-full relative group transition-all duration-500 ease-out"
                         style={{
                             width: `${pct}%`,
@@ -366,6 +367,7 @@ const OverviewPage: React.FC = () => {
             totalContainerCpuUsedRel += relCpu;
             if (relCpu > 0) {
                 cpuSegments.push({
+                    key: `cpu_container_${c.id}`,
                     label: c.name,
                     value: relCpu,
                     color: containerColorMap[c.id],
@@ -376,6 +378,7 @@ const OverviewPage: React.FC = () => {
         const otherCpu = Math.max(0, host.cpuUsagePercent - totalContainerCpuUsedRel);
         if (otherCpu > 0) {
             cpuSegments.push({
+                key: 'cpu_other',
                 label: t('admin.overview.infra.other'),
                 value: otherCpu,
                 color: OTHER_COLOR,
@@ -384,6 +387,7 @@ const OverviewPage: React.FC = () => {
         }
         const freeCpu = Math.max(0, 100 - host.cpuUsagePercent);
         cpuSegments.push({
+            key: 'cpu_free',
             label: t('admin.overview.disk.free'),
             value: freeCpu,
             color: FREE_COLOR,
@@ -396,6 +400,7 @@ const OverviewPage: React.FC = () => {
             totalContainerMem += c.memoryUsedBytes;
             if (c.memoryUsedBytes > 0) {
                 memSegments.push({
+                    key: `mem_container_${c.id}`,
                     label: c.name,
                     value: c.memoryUsedBytes,
                     color: containerColorMap[c.id],
@@ -406,6 +411,7 @@ const OverviewPage: React.FC = () => {
         const otherMem = Math.max(0, host.memoryUsedBytes - totalContainerMem);
         if (otherMem > 0) {
             memSegments.push({
+                key: 'mem_other',
                 label: t('admin.overview.infra.other'),
                 value: otherMem,
                 color: OTHER_COLOR,
@@ -414,6 +420,7 @@ const OverviewPage: React.FC = () => {
         }
         const freeMem = Math.max(0, host.memoryTotalBytes - host.memoryUsedBytes);
         memSegments.push({
+            key: 'mem_free',
             label: t('admin.overview.disk.free'),
             value: freeMem,
             color: FREE_COLOR,
@@ -429,6 +436,7 @@ const OverviewPage: React.FC = () => {
             if (isNamedVolume(v.name)) {
                 if (v.sizeBytes > 0) {
                     diskSegments.push({
+                        key: `disk_volume_${v.name}`,
                         label: v.name,
                         value: v.sizeBytes,
                         color: CONTAINER_COLORS[diskSegments.length % CONTAINER_COLORS.length],
@@ -442,6 +450,7 @@ const OverviewPage: React.FC = () => {
 
         if (otherVolumeBytes > 0) {
             diskSegments.push({
+                key: 'disk_volume_other',
                 label: t('admin.overview.infra.volume_other'),
                 value: otherVolumeBytes,
                 color: VOLUME_OTHER_COLOR,
@@ -452,6 +461,7 @@ const OverviewPage: React.FC = () => {
         const otherDiskUsed = Math.max(0, host.diskUsedBytes - totalVolumeBytes);
         if (otherDiskUsed > 0) {
             diskSegments.push({
+                key: 'disk_other',
                 label: t('admin.overview.infra.disk_other'),
                 value: otherDiskUsed,
                 color: OTHER_COLOR,
@@ -461,6 +471,7 @@ const OverviewPage: React.FC = () => {
 
         const freeDisk = Math.max(0, host.diskTotalBytes - host.diskUsedBytes);
         diskSegments.push({
+            key: 'disk_free',
             label: t('admin.overview.disk.free'),
             value: freeDisk,
             color: FREE_COLOR,
