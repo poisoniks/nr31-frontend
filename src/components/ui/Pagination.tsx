@@ -61,7 +61,7 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPage
                         <button
                             onClick={() => onPageChange(currentPage - 1)}
                             disabled={currentPage === 0}
-                            className="relative inline-flex items-center rounded-l-md px-2 py-2 text-nr-text/60 ring-1 ring-inset ring-nr-border/50 hover:bg-nr-border/20 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                            className="relative inline-flex items-center rounded-l-md px-2 py-2 text-nr-text/60 ring-1 ring-inset ring-nr-border/50 hover:bg-nr-border/20 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
                         >
                             <span className="sr-only">{t('common.pagination.prev')}</span>
                             <ChevronLeft className="h-4 w-4" aria-hidden="true" />
@@ -87,7 +87,7 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPage
                                     key={`page-${pageNumber}`}
                                     onClick={() => onPageChange(pageNumber)}
                                     aria-current={isCurrent ? 'page' : undefined}
-                                    className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold transition-colors focus:z-20 focus:outline-offset-0 ${
+                                    className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold transition-colors focus:z-20 focus:outline-offset-0 cursor-pointer ${
                                         isCurrent
                                             ? 'z-10 bg-nr-accent text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-nr-accent'
                                             : 'text-nr-text/80 ring-1 ring-inset ring-nr-border/50 hover:bg-nr-border/20'
@@ -101,7 +101,7 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPage
                         <button
                             onClick={() => onPageChange(currentPage + 1)}
                             disabled={currentPage === totalPages - 1}
-                            className="relative inline-flex items-center rounded-r-md px-2 py-2 text-nr-text/60 ring-1 ring-inset ring-nr-border/50 hover:bg-nr-border/20 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                            className="relative inline-flex items-center rounded-r-md px-2 py-2 text-nr-text/60 ring-1 ring-inset ring-nr-border/50 hover:bg-nr-border/20 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
                         >
                             <span className="sr-only">{t('common.pagination.next')}</span>
                             <ChevronRight className="h-4 w-4" aria-hidden="true" />

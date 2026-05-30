@@ -46,10 +46,37 @@ export const CopyDefinitionsButton: React.FC = () => {
     const { t } = useTranslation();
     const [copied, setCopied] = useState(false);
 
-    const handleCopy = () => {
-        navigator.clipboard.writeText(JSON.stringify(DEFINITIONS_JSON, null, 2));
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
+    const handleCopy = async () => {
+        const textToCopy = JSON.stringify(DEFINITIONS_JSON, null, 2);
+        try {
+            if (navigator.clipboard && window.isSecureContext) {
+                await navigator.clipboard.writeText(textToCopy);
+            } else {
+                // Fallback for older browsers or non-secure contexts
+                const textArea = document.createElement("textarea");
+                textArea.value = textToCopy;
+                // Avoid scrolling to bottom
+                textArea.style.top = "0";
+                textArea.style.left = "0";
+                textArea.style.position = "fixed";
+                
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                
+                try {
+                    document.execCommand('copy');
+                } catch (err) {
+                    console.error('Fallback: Oops, unable to copy', err);
+                }
+                
+                document.body.removeChild(textArea);
+            }
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+        } catch (err) {
+            console.error('Failed to copy text: ', err);
+        }
     };
 
     return (
