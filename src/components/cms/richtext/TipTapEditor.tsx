@@ -123,8 +123,7 @@ export const TipTapEditor: React.FC<TipTapEditorProps> = ({ content, onChange, s
         class: `${EDITOR_STYLES} min-h-[150px] p-4`,
       },
       handlePaste: (_view, event) => {
-        handleEditorPaste(event);
-        return false;
+        return handleEditorPaste(event);
       },
       handleDOMEvents: {
         dragstart: (view, event) => {
@@ -281,7 +280,7 @@ export const TipTapEditor: React.FC<TipTapEditorProps> = ({ content, onChange, s
     isInternalDragRef.current = false;
   };
 
-  const handleEditorPaste = (e: ClipboardEvent) => {
+  const handleEditorPaste = (e: ClipboardEvent): boolean => {
     const items = Array.from(e.clipboardData?.items || []);
     const fileItem = items.find(item => item.kind === 'file');
 
@@ -290,8 +289,10 @@ export const TipTapEditor: React.FC<TipTapEditorProps> = ({ content, onChange, s
       const file = fileItem.getAsFile();
       if (file) {
         uploadAndInsert(file);
+        return true;
       }
     }
+    return false;
   };
 
   const applyColor = (colorValue: string | null, isGradient: boolean) => {
