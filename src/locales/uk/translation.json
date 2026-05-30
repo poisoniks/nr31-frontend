@@ -60,6 +60,7 @@
     "admin.overview.last_updated": "Оновлено о {{time}}",
     "admin.overview.live_update": "Живе оновлення",
     "admin.overview.error": "Не вдалося завантажити системні метрики",
+    "admin.overview.disk.free": "Вільно",
     "admin.overview.section.infrastructure": "Інфраструктура",
     "admin.overview.section.jvm": "Метрики JVM",
     "admin.overview.section.spring_cache": "Spring Кеші",

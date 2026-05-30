@@ -60,6 +60,7 @@
     "admin.overview.last_updated": "Updated at {{time}}",
     "admin.overview.live_update": "Live Update",
     "admin.overview.error": "Failed to load system metrics",
+    "admin.overview.disk.free": "Free",
     "admin.overview.section.infrastructure": "Infrastructure",
     "admin.overview.section.jvm": "JVM Metrics",
     "admin.overview.section.spring_cache": "Spring Caches",
