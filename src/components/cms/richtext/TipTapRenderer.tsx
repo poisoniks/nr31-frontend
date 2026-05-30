@@ -129,12 +129,14 @@ function renderNode(node: any): React.ReactNode {
 
       if (isImage) {
         return (
-          <div className="relative inline-block overflow-hidden rounded-lg border border-nr-border/40 bg-nr-bg/20 shadow-md my-4 max-w-full">
-            <img 
-              src={url} 
-              alt={originalName || ''} 
-              className="max-h-[350px] max-w-full object-contain block animate-fade-in"
-            />
+          <div className="block my-4">
+            <div className="relative inline-block overflow-hidden rounded-lg border border-nr-border/40 bg-nr-bg/20 shadow-md max-w-full">
+              <img 
+                src={url} 
+                alt={originalName || ''} 
+                className="max-h-[350px] max-w-full object-contain block animate-fade-in"
+              />
+            </div>
           </div>
         );
       }
