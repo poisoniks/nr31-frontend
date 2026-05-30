@@ -120,8 +120,8 @@ const EventDetailModal: React.FC<EventDetailModalProps> = ({ event, isOpen, onCl
         setEditStart(toLocalDatetime(event.start));
         setEditEnd(toLocalDatetime(event.end));
         setEditServerName(event.serverName);
-        setEditTypeId(event.type.id);
-        setEditUnitIds(event.participatingUnits.map((u) => u.id));
+        setEditTypeId(event.type?.id || 0);
+        setEditUnitIds(event.participatingUnits ? event.participatingUnits.map((u) => u.id) : []);
         setTitleLocale(lang);
         setDescLocale(lang);
         setTitleError(false);
@@ -264,11 +264,11 @@ const EventDetailModal: React.FC<EventDetailModalProps> = ({ event, isOpen, onCl
 
     const titleText = localized(event.title, lang);
     const description = localized(event.description, lang);
-    const typeName = localized(event.type.name, lang);
+    const typeName = event.type ? localized(event.type.name, lang) : '';
 
     const modalTitle = (
         <>
-            {event.type.customIcon && (
+            {event.type?.customIcon && (
                 <img src={libraryApi.getFileUrl(event.type.customIcon, 24)} alt="" className="w-6 h-6 object-contain shrink-0" />
             )}
             <span>{titleText}</span>
@@ -309,12 +309,14 @@ const EventDetailModal: React.FC<EventDetailModalProps> = ({ event, isOpen, onCl
 
                 {/* Type badge and Units */}
                 <div className="mb-4 flex flex-wrap items-center gap-2">
-                    <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider border ${event.source === 'DISCORD'
-                        ? 'bg-purple-500/20 text-purple-400 border-purple-500/30'
-                        : 'bg-nr-accent/20 text-nr-accent border-nr-accent/30'
-                        }`}>
-                        {typeName}
-                    </span>
+                    {typeName && (
+                        <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider border ${event.source === 'DISCORD'
+                            ? 'bg-purple-500/20 text-purple-400 border-purple-500/30'
+                            : 'bg-nr-accent/20 text-nr-accent border-nr-accent/30'
+                            }`}>
+                            {typeName}
+                        </span>
+                    )}
                     {event.recurring && (
                         <span className="inline-block px-2 py-1 rounded-full text-xs font-medium bg-blue-500/20 text-blue-400 border border-blue-500/30">
                             ↻ {t('events.details.recurring')}

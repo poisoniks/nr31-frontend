@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { BookOpen, Edit, Trash, ChevronLeft, Calendar, User, EyeOff } from 'lucide-react';
+import { BookOpen, Edit, Trash, ChevronLeft, Calendar, User, EyeOff, PanelRightClose, PanelRightOpen } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '../../store/useAuthStore';
 import { kbApi } from '../../api/kbApi';
@@ -11,6 +11,23 @@ import KbTableOfContents from '../../components/kb/KbTableOfContents';
 import KbFolderTree from '../../components/kb/KbFolderTree';
 import { TipTapRenderer } from '../../components/cms/richtext/TipTapRenderer';
 import Button from '../../components/ui/Button';
+
+const hasHeadings = (content: any): boolean => {
+    if (!content || !content.content || !Array.isArray(content.content)) return false;
+    
+    const getTextFromNode = (n: any): string => {
+        if (!n) return '';
+        if (n.type === 'text') return n.text || '';
+        return n.content?.map(getTextFromNode).join('') || '';
+    };
+
+    return content.content.some((node: any) => {
+        if (node.type === 'heading') {
+            return !!getTextFromNode(node).trim();
+        }
+        return false;
+    });
+};
 
 const KbArticle: React.FC = () => {
     const { t, i18n } = useTranslation();
@@ -28,6 +45,9 @@ const KbArticle: React.FC = () => {
 
     // Sidebar tree toggle (Hidden/collapsed by default)
     const [treeOpen, setTreeOpen] = useState(false);
+    
+    // TOC toggle (Expanded by default)
+    const [tocExpanded, setTocExpanded] = useState(true);
 
     useEffect(() => {
         if (!slug) return;
@@ -88,6 +108,7 @@ const KbArticle: React.FC = () => {
     const contentMap = article.content as Record<string, any> | undefined;
     const localizedContent = contentMap?.[currentLang] || contentMap?.['en'] || contentMap?.['uk'] || null;
     const dateToFormat = article.updatedAt || article.createdAt || '';
+    const hasToc = hasHeadings(localizedContent);
 
     const isAuthor = !!(
         user &&
@@ -148,29 +169,50 @@ const KbArticle: React.FC = () => {
                             <KbBreadcrumbs breadcrumbs={article.breadcrumbs} />
                         </div>
 
-                        {/* Writer/Admin controls */}
-                        {(canEdit || hasAdmin) && (
-                            <div className="flex items-center gap-2">
-                                {canEdit && (
-                                    <Link to={`/kb/article/${slug}/edit`}>
-                                        <Button variant="ghost" className="flex items-center gap-1 py-1.5 px-3 text-xs">
-                                            <Edit size={14} />
-                                            <span>{t('kb.edit_article')}</span>
+                        {/* Actions wrapper */}
+                        <div className="flex items-center gap-2">
+                            {/* TOC toggle */}
+                            {hasToc && (
+                                <button
+                                    onClick={() => setTocExpanded(!tocExpanded)}
+                                    className={`
+                                        p-2 bg-nr-surface/50 border border-nr-border rounded-xl text-nr-text/75 hover:text-nr-text hover:bg-nr-surface transition-all cursor-pointer
+                                        ${!tocExpanded
+                                            ? 'bg-nr-accent/15 border-nr-accent/50 text-nr-accent'
+                                            : ''
+                                        }
+                                    `}
+                                    title={t('kb.article.toc')}
+                                    aria-label={t('kb.article.toc')}
+                                >
+                                    {tocExpanded ? <PanelRightClose size={20} /> : <PanelRightOpen size={20} />}
+                                </button>
+                            )}
+
+                            {/* Writer/Admin controls */}
+                            {(canEdit || hasAdmin) && (
+                                <div className="flex items-center gap-2">
+                                    {canEdit && (
+                                        <Link to={`/kb/article/${slug}/edit`}>
+                                            <Button variant="ghost" className="flex items-center gap-1 py-1.5 px-3 text-xs">
+                                                <Edit size={14} />
+                                                <span>{t('kb.edit_article')}</span>
+                                            </Button>
+                                        </Link>
+                                    )}
+                                    {hasAdmin && (
+                                        <Button
+                                            variant="ghost"
+                                            onClick={handleDelete}
+                                            className="flex items-center gap-1 py-1.5 px-3 text-xs text-red-400 hover:text-red-500"
+                                        >
+                                            <Trash size={14} />
+                                            <span>{t('kb.delete_article')}</span>
                                         </Button>
-                                    </Link>
-                                )}
-                                {hasAdmin && (
-                                    <Button
-                                        variant="ghost"
-                                        onClick={handleDelete}
-                                        className="flex items-center gap-1 py-1.5 px-3 text-xs text-red-400 hover:text-red-500"
-                                    >
-                                        <Trash size={14} />
-                                        <span>{t('kb.delete_article')}</span>
-                                    </Button>
-                                )}
-                            </div>
-                        )}
+                                    )}
+                                </div>
+                            )}
+                        </div>
                     </div>
 
                     {/* Article Content Wrapper Card */}
@@ -207,9 +249,11 @@ const KbArticle: React.FC = () => {
                 </article>
 
                 {/* Right Outline Sidebar (Table of Contents) */}
-                <aside className="w-full lg:w-64 shrink-0 lg:sticky lg:top-24 max-h-[80vh] overflow-y-auto">
-                    <KbTableOfContents content={localizedContent} />
-                </aside>
+                {hasToc && tocExpanded && (
+                    <aside className="w-full lg:w-64 shrink-0 lg:sticky lg:top-24 max-h-[80vh] overflow-y-auto animate-fade-in">
+                        <KbTableOfContents content={localizedContent} />
+                    </aside>
+                )}
             </div>
         </div>
     );
