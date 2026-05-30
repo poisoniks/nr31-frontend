@@ -1,93 +1,44 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Youtube } from 'lucide-react';
+import { cmsApi } from '../../api/cmsApi';
+import type { YoutubeVideoDto } from '../../api/cmsApi';
 
-interface VideoData {
-    id: string;
-    title: string;
-    link: string;
-    published: Date;
-    author: string;
-    isShort: boolean;
+interface YoutubeWidgetProps {
+    channelId: string;
 }
 
-const CHANNELS = ['UCbU41G2hhiwdn-gFFRqZN4w', 'UC3tNYFX1bqhA6tez9gYHbxA'];
-
-const YoutubeWidget: React.FC = () => {
+const YoutubeWidget: React.FC<YoutubeWidgetProps> = ({ channelId }) => {
     const { t } = useTranslation();
-    const [latestVideo, setLatestVideo] = useState<VideoData | null>(null);
+    const [latestVideo, setLatestVideo] = useState<YoutubeVideoDto | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        const fetchVideos = async () => {
+        if (!channelId) {
+            setLoading(false);
+            return;
+        }
+
+        const fetchVideo = async () => {
             try {
                 setLoading(true);
-                const videos: VideoData[] = [];
-
-                for (const channelId of CHANNELS) {
-                    try {
-                        const rssUrl = encodeURIComponent(`https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`);
-                        const response = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${rssUrl}`);
-                        if (!response.ok) {
-                            console.error(`Failed to fetch JSON for channel ${channelId}`);
-                            continue;
-                        }
-                        const data = await response.json();
-
-                        if (data.status === 'ok' && data.items && data.items.length > 0) {
-                            for (const item of data.items) {
-                                let videoId = '';
-                                if (item.guid && item.guid.includes('yt:video:')) {
-                                    videoId = item.guid.split(':')[2];
-                                } else if (item.link && item.link.includes('v=')) {
-                                    videoId = item.link.split('v=')[1].split('&')[0];
-                                }
-
-                                const title = item.title || '';
-                                const publishedText = item.pubDate || '';
-                                const author = item.author || (data.feed && data.feed.title) || '';
-                                const link = item.link || '';
-                                const isShort = link.includes('/shorts/');
-
-                                if (videoId && title && publishedText) {
-                                    videos.push({
-                                        id: videoId,
-                                        title,
-                                        link: `https://www.youtube.com/watch?v=${videoId}`,
-                                        published: new Date(publishedText),
-                                        author,
-                                        isShort
-                                    });
-                                }
-                            }
-                        }
-                    } catch (channelErr) {
-                        console.error(`Error processing channel ${channelId}:`, channelErr);
-                    }
-                }
-
-                videos.sort((a, b) => b.published.getTime() - a.published.getTime());
-
-                if (videos.length > 0) {
-                    setLatestVideo(videos[0]);
-                } else {
-                    setError(t('youtube.no_videos'));
-                }
+                const video = await cmsApi.getYoutubeVideo(channelId);
+                setLatestVideo(video);
             } catch (err) {
-                console.error("Error fetching YouTube feed:", err);
-                setError(t('youtube.error'));
+                console.error("Error fetching YouTube feed from backend:", err);
+                setError(t('youtube.error', 'Error loading video'));
             } finally {
                 setLoading(false);
             }
         };
 
-        fetchVideos();
-    }, [t]);
+        fetchVideo();
+    }, [t, channelId]);
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center bg-transparent text-nr-text w-full h-full min-h-[300px] font-sans text-sm transition-colors duration-200">
+            <div className="flex items-center justify-center glass-card text-nr-text w-full h-full min-h-[300px] font-sans text-sm transition-colors duration-200 border border-nr-border/50 rounded-xl">
                 <div className="w-8 h-8 border-4 border-nr-accent border-t-transparent rounded-full animate-spin"></div>
             </div>
         );
@@ -95,7 +46,7 @@ const YoutubeWidget: React.FC = () => {
 
     if (error || !latestVideo) {
         return (
-            <div className="flex items-center justify-center bg-transparent text-nr-text w-full h-full min-h-[300px] font-sans text-sm p-4 transition-colors duration-200">
+            <div className="flex items-center justify-center glass-card text-nr-text w-full h-full min-h-[300px] font-sans text-sm p-4 transition-colors duration-200 border border-nr-border/50 rounded-xl">
                 <div className="text-center opacity-70">
                     <Youtube size={32} className="mx-auto mb-2 opacity-50 text-nr-accent" />
                     <p>{error || t('youtube.no_videos', 'No recent videos found')}</p>
@@ -105,7 +56,7 @@ const YoutubeWidget: React.FC = () => {
     }
 
     return (
-        <div className="flex flex-col bg-transparent text-nr-text w-full h-full font-sans text-sm transition-colors duration-200 shadow-none">
+        <div className="flex flex-col glass-card text-nr-text w-full h-full min-h-[300px] font-sans text-sm transition-colors duration-200 shadow-none border border-nr-border/50 rounded-xl overflow-hidden pointer-events-auto">
             {/* Header */}
             <div className="flex flex-col border-b border-nr-border/50 p-3 shrink-0 transition-colors duration-200">
                 <div className="flex items-center gap-3">
@@ -126,13 +77,13 @@ const YoutubeWidget: React.FC = () => {
             {/* Body */}
             <div className="flex-1 flex flex-col items-center justify-center w-full relative">
                 {/* Player Wrapper */}
-                <div className={`w-full relative ${latestVideo.isShort ? 'aspect-[9/16] max-w-[350px] mx-auto' : 'aspect-video'}`}>
+                <div className={`w-full relative ${latestVideo.short ? 'aspect-[9/16] max-w-[350px] mx-auto' : 'aspect-video'}`}>
                     <iframe
                         className="absolute top-0 left-0 w-full h-full"
-                        src={`https://www.youtube.com/embed/${latestVideo.id}`}
+                        src={`https://www.youtube-nocookie.com/embed/${latestVideo.videoId}`}
                         title={latestVideo.title}
                         frameBorder="0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; compute-pressure"
                         allowFullScreen
                     ></iframe>
                 </div>

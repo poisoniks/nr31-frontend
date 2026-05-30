@@ -15,8 +15,8 @@ const Button: React.FC<ButtonProps> = ({
     const baseStyles = 'inline-flex items-center justify-center rounded-md font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none cursor-pointer';
 
     const variants: Record<NonNullable<ButtonProps['variant']>, string> = {
-        primary: 'bg-nr-accent text-nr-text hover:bg-nr-accent-hover focus:ring-nr-accent',
-        secondary: 'border-2 border-nr-accent text-nr-text bg-transparent hover:bg-nr-accent hover:text-nr-text focus:ring-nr-accent',
+        primary: 'bg-nr-accent text-[#1C1510] dark:text-slate-950 hover:bg-nr-accent-hover focus:ring-nr-accent border border-[#3B3024]/30 dark:border-transparent shadow-sm',
+        secondary: 'border-2 border-nr-accent text-nr-text bg-transparent hover:bg-nr-accent hover:text-[#1C1510] dark:hover:text-slate-950 focus:ring-nr-accent',
         destructive: 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-600',
         ghost: 'bg-transparent text-nr-text hover:bg-nr-border focus:ring-gray-400',
     };

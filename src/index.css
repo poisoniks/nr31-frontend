@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Georgia:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@400;500;600;700&family=Georgia:wght@400;700&display=swap');
 @import "tailwindcss";
 
 @custom-variant dark (&:where(.dark, .dark *));
@@ -6,6 +6,8 @@
 @theme {
   --font-serif: "Georgia", serif;
   --font-sans: "Georgia", serif;
+  --font-header: "Cinzel", "Georgia", serif;
+  --font-interface: "Inter", sans-serif;
 
   --color-nr-accent: var(--accent-base);
   --color-nr-accent-hover: var(--accent-hover);
@@ -66,22 +68,24 @@
     --radius: 0.5rem;
 
     /* Site Design Root Variables */
-    --accent-base: #ff9900;
-    --accent-hover: #e68a00;
-    --bg-base: #F8F7F4;
-    --text-base: #1A1F2C;
-    --text-alt: #0B1320;
-    --surface-base: #FFFFFF;
-    --border-base: rgba(26, 31, 44, 0.12);
-    --glass-bg: rgba(255, 255, 255, 0.6);
-    --glass-border: rgba(255, 255, 255, 0.6);
-    --glass-card-bg: rgba(255, 255, 255, 0.85);
-    --glass-card-border: rgba(26, 31, 44, 0.08);
-    --hero-overlay-start: rgba(248, 247, 244, 0.1);
-    --hero-overlay-end: rgba(248, 247, 244, 0.95);
-    --gold-grad-start: #ff9900;
-    --gold-grad-end: #a16207;
-    --glass-shadow: 0 12px 32px -8px rgba(0, 0, 0, 0.08), 0 4px 12px -4px rgba(0, 0, 0, 0.04);
+    --accent-base: #EAB308;
+    --accent-hover: #CA8A04;
+    --bg-base: #F5F0E8;
+    --text-base: #281F18;
+    --text-alt: #16100D;
+    --surface-base: #FAF8F5;
+    --border-base: rgba(40, 31, 24, 0.12);
+    --glass-bg: rgba(245, 240, 232, 0.7);
+    --glass-border: rgba(245, 240, 232, 0.7);
+    --glass-card-bg: rgba(250, 248, 245, 0.9);
+    --glass-card-border: rgba(184, 134, 11, 0.12);
+    --hero-overlay-start: rgba(245, 240, 232, 0.15);
+    --hero-overlay-end: rgba(245, 240, 232, 0.95);
+    --gold-grad-start: #FACC15;
+    --gold-grad-end: #EAB308;
+    --glass-shadow: 0 12px 32px -8px rgba(40, 31, 24, 0.10), 0 4px 12px -4px rgba(40, 31, 24, 0.06);
+    --gold-text-stroke: 1px var(--text-base);
+    --gold-text-shadow: drop-shadow(0 2px 4px rgba(40, 31, 24, 0.25));
   }
 
   .dark {
@@ -123,6 +127,8 @@
     --gold-grad-start: #fbbf24;
     --gold-grad-end: #d97706;
     --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+    --gold-text-stroke: 0px transparent;
+    --gold-text-shadow: none;
   }
 
   body {
@@ -177,6 +183,8 @@
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+  -webkit-text-stroke: var(--gold-text-stroke, 0px transparent);
+  filter: var(--gold-text-shadow, none);
 }
 
 @utility animate-fade-in-up {
@@ -187,6 +195,9 @@
   animation: spin 3s linear infinite;
 }
 
+@utility animate-fade-in {
+  animation: fade-in 0.2s ease-out forwards;
+}
 
 @keyframes fade-in-up {
   from {
@@ -198,4 +209,25 @@
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+/* Light mode overrides for text opacity classes to ensure readability */
+html:not(.dark) {
+  .text-nr-text\/80 { color: color-mix(in srgb, var(--color-nr-text) 90%, transparent) !important; }
+  .text-nr-text\/70 { color: color-mix(in srgb, var(--color-nr-text) 85%, transparent) !important; }
+  .text-nr-text\/60 { color: color-mix(in srgb, var(--color-nr-text) 80%, transparent) !important; }
+  .text-nr-text\/50 { color: color-mix(in srgb, var(--color-nr-text) 72%, transparent) !important; }
+  .text-nr-text\/40 { color: color-mix(in srgb, var(--color-nr-text) 60%, transparent) !important; }
+  .text-nr-text\/30 { color: color-mix(in srgb, var(--color-nr-text) 45%, transparent) !important; }
+  .text-nr-text\/20 { color: color-mix(in srgb, var(--color-nr-text) 35%, transparent) !important; }
 }

@@ -1,7 +1,9 @@
 import axios from 'axios';
+import { env } from '../config/environment';
+import i18n from '../i18n';
 
 const api = axios.create({
-    baseURL: '/api',
+    baseURL: env.API_BASE_URL,
     headers: {
         'Content-Type': 'application/json',
     },
@@ -13,6 +15,11 @@ api.interceptors.request.use(
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }
+        
+        if (i18n.language) {
+            config.headers['Accept-Language'] = i18n.language;
+        }
+
         return config;
     },
     (error) => {
@@ -31,8 +38,6 @@ api.interceptors.response.use(
             try {
                 const refreshToken = localStorage.getItem('refreshToken');
                 if (refreshToken) {
-                    // Attempt to refresh token
-                    // Note: This endpoint should be adjusted based on actual backend implementation
                     const response = await axios.post('/api/v1/auth/refresh', { refreshToken });
                     const { accessToken } = response.data;
 
